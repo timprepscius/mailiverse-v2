@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="mv.tomcat">
+    <property environment="env"/>
+    <property name="mv.common.location" value="../common"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath">
+        <pathelement location="../ext/apache-tomcat/lib/annotations-api.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/catalina-ant.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/catalina-ha.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/catalina-tribes.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/catalina.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/ecj-4.3.1.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/el-api.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/jasper-el.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/jasper.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/jsp-api.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/servlet-api.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/tomcat-api.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/tomcat-coyote.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/tomcat-dbcp.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/tomcat-i18n-es.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/tomcat-i18n-fr.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/tomcat-i18n-ja.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/tomcat-jdbc.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/tomcat-util.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/tomcat7-websocket.jar"/>
+        <pathelement location="../ext/apache-tomcat/lib/websocket-api.jar"/>
+    </path>
+    <path id="Web App Libraries.libraryclasspath">
+        <pathelement location="../../../../../../mv.common"/>
+    </path>
+    <path id="EAR Libraries.libraryclasspath"/>
+    <path id="mv.common.classpath">
+        <pathelement location="${mv.common.location}/bin"/>
+        <pathelement location="${mv.common.location}/bouncycastle.jar"/>
+        <path refid="EAR Libraries.libraryclasspath"/>
+        <path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
+        <pathelement location="${mv.common.location}/javax.mail.jar"/>
+        <pathelement location="${mv.common.location}/bcpg.jar"/>
+        <pathelement location="${mv.common.location}/mongo.jar"/>
+        <pathelement location="${mv.common.location}/mysql-connector-java.jar"/>
+    </path>
+    <path id="mv.tomcat.classpath">
+        <pathelement location="build/classes"/>
+        <path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
+        <path refid="Web App Libraries.libraryclasspath"/>
+        <path refid="EAR Libraries.libraryclasspath"/>
+        <path refid="mv.common.classpath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="build/classes"/>
+        <copy includeemptydirs="false" todir="build/classes">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="build/classes"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <ant antfile="build.xml" dir="${mv.common.location}" inheritAll="false" target="clean"/>
+    </target>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects">
+        <ant antfile="build.xml" dir="${mv.common.location}" inheritAll="false" target="build-project"/>
+    </target>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="mv.tomcat.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+
+
+    <target name="war" depends="build">
+        <delete dir="dist" />
+        <mkdir dir="dist" />
+
+        <jar destfile="dist/WEB-INF/lib/mv.common.jar">
+            <fileset dir="${mv.common.location}/bin" />
+        </jar>
+
+        <copy includeemptydirs="false" todir="dist/WEB-INF/classes">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+            <fileset dir="build/classes" />
+        </copy>
+
+        <copy includeemptydirs="false" todir="dist">
+            <fileset dir="WebContent" />
+        </copy>
+
+        <copy includeemptydirs="false" todir="dist/WEB-INF/lib">
+            <fileset dir="../ext">
+                <include name="bouncycastle.jar"/>
+                <include name="javax.mail.jar"/>
+                <include name="mongo.jar"/>
+                <include name="mysql-connector-java.jar"/>
+                <include name="bcpg.jar"/>
+
+            </fileset>
+        </copy>
+        <war basedir="dist" destfile="../export/WebServer.war" needxmlfile='false' >
+            <exclude name="WEB-INF/**" />
+            <webinf dir="dist/WEB-INF/">
+<!--                <include name="**/*.jar" /> -->
+            </webinf>
+        </war>
+
+       <delete dir="dist" />
+    </target>
+
+</project>

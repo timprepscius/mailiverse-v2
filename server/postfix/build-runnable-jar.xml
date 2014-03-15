@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project mv.postfix with Jar-in-Jar Loader">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="../export/StoreMail.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="mv.server.util.StoreMail"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ bouncycastle.jar annotations-api.jar catalina-ant.jar catalina-ha.jar catalina-tribes.jar catalina.jar ecj-4.3.1.jar el-api.jar jasper-el.jar jasper.jar jsp-api.jar servlet-api.jar tomcat-api.jar tomcat-coyote.jar tomcat-dbcp.jar tomcat-i18n-es.jar tomcat-i18n-fr.jar tomcat-i18n-ja.jar tomcat-jdbc.jar tomcat-util.jar tomcat7-websocket.jar websocket-api.jar javax.mail.jar bcpg.jar mongo.jar mysql-connector-java.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="../postfix/bin"/>
+            <fileset dir="../common/bin"/>
+            <zipfileset dir="../common" includes="bouncycastle.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="annotations-api.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="catalina-ant.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="catalina-ha.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="catalina-tribes.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="catalina.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="ecj-4.3.1.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="el-api.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="jasper-el.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="jasper.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="jsp-api.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="servlet-api.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="tomcat-api.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="tomcat-coyote.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="tomcat-dbcp.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="tomcat-i18n-es.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="tomcat-i18n-fr.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="tomcat-i18n-ja.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="tomcat-jdbc.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="tomcat-util.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="tomcat7-websocket.jar"/>
+            <zipfileset dir="../ext/apache-tomcat/lib" includes="websocket-api.jar"/>
+            <zipfileset dir="../common" includes="javax.mail.jar"/>
+            <zipfileset dir="../common" includes="bcpg.jar"/>
+            <zipfileset dir="../common" includes="mongo.jar"/>
+            <zipfileset dir="../common" includes="mysql-connector-java.jar"/>
+        </jar>
+    </target>
+</project>
