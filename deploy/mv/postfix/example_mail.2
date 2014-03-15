@@ -1,0 +1,189 @@
+                                                                                                                                                                                                                                                               
+Delivered-To: timprepscius@gmail.com
+Received: by 10.140.20.38 with SMTP id 35csp80927qgi;
+        Wed, 29 Jan 2014 06:57:29 -0800 (PST)
+X-Received: by 10.224.75.138 with SMTP id y10mr12756921qaj.72.1391007449090;
+        Wed, 29 Jan 2014 06:57:29 -0800 (PST)
+Return-Path: <guardian-dev-bounces+timprepscius=gmail.com@lists.mayfirst.org>
+Received: from lists.mayfirst.org (leslie.mayfirst.org. [209.51.180.249])
+        by mx.google.com with ESMTPS id j78si1915741qgd.162.2014.01.29.06.57.28
+        for <timprepscius@gmail.com>
+        (version=TLSv1 cipher=RC4-SHA bits=128/128);
+        Wed, 29 Jan 2014 06:57:29 -0800 (PST)
+Received-SPF: pass (google.com: domain of guardian-dev-bounces+timprepscius=gmail.com@lists.mayfirst.org designates 209.51.180.249 as permitted sender) client-ip=209.51.180.249;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: domain of guardian-dev-bounces+timprepscius=gmail.com@lists.mayfirst.org designates 209.51.180.249 as permitted sender) smtp.mail=guardian-dev-bounces+timprepscius=gmail.com@lists.mayfirst.org
+Received: from leslie.mayfirst.org (localhost [127.0.0.1])
+	by lists.mayfirst.org (Postfix) with ESMTP id A6F541DE5F
+	for <timprepscius@gmail.com>; Wed, 29 Jan 2014 09:57:28 -0500 (EST)
+Received: from lists.mayfirst.org (localhost [127.0.0.1])
+	by lists.mayfirst.org (Postfix) with ESMTP id BE8E81DD67
+	for <guardian-dev@lists.mayfirst.org>;
+	Wed, 29 Jan 2014 09:57:14 -0500 (EST)
+Received: from mail-ig0-f173.google.com (mail-ig0-f173.google.com
+	[209.85.213.173])
+	by lists.mayfirst.org (Postfix) with ESMTPS id 9A5371DD63
+	for <guardian-dev@lists.mayfirst.org>;
+	Wed, 29 Jan 2014 09:57:14 -0500 (EST)
+Received: by mail-ig0-f173.google.com with SMTP id c10so15227732igq.0
+	for <guardian-dev@lists.mayfirst.org>;
+	Wed, 29 Jan 2014 06:57:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20130820;
+	h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
+	:subject:references:in-reply-to:content-type;
+	bh=C+mk3SnxPOwlJcErWJs3kMSdFtuWSCztQviXusuNPpc=;
+	b=KjeKaewGwIuzhb8HEQhP6zC+ydCeIrsoq+tINMXPWD7PycZVtSwBgHvJKDAe+QvUo7
+	RbD5xZIuVbywCNoLnzs/g5jVFEj8zDea6jeh2iqE4KGAAhgI4hor3yJsF8ClIt4A2w5F
+	xUnXafh/qxSdojnQhPYIjzKThmNv1CsHTjsqavFGoIEpfHdrvS+eIhcQ+SawYAX+HTlV
+	A10ZKXi5quxqLnuRBR6pgnrPbiat3ZzOiVEBpNykgfW7b6qPuMtoxmGZqyzW4SmdkDaz
+	SSsbr47+9HfdF8iJFeM1OtbZy0SwPa8gdka1QVrD0YnFqbfq+vGWLtUDBXDBnc3atft9
+	s7/Q==
+X-Gm-Message-State: ALoCoQn0avb/WBsey5zf5fJ6VX7ZbWcrz9E9Y6R3IN2b4K2VN78eSCyZdngQngUCIP8FCo3+BrB0
+X-Received: by 10.42.227.195 with SMTP id jb3mr6248122icb.27.1391007433556;
+	Wed, 29 Jan 2014 06:57:13 -0800 (PST)
+Received: from work.local (173-29-199-75.client.mchsi.com. [173.29.199.75])
+	by mx.google.com with ESMTPSA id f2sm68660764igt.6.2014.01.29.06.57.12
+	for <multiple recipients>
+	(version=TLSv1 cipher=ECDHE-RSA-RC4-SHA bits=128/128);
+	Wed, 29 Jan 2014 06:57:12 -0800 (PST)
+Message-ID: <52E916C7.5070509@zetetic.net>
+Date: Wed, 29 Jan 2014 08:57:11 -0600
+From: Nick Parker <nparker@zetetic.net>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9;
+	rv:24.0) Gecko/20100101 Thunderbird/24.2.0
+MIME-Version: 1.0
+To: Michael Rogers <michael@briarproject.org>, 
+	Guardian Dev <guardian-dev@lists.mayfirst.org>
+References: <52E84334.90902@briarproject.org>
+In-Reply-To: <52E84334.90902@briarproject.org>
+X-Enigmail-Version: 1.6
+X-Virus-Scanned: ClamAV using ClamSMTP
+Subject: Re: [guardian-dev] Sharing encrypted content with other apps
+X-BeenThere: guardian-dev@lists.mayfirst.org
+X-Mailman-Version: 2.1.13
+Precedence: list
+List-Id: Guardian Project Development <guardian-dev.lists.mayfirst.org>
+List-Unsubscribe: <https://lists.mayfirst.org/mailman/options/guardian-dev>,
+	<mailto:guardian-dev-request@lists.mayfirst.org?subject=unsubscribe>
+List-Archive: <http://lists.mayfirst.org/pipermail/guardian-dev>
+List-Post: <mailto:guardian-dev@lists.mayfirst.org>
+List-Help: <mailto:guardian-dev-request@lists.mayfirst.org?subject=help>
+List-Subscribe: <https://lists.mayfirst.org/mailman/listinfo/guardian-dev>,
+	<mailto:guardian-dev-request@lists.mayfirst.org?subject=subscribe>
+Content-Type: multipart/mixed; boundary="===============3743750205107100449=="
+Sender: guardian-dev-bounces+timprepscius=gmail.com@lists.mayfirst.org
+Errors-To: guardian-dev-bounces+timprepscius=gmail.com@lists.mayfirst.org
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--===============3743750205107100449==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="sxgdJT4R1LJG8GM5kLALGiGHQiBketMsl"
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--sxgdJT4R1LJG8GM5kLALGiGHQiBketMsl
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi Michael,
+
+That is an interesting idea, SQLCipher supports in-memory databases via
+the special filename :memory:, however accessing the raw representation
+of the database becomes more challenging.  One approach that might be
+considered is implementing and registering a custom in-memory virtual
+file system.
+
+http://sqlite.org/c3ref/vfs.html
+http://sqlite.org/c3ref/vfs_find.html
+
+On 1/28/14, 5:54 PM, Michael Rogers wrote:
+> Hi all,
+>=20
+> I've been pondering whether it's possible for an Android app to share
+> encrypted content - for example, an image stored in a SQLCipher
+> database - with another app, without first creating an unencrypted
+> copy of the content on disk.
+>=20
+> If we didn't mind creating an unencrypted copy of the content we could
+> write it to a file, use a FileProvider to get a content URI for the
+> file, and use an Intent to share the URI with the other app. Can that
+> process be modified to avoid making a copy of the content?
+>=20
+> One possibility would be to create a named pipe with mkfifo(), use a
+> FileProvider to create a content URI for the pipe, use an Intent to
+> share the URI with the other app, and then stream the data from
+> storage to the pipe.
+>=20
+> Another possibility would be to use ParcelFileDescriptor.createPipe()
+> to create a pair of ParcelFileDescriptors, use an Intent to pass the
+> read descriptor to the other app, and then stream the data from
+> storage to the write descriptor. But I guess most apps will expect to
+> obtain content from URIs rather than ParcelFileDescriptors.
+>=20
+> Has anyone on the list tried something like this? Any suggestions?
+>=20
+> Cheers,
+> Michael
+> _______________________________________________
+> Guardian-dev mailing list
+>=20
+> Post: Guardian-dev@lists.mayfirst.org
+> List info: https://lists.mayfirst.org/mailman/listinfo/guardian-dev
+>=20
+> To Unsubscribe
+>         Send email to:  Guardian-dev-unsubscribe@lists.mayfirst.org
+>         Or visit: https://lists.mayfirst.org/mailman/options/guardian-d=
+ev/nparker%40zetetic.net
+>=20
+> You are subscribed as: nparker@zetetic.net
+>=20
+
+--=20
+Nick Parker
+
+
+--sxgdJT4R1LJG8GM5kLALGiGHQiBketMsl
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJS6RbHAAoJEC+HMEgI1AzsD0oP/3zHyJ4IVPydhKD27n0dFYMV
+fUxG0qV5RvRotiQf1mZdwnN05SSO9Iv4fCKjTo5GLG1zJ9tp2rSUF/mUA1Bv7EQB
+CXTxkWpx3QXPQmhV0P/JkUSRAMPADjQKVSxOCUKWBLpufllMsosDUS1FYBzNBNv5
+94HTXGIw+cSNIpqiv9NyHSZzFhp3BLz1ZOwJanSNRZCOPsWJLZ+aH790KyzLZ01K
+FtbM9LN/RrpoIUQ2jt+dFnLQLoFrB3Osr4K4yVwrwWc+1ZN8jB9K6nkIyj/DYtnp
+Jrd/HWMslPn2tlNrsZfMGCD5sUIS8ULnUPFGrZ7HgeOjnCEU6PBkrx4Ep/tSiot5
+PeEZGAABuZUGL+krIpA7p771Lj7O8JnuFB8BkLFdjZs0ziGp0OO4GklROSyO2UbI
+tZRXovKq1ZBtfsQIO9RXfiz1lPp4qyjdcTGGyglHcdvNm6fYhXj5odVJFtNn5F4w
+GtV9iO6shTCvCZE1POp/z+3clhL8BnRYUaFXEEOpMDoyTDmGDyjihiUD3cCbO+du
+hQG+/IBECOhPt1RAT0hIftjJctSqRbAiZBAHn1ZzkHhtSFvVxozq6UavE9m8u5y3
+y+sbHP+gCXWNLyK/Ga5w8Qw413r7JLDFFBAQoguK6oKBmEapMrE68g/LzILnTvvG
+UtHJJJqnvlAIYfzLOFuu
+=qFIZ
+-----END PGP SIGNATURE-----
+
+--sxgdJT4R1LJG8GM5kLALGiGHQiBketMsl--
+
+--===============3743750205107100449==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+Guardian-dev mailing list
+
+Post: Guardian-dev@lists.mayfirst.org
+List info: https://lists.mayfirst.org/mailman/listinfo/guardian-dev
+
+To Unsubscribe
+        Send email to:  Guardian-dev-unsubscribe@lists.mayfirst.org
+        Or visit: https://lists.mayfirst.org/mailman/options/guardian-dev/timprepscius%40gmail.com
+
+You are subscribed as: timprepscius@gmail.com
+
+--===============3743750205107100449==--

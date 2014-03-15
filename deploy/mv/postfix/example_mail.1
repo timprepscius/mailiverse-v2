@@ -1,0 +1,165 @@
+                                                                                                                                                                                                                                                               
+Delivered-To: timprepscius@gmail.com
+Received: by 10.140.20.38 with SMTP id 35csp49666qgi;
+        Tue, 11 Feb 2014 08:03:51 -0800 (PST)
+X-Received: by 10.224.36.195 with SMTP id u3mr58330253qad.59.1392134630535;
+        Tue, 11 Feb 2014 08:03:50 -0800 (PST)
+Return-Path: <guardian-dev-bounces+timprepscius=gmail.com@lists.mayfirst.org>
+Received: from lists.mayfirst.org (leslie.mayfirst.org. [209.51.180.249])
+        by mx.google.com with ESMTPS id h12si12704968qge.120.2014.02.11.08.03.50
+        for <timprepscius@gmail.com>
+        (version=TLSv1 cipher=RC4-SHA bits=128/128);
+        Tue, 11 Feb 2014 08:03:50 -0800 (PST)
+Received-SPF: pass (google.com: domain of guardian-dev-bounces+timprepscius=gmail.com@lists.mayfirst.org designates 209.51.180.249 as permitted sender) client-ip=209.51.180.249;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: domain of guardian-dev-bounces+timprepscius=gmail.com@lists.mayfirst.org designates 209.51.180.249 as permitted sender) smtp.mail=guardian-dev-bounces+timprepscius=gmail.com@lists.mayfirst.org
+Received: from leslie.mayfirst.org (localhost [127.0.0.1])
+	by lists.mayfirst.org (Postfix) with ESMTP id D4C5C1E699
+	for <timprepscius@gmail.com>; Tue, 11 Feb 2014 11:03:49 -0500 (EST)
+Received: from lists.mayfirst.org (localhost [127.0.0.1])
+	by lists.mayfirst.org (Postfix) with ESMTP id 028071E3C0
+	for <guardian-dev@lists.mayfirst.org>;
+	Tue, 11 Feb 2014 11:00:03 -0500 (EST)
+Received: from mail-qc0-f178.google.com (mail-qc0-f178.google.com
+	[209.85.216.178])
+	by lists.mayfirst.org (Postfix) with ESMTPS id 421AB1E402
+	for <guardian-dev@lists.mayfirst.org>;
+	Tue, 11 Feb 2014 11:00:02 -0500 (EST)
+Received: by mail-qc0-f178.google.com with SMTP id m20so13111320qcx.37
+	for <guardian-dev@lists.mayfirst.org>;
+	Tue, 11 Feb 2014 08:00:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20130820;
+	h=x-gm-message-state:sender:message-id:date:from:organization
+	:user-agent:mime-version:to:subject:references:in-reply-to
+	:content-type:content-transfer-encoding;
+	bh=+KDJ/92zFSNOxLia93HBiNw13imWD8OL94G0Ih+Sj9o=;
+	b=YNKWbuLAnLL/s29nkaKe04TZdEMxAFqbCfjcUi5E6AsIjsDqVOQALoGvIolPIuAgl/
+	149anTNKtgkSM1THp8RWk5V0psjQR82EoV2gxAkesUL0G0rU2zgzasCYvNKW7i9gdo67
+	RnRD2yh4J/4fOHoRGW1JIKbfZuE57wQPEO2MsGy0Wo/QdM3+XXNNuDlK34BUumk0jJ4f
+	73iii1UMZByICu729MgLYQVUcpsmxPc4xt8PD+VPldJx1ISSd86R7EN6UdPUUF3+1jAR
+	q04ywAHKw+LDQajrVkbQr6ZGUeaGYJamKuTNfnryC+yMPZOT1HjZUnXbIOoOQXXR20qA
+	WBag==
+X-Gm-Message-State: ALoCoQke2FCLgSPQToMtbLhMhNT+UL458WfIp9SLqSB4L0ZPY1vul+OlKIfmQH6F1WjjD5jD2QgL
+X-Received: by 10.140.43.230 with SMTP id e93mr55868043qga.35.1392134401401;
+	Tue, 11 Feb 2014 08:00:01 -0800 (PST)
+Received: from strop.home (pool-108-29-139-222.nycmny.fios.verizon.net.
+	[108.29.139.222])
+	by mx.google.com with ESMTPSA id w2sm40671906qad.19.2014.02.11.07.59.59
+	for <guardian-dev@lists.mayfirst.org>
+	(version=TLSv1 cipher=ECDHE-RSA-RC4-SHA bits=128/128);
+	Tue, 11 Feb 2014 07:59:59 -0800 (PST)
+Message-ID: <52FA48FE.3000205@guardianproject.info>
+Date: Tue, 11 Feb 2014 10:59:58 -0500
+From: Lee Azzarello <lee@guardianproject.info>
+Organization: Guardian Project
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9;
+	rv:24.0) Gecko/20100101 Thunderbird/24.3.0
+MIME-Version: 1.0
+To: Guardian Dev <guardian-dev@lists.mayfirst.org>
+References: <52FA3198.2080108@owca.info>
+In-Reply-To: <52FA3198.2080108@owca.info>
+X-Enigmail-Version: 1.6
+X-Virus-Scanned: ClamAV using ClamSMTP
+Subject: Re: [guardian-dev] detecting mobile phone location
+X-BeenThere: guardian-dev@lists.mayfirst.org
+X-Mailman-Version: 2.1.13
+Precedence: list
+List-Id: Guardian Project Development <guardian-dev.lists.mayfirst.org>
+List-Unsubscribe: <https://lists.mayfirst.org/mailman/options/guardian-dev>,
+	<mailto:guardian-dev-request@lists.mayfirst.org?subject=unsubscribe>
+List-Archive: <http://lists.mayfirst.org/pipermail/guardian-dev>
+List-Post: <mailto:guardian-dev@lists.mayfirst.org>
+List-Help: <mailto:guardian-dev-request@lists.mayfirst.org?subject=help>
+List-Subscribe: <https://lists.mayfirst.org/mailman/listinfo/guardian-dev>,
+	<mailto:guardian-dev-request@lists.mayfirst.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Sender: guardian-dev-bounces+timprepscius=gmail.com@lists.mayfirst.org
+Errors-To: guardian-dev-bounces+timprepscius=gmail.com@lists.mayfirst.org
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 2/11/14, 9:20 AM, Matej Kovacic wrote:
+> Hi,
+> 
+> I have a contact with one of the human rights activists in Sudan.
+> The person told me a story, that some Somalian indigenous people,
+> who are opressed by the Sudanian regime did the test with mobile
+> phones.
+> 
+> They turned the mobile phone on, put it on some corner and went
+> several hundert meters away. In an hour airplane came and bombed
+> the house.
+> 
+> I am quite curious how is that possible if there is no mobile
+> signal there. Of course, I don't know the details, it is possible,
+> that mobile signal is there. As far as I know, it is possible to
+> connect to a base station from up to 30 km away, but I am not sure
+> how triangulation works if there is only one base station nearby.
+> 
+> Now they have a question: how to protect from this? They came with
+> an idea that they will simply remove SIM card and communicate via
+> wi-fi. System would create with meshing network where each mobile
+> phone would be a relay node.
+> 
+> There is an application from Swiss mountain rescue service called
+> Uepaa (http://www.uepaa.ch), which is doing similar thing.
+> 
+> There is also interestin slovenian project doing this with home
+> wi-fi routers: https://wlan-si.net/en/ and
+> https://nodes.wlan-si.net/.
+> 
+> However, I am not sure how safe is this (removing SIM card),
+> because even if you remove SIM card, you are still able to make an
+> emergency call, which means you still see the network and network
+> still can see you. I think all radio part should be completely
+> switched off / removed.
+> 
+> However, there is a problem how to do this...?
+> 
+> Any idea how to privide safe communications in such a case?
+> Because encryption is not a solution, problem is location privacy.
+
+Radio Direction Finding (RDF) has a rich history that predates mobile
+phones. A solution to provide safe communications when a radio is an
+active target for an air strike is not to use a radio to communicate.
+
+At the very least use the radio only for some kind of store and
+forward system whereby the user may transmit a message and immediately
+power down the radio after transmission.
+
+- -lee
+
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iQIcBAEBAgAGBQJS+kj9AAoJEKhL9IoSyjdlT2YP/iLzAd3KtdgCYBytkaBNEsnc
+Qtb2q4x3b+rgq50Q5QHFCTOoza6cQIvHYrwat0ywFxXJvtGT1qb+kNypVN71AOti
+hNrou6Z6iAdGAteZvLLzc79wR5yzDRDywkTC1OHZNCkiapuVl9krP5/cAq5BZNC0
+G3slhR1rKZLMoVwvKDSd8H901Z5xG8GmaNfZoQx5TtbGRghc83ldbO56LwxVsWxD
+EbnG3WsxJNUSCkkYAEHkCDWjygxd2Ue6D25wjkwBU1K75RZ6Ajwzw3OFnhEa/dht
+tMjWoDA4hxYxTqRSDLC/8Mdd3ajGNnSTILoRMkOGIb1BdbDEOYb4ESD7IbfjVfKb
+BCKk0yc/qqJQMysPPVholxcxwsqN0QJk+urpgkyf68PtnqsO8WKHPVf2kEqie3u7
+YvEBGpt2A9Z9L5uc+BFgZTxQUYevqLEzMUyqpu/Ku09B4ZinpSLYCFTibOPDoCb6
+Zh+39w5H26peEHirJ6F4ywHzCHHmkhSlHPUjWDRywCP1oPotg4OdkdUNgdCMw8lY
+qfpxaViHZSS0vzDH49J2qNXTyB9nLqOrrCwNmsdlkP/mhxoZRfhFR8QJEd6KNG0u
+X6TEhSk9s4amMBWFh4UVsNJnVZX6xNN6joAuaAoyEWLJMX5GSHytXp2caAip4446
+pD2WxKtgzk8jD549l/Py
+=YN39
+-----END PGP SIGNATURE-----
+_______________________________________________
+Guardian-dev mailing list
+
+Post: Guardian-dev@lists.mayfirst.org
+List info: https://lists.mayfirst.org/mailman/listinfo/guardian-dev
+
+To Unsubscribe
+        Send email to:  Guardian-dev-unsubscribe@lists.mayfirst.org
+        Or visit: https://lists.mayfirst.org/mailman/options/guardian-dev/timprepscius%40gmail.com
+
+You are subscribed as: timprepscius@gmail.com
+

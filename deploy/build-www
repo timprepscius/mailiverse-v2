@@ -1,0 +1,11 @@
+V=`date "+%Y%m%d_%H%M%S"`
+
+rm -rf www
+mkdir www
+pushd www
+ln -s ../../client/web/WebContent $V
+cp $V/index.html index.html
+popd
+
+source ./seds
+dosed -e s/__VERSION__/$V/g www/index.html

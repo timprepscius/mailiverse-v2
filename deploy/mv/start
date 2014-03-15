@@ -1,0 +1,21 @@
+./setup
+
+echo ---------------------------------------- >> ../run.log 
+date >> ../run.log
+echo ---------------------------------------- >> ../run.log 
+
+echo syncing web
+rsync -avz --delete www/ /var/local/www/mv/
+
+sudo /etc/init.d/postfix start
+
+echo restarting tomcat
+pushd ~/tomcat/webapps
+rm -rf mv
+popd
+
+pushd ~/tomcat/bin
+./startup.sh
+popd
+
+sudo /etc/init.d/nginx start

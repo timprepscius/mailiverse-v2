@@ -1,0 +1,24 @@
+source ./config
+
+user=$MV_USER
+server=$MV_HOST
+server=mv
+
+echo deploy [$server] to [$user@$server]
+
+echo stopping...
+ssh $user@$server "cd deploy && ./stop"
+
+echo building www
+./build-www
+
+echo transfering
+rsync -avzL --delete $server/ $user@$server:deploy
+
+echo cataloging
+ssh $user@$server "cd deploy && ./catalog"
+
+echo starting...
+ssh $user@$server "cd deploy && ./start"
+
+

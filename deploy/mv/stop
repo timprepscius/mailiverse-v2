@@ -1,0 +1,9 @@
+sudo /etc/init.d/nginx stop
+sudo /etc/init.d/postfix stop
+
+pushd ~/tomcat/bin
+./shutdown.sh
+popd
+
+sleep 5
+
