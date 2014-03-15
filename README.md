@@ -15,6 +15,11 @@ and client/web/WebContent/css).
 My hope is also to demonstrate how any service built using backbone can easily use encryption, with
 almost no modifications in existing code.
 
+==
+
+There is NO nginx ssl, this is on purpose.  Everyone will need to do their own.  I will probably eventually
+include some sort of script to generate default certs.
+
 ===
 
 Progress:
