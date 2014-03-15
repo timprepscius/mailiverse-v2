@@ -2,11 +2,8 @@ mv
 
 ==
 
-a PGP based mail service.
-
-===
-
-This project creates a mail service which is PGP based.
+This project is a PGP mail service which caches using AES to provide a UI of the standard, "click on
+folder, see conversations instantaineously, etc etc."
 
 It uses Backbone for the model/view architecture.  The backone syncronization code is overridden before
 ajax is performed to encrypt and decrypt the models as they are transfered.
