@@ -17,7 +17,18 @@ define([
         
         initialize: function(options) 
         {
+        	var that = this;
         	_.bindAll(this, 'onSync');
+    		Backbone.atomicEvents.on("needsSync", function() {
+    			Util.keyTimeout ("SyncView-needsSync", 500, that.onSync);
+    		});
+    		
+    		Backbone.atomicEvents.on("syncFailed", function() {
+    			Util.keyTimeout ("SyncView-needsSync", 2 * 1000, that.onSync);
+    		});
+    		
+    		if (Backbone.atomicIONeeded())
+    			Util.keyTimeout ("SyncView-needsSync", 1000, that.onSync);
         },
         
         onSync: function(event)

@@ -8,6 +8,8 @@ define([
 	Backbone.itemsToSave = [];
 	Backbone.itemsToDelete = [];
 	
+	Backbone.atomicEvents = new Backbone.Model();
+
 	//------------------
 
 	Backbone.Collection.prototype.atomic_save = Backbone.Collection.prototype.save;
@@ -15,6 +17,8 @@ define([
 	{
 		Backbone.itemsToSave.push(this);
 		this.updateModificationTime();
+		
+		Backbone.atomicEvents.trigger("needsSync");
 	};
 	
 	Backbone.Collection.prototype.atomic_destroy = Backbone.Collection.prototype.destroy;
@@ -22,6 +26,8 @@ define([
 	{
 		Backbone.itemsToDelete.push(this);
 		this.updateModificationTime();
+		
+		Backbone.atomicEvents.trigger("needsSync");
 	},
 	
 	//------------------
@@ -31,6 +37,8 @@ define([
 	{
 		Backbone.itemsToSave.push(this);
 		this.updateModificationTime();
+		
+		Backbone.atomicEvents.trigger("needsSync");
 	},
 
 	Backbone.Model.prototype.atomic_destroy = Backbone.Model.prototype.destroy;
@@ -38,10 +46,16 @@ define([
 	{
 		Backbone.itemsToDelete.push(this);
 		this.updateModificationTime();
+		
+		Backbone.atomicEvents.trigger("needsSync");
 	},
 
 	//------------------
 
+	Backbone.atomicIONeeded = function() {
+		return (Backbone.itemsToSave.length + Backbone.itemsToDelete.length) > 0;
+	},
+	
 	Backbone.atomicIO = function(callbacks) {
 		var objectsToSave = _.uniq(Backbone.itemsToSave);
 		var objectsToDelete = _.uniq(Backbone.itemsToDelete);
@@ -49,7 +63,13 @@ define([
 		Backbone.itemsToDelete = [];
 		
 		Backbone.atomicIOImplementation (objectsToSave, objectsToDelete, {
-			success: callbacks.success,
+			success: function () {
+				callbacks.success();
+				
+				if (Backbone.atomicIONeeded())
+					Backbone.atomicEvents.trigger("needsSync");
+			},
+					
 			failure: function () {
 				_.each(objectsToSave, function(object) {
 					Backbone.itemsToSave.push(object);
@@ -57,6 +77,8 @@ define([
 				_.each(objectsToDelete, function(object) {
 					Backbone.itemsToDelete.push(object);
 				});
+				
+				Backbone.atomicEvents.trigger("syncFailed");
 				
 				if (callbacks.failure)
 					callbacks.failure();

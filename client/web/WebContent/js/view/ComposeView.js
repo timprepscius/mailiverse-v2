@@ -145,6 +145,7 @@ define([
 		{
 			this.onSave();
 			appSingleton.sendMail(this.model);
+			appSingleton.mainView.closeCurrentView();
 		},
 		
 		onSave: function()
