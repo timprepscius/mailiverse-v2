@@ -33,6 +33,7 @@ Progress:
  * Decodes QP inlines in the subject, haven't applied this to mail bodies yet.   
 
 Todo:
+ * Public keys are not automatically registered on the pgp key servers.  Don't want to enable until semi-permanent I think.
  * Signing mail with text & html blocks using PGP.  The signature is too small to be correct.  But GPG
    somehow accepts it.  Which I find disturbing.
  * QP all around.
