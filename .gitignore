@@ -1,0 +1,7 @@
+.DS_Store
+*.jar
+*.war
+bin
+build
+setup/requirements/id_rsa.pub
+.class
