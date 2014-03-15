@@ -1,0 +1,135 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Tut</title>
+<script type="text/javascript" src="__VERSION__/js/lib/require-min.js"></script>
+<link href="__VERSION__/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="__VERSION__/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" media="screen">
+<link href="__VERSION__/css/dashboard.css" rel="stylesheet" media="screen">
+<link href="__VERSION__/css/typeahead-js-bootstrap3.css" rel="stylesheet" media="screen">
+
+<link rel="stylesheet" type="text/css" href="__VERSION__/css/defaults.css" />
+<link rel="stylesheet" type="text/css" href="__VERSION__/css/login.css" />
+
+
+<script type="text/javascript">
+
+//<link rel="stylesheet" type="text/css" href="css/app-login.css" />
+
+VERSION = '__VERSION__';
+
+require.config({
+	baseUrl: '__VERSION__',
+	paths: {
+		jquery: 'js/lib/jquery-min',
+//		jqueryui: 'js/lib/jquery-ui/jquery-ui',
+		typeahead: 'js/lib/typeahead',
+		underscore: 'js/lib/underscore-min',
+		bootstrap: 'bootstrap/js/bootstrap',
+
+		backbone: 'js/lib/backbone',
+		modelBinder: 'js/lib/Backbone.ModelBinder',
+		collectionBinder: 'js/lib/Backbone.CollectionBinder',
+		pageable: 'js/lib/backbone-pageable',
+		
+		openpgp: 'js/crypt/openpgp',
+		sjcl: 'js/crypt/sjcl',
+		mime: 'js/lib/Mime',
+		base64: 'js/crypt/Base64',
+		aes: 'js/crypt/cryptojs-aes',
+		
+		async: 'js/async/Async',
+		dispatch: 'js/async/Dispatch',
+		support: 'js/async/Support',
+		
+		ckeditor: 'ckeditor/ckeditor',
+		ckeditor_adapter: 'ckeditor/adapters/jquery',
+		
+	},
+	shim: {
+		bootstrap: { deps: ['jquery'] },
+		ckeditor: { deps: ['jquery'] },
+		ckeditor_adapter : { deps: ['ckeditor'] },
+		sjcl : { deps: [] },
+		aes: { deps: [] },
+		jqueryui : { deps: ['jquery'] },
+		typeahead: { deps: ['jquery'] },
+	}
+});
+</script>
+</head>
+<body>
+
+<div id="mailiverse-application"></div>
+
+<script type="text/javascript">
+
+require ([
+	'js/lib/require-plugin-text',
+	
+	'jquery',
+	'typeahead',
+	'bootstrap',
+	'backbone',
+	'ckeditor',
+	'ckeditor_adapter',
+	
+	'js/lib/Encodings',
+	'js/lib/Sandbox',
+	
+	'js/mech/JavaScriptPrototypeExtensions',
+	'js/mech/BackboneAtomicSave',
+	'js/mech/BackboneEncryption',
+	'js/mech/BackboneSyncCollisions',
+	'js/mech/BackboneSyncedOnce',
+	
+	'js/Util',
+	'js/Crypto',
+	'js/Constants',
+], function () {
+	require ([
+	    
+	    'js/model/App',
+	    'js/model/Login',
+		'js/model/User', 
+		'js/model/Folder', 
+		'js/model/Conversation', 
+		'js/model/ConversationReference', 
+		'js/model/Mail',
+		'js/model/Original',
+		'js/model/DecryptedOriginal',
+		'js/model/Contact',
+		'js/model/Key',
+		
+		'js/view/FolderListView',
+		'js/view/ConversationListView',
+		'js/view/ConversationView',
+		'js/view/MailListView',
+		'js/view/MailView',
+		'js/view/AppView',
+		'js/view/LoginView',
+		'js/view/SignupView',
+		'js/view/MainView',
+		'js/view/SidebarView',
+		'js/view/ComposeView',
+		'js/view/SyncView',
+		'js/view/DownloadMailView',
+	
+		'js/mech/MailReceiver',
+		'js/mech/MailSender',
+		'js/mech/LoginProcessor',
+		'js/mech/SignupProcessor',
+	    'js/mech/PGPLookUp',
+	    'js/mech/SignatureProcessor',
+		
+		'js/Test',
+	], function () {
+		
+		main();
+	
+	})
+});
+
+</script>
+</body>
+</html>

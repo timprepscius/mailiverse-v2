@@ -1,0 +1,8 @@
+<span class="download">Download Mail</span>
+
+<% if (state == 'getting') { %>
+	<span class="glyphicon glyphicon-download download-indicator" style="color:green"></span>
+<% } else if (state=='failure') { %>
+	<span class="glyphicon glyphicon-download download-indicator" style="color:red"></span>
+<% } %>
+	

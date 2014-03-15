@@ -1,0 +1,8 @@
+<span class="sync">Sync</span>
+
+<% if (state == 'saving') { %>
+	<span class="glyphicon glyphicon-upload upload-indicator" style="color:green"></span>
+<% } else if (state=='failure') { %>
+	<span class="glyphicon glyphicon-upload upload-indicator" style="color:red"></span>
+<% } %>
+	

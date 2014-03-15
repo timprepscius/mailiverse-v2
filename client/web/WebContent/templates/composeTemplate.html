@@ -1,0 +1,38 @@
+<td class="conversation-compose">
+<div class="conversation-compose-header">
+
+	<div class="input-group to address">
+	  <span class="input-group-addon">To:</span>
+	  <input name="to" type="text" class="form-control autocomplete-address" placeholder="To" value="<%- model.get('to') %>">
+	  <span class="glyphicon glyphicon-lock input-marker" />
+	</div>
+
+	<div class="input-group cc address">
+	  <span class="input-group-addon">Cc:</span>
+	  <input name="cc" type="text" class="form-control autocomplete-address" placeholder="Carbon copy" value="<%- model.get('cc') %>">
+	  <span class="glyphicon glyphicon-lock input-marker" />
+	</div>
+
+	<div class="input-group bcc address">
+	  <span class="input-group-addon">Bcc:</span>
+	  <input name="bcc" type="text" class="form-control autocomplete-address" placeholder="Blind carbon copy" value="<%- model.get('bcc') %>">
+	  <span class="glyphicon glyphicon-lock input-marker" />
+	</div>
+
+	<div class="input-group subject">
+	  <span class="input-group-addon">Subject:</span>
+	  <input type="text" class="form-control" placeholder="Subject" value="<%- model.get('subject') %>">
+	</div>
+</div>
+
+<div class="conversation-compose-body">
+	<textarea class="textarea" />
+	<div class="line below-textarea">
+		<button class="save btn btn-primary">Save</button>
+		<button class="send btn">Send</button>
+	  	<span class="glyphicon glyphicon-lock send-lock-marker" />
+		<button class="discard btn btn-warning">Discard</button>
+	</div>	
+</div>
+</td>
+

@@ -1,0 +1,179 @@
+.initially-hidden {
+	display: none;
+}
+
+.conversation-mail-header .date {
+	display: inline-block;
+}
+
+.line div {
+	display: inline;
+}
+
+.not-implemented {
+	display: none;
+}
+
+
+.startMailProcessing {
+	position: absolute;
+	z-index: 100000;
+	background-color: red;	
+}
+
+.text-align-center {
+	text-align: center;
+}
+
+.glyphicon-progress {
+	width: 36px;
+	height: 36px;
+	background-image: url('../img/spinner.gif');
+}
+
+/******************************* **************/
+
+.sidebar {
+	
+	padding: 2px;
+}
+
+.folder-list-item {
+	
+	width: 100%;
+	
+}
+
+#main-compose-button {
+	margin-left:10%;
+	margin-right:10%;
+	width: 80%;
+	margin-top: 10px;
+}
+/* ****************************** */
+
+#main-conversation {
+	padding-top: 0px;	
+}
+
+#main-conversation .conversation-subject {
+	position: fixed;
+	padding-top: 20px;
+	padding-bottom: 10px;
+	width: 100%;
+	background-color: white;
+	z-index: 1020;
+}
+
+#main-mail-list {
+	margin-top:70px;	
+	
+}
+
+.conversation-mail-header {
+	position: relative;
+}
+
+.conversation-mail-body .body-part {
+	position: relative;
+}
+
+.conversation-mail-body pre {
+	border: none;	
+	line-height: normal;
+}
+
+.top-right {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index:1;
+}
+
+.conversation-mail-body .verified-indicator-success {
+	position: absolute;
+	top: 0;
+	right: 0;
+	color: green;
+}
+
+#main-mail-list .click-to-reply .text {
+	
+	height:50px;
+	line-height: 50px;
+	text-decoration: underline;
+	border: dotted thin;
+	text-align: center;
+	width: 100%;
+	background-color: #FCFFFC;
+	
+}
+
+.draft {
+	margin-left: 5px;
+	color: red;
+}
+
+/******************************* **************/
+
+.conversation-compose {
+	background-color: #f9f9f9;	
+	border: solid thin white;
+}
+
+.conversation-compose-header .input-group {
+	margin-bottom: 5px;
+}
+
+.below-textarea {
+	margin-top:10px;	
+}
+
+.conversation-compose-header .tt-suggestion .keystatus-success {
+	color: green;
+}
+
+.conversation-compose-header .tt-suggestion .keystatus-failure::before {
+    color: black;
+    content: "Key Failure";
+}
+
+.conversation-compose-header .tt-suggestion .keystatus-none {
+	display: none;
+}
+
+.conversation-compose-header .input-marker {
+	right: 10px;
+	top: 10px;
+	position: absolute;
+	z-index: 3;
+	display: none;
+}
+
+.conversation-compose-header .pgp-verified .input-marker {
+	color: green;
+	display: block;
+}
+
+.conversation-compose-header .pgp-keys .input-marker {
+	color: orange;
+	display: block;
+}
+
+.conversation-compose-body .send-lock-marker {
+	display: none;
+}
+
+.conversation-compose-body .send-lock-marker.pgp-verified {
+	color: green;
+	display: inline-block;
+}
+
+.conversation-compose-body .send-lock-marker.pgp-keys {
+	color: orange;
+	display: inline-block;
+}
+
+.conversation-compose-body button.discard {
+	float: right;
+}

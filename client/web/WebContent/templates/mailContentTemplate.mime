@@ -1,0 +1,17 @@
+Content-Type: multipart/alternative;
+	boundary="<%- contentBoundary %>"
+
+
+--<%- contentBoundary %>
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset=us-ascii
+
+<%- text %>
+--<%- contentBoundary %>
+Content-Transfer-Encoding: 7bit
+Content-Type: text/html;
+	charset=us-ascii
+
+<%= html %>
+--<%- contentBoundary %>--

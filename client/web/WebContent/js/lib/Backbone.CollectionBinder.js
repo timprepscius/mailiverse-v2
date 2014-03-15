@@ -1,0 +1,1 @@
+../../../Ext/Backbone.ModelBinder-1.0.5/Backbone.CollectionBinder.js

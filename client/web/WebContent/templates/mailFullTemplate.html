@@ -1,0 +1,49 @@
+<div class="conversation-mail-header">
+	<span class="top-right">
+		<div class="date"><%- Util.getUserFriendlyDate(model.get('date')) %></div>
+	
+		<!-- Split button -->
+		<div class="btn-group">
+		  <button type="button" class="btn"><span class="glyphicon glyphicon-arrow-left"></span> Reply</button>
+		  <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+		    <span class="caret"></span>
+		    <span class="sr-only">Toggle Dropdown</span>
+		  </button>
+		  <ul class="dropdown-menu pull-right" role="menu">
+		    <li><a href="#" class="reply-all">Reply All</a></li>
+		    <li><a href="#" class="forward">Forward</a></li>
+		    <li><a href="#" class="show-original">Show Original</a></li>
+		    <li><a href="#" class="star">Star</a></li>
+		    <li class="divider"></li>
+		    <li><a href="#" class="delete">Delete</a></li>
+		  </ul>
+		</div>	
+	</span>
+		
+	<div class="clickable">		
+		
+		<div class="line">
+			<div class="from"><%- model.get('from') %></div>
+		</div>
+		<div class="to">To: <%- model.get('to') %></div>
+		<% if (model.has('cc')) { %>
+		<div class="cc">Cc: <%- model.get('cc') %></div>
+		<% } %>
+		<% if (model.has('bcc')) { %>
+		<div class="cc">Bcc: <%- model.get('bcc') %></div>
+		<% } %>
+	
+	</div>	
+</div>
+<div class="conversation-mail-body">
+	<% _.each(model.get('content'), function(c) { %>
+	<% var v = (c.tags.signatureVerified || c.tags.decrypted); %>
+	<div class="body-part">
+		<% if (v) { %>
+			<span class="glyphicon glyphicon-lock verified-indicator-<%- v ? 'success' : 'failure' %>"></span>
+		<% } %>
+		
+		<%= c.content %>
+	</div>	
+	<% }); %>
+</div>

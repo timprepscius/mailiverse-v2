@@ -1,0 +1,20 @@
+Content-Type: multipart/signed;
+	boundary="<%- mailBoundary %>";
+	protocol="application/pgp-signature";
+	micalg=pgp-sha512
+
+
+--<%- mailBoundary %>
+<%= mailContent %>
+
+--<%- mailBoundary %>
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename=signature.asc
+Content-Type: application/pgp-signature;
+	name=signature.asc
+Content-Description: Message signed with OpenPGPJS
+
+<%- signature %>
+
+--<%- mailBoundary %>--
