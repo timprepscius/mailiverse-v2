@@ -59,12 +59,12 @@ Build:
  1. cd server
  2. ./build
 
-Setup: -----
-(assuming you have root access to the target machine:
- 1. cd setup
- 2. ./setup-server target-machine-name
+Setup:
+ 1. make sure you have pub/priv key access to root/ubuntu of the target machine - ssh ubuntu@target-machine - must work
+ 2. cd setup
+ 3. ./setup-server target-machine-name
 
-Deploy: -----
+Deploy:
  1. cd deploy
  2. echo "target-machine-name" > config.domain
  3. ./server-deploy
