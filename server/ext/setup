@@ -1,0 +1,19 @@
+wget http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.50/bin/apache-tomcat-7.0.50.tar.gz
+tar -xzf apache-tomcat-7.*.tar.gz
+ln -fs apache-tomcat-7.*/ apache-tomcat
+
+wget http://www.bouncycastle.org/download/bcpg-jdk15on-150.jar
+ln -s bcpg-jdk15on-150.jar bcpg.jar
+
+wget http://www.bouncycastle.org/download/bcprov-jdk15on-150.jar
+ln -s bcprov-jdk15on-150.jar bouncycastle.jar
+
+wget --no-check-certificate http://java.net/projects/javamail/downloads/download/javax.mail.jar
+
+wget http://central.maven.org/maven2/org/mongodb/mongo-java-driver/2.11.4/mongo-java-driver-2.11.4.jar
+ln -s mongo-java-driver-2.11.4.jar mongo.jar
+
+wget --no-check-certificate  https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.29.tar.gz
+tar -xzvf mysql-connector-java-5.1.29.tar.gz
+ln -s mysql-connector-java*/*.jar mysql-connector-java.jar
+
