@@ -2,7 +2,6 @@ source ./config
 
 user=$MV_USER
 server=$MV_HOST
-server=mv
 
 echo deploy [$server] to [$user@$server]
 
@@ -13,7 +12,7 @@ echo building www
 ./build-www
 
 echo transfering
-rsync -avzL --delete $server/ $user@$server:deploy
+rsync -avzL --delete mv/ $user@$server:deploy
 
 echo cataloging
 ssh $user@$server "cd deploy && ./catalog"
