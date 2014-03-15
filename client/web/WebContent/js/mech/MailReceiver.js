@@ -2,10 +2,7 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'text!templates/sidebarTemplate.html',
-
-        'modelBinder',
-        ], function ($,_,Backbone,sidebarTemplate) {
+        ], function ($,_,Backbone) {
 
 	MailReceiver = Backbone.View.extend({
 

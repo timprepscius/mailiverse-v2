@@ -3,7 +3,6 @@ define([
 	'underscore',
 	'backbone',
 	'text!templates/mainTemplate.html',
-	'text!templates/sidebarTemplate.html',
 
 	'modelBinder',
 ], function ($,_,Backbone,mainTemplate) {
@@ -11,6 +10,7 @@ define([
 	MainView = Backbone.View.extend({
 		
         events: {
+        	'click #main-compose-button': 'loadCompose',
         },
         
         currentView: null,
@@ -21,23 +21,25 @@ define([
         	this.modelBinders = [];
         	this.user = options.user;
         	
-        	this.sidebar = new SidebarView({mainView:this});
-        	this.sidebar.render();
-        	
         	this.syncView = new SyncView({mainView:this});
         	this.syncView.render();
 
         	this.downloadMailView = new DownloadMailView({mainView:this});
         	this.downloadMailView.render();
+
+        	this.folderListView = new FolderListView({ collection:this.user.getFolders() });
+        	this.folderListView.render();
+        	
+        	_.bindAll(this, 'loadCompose');
         },
         
         render: function( model ) {
         	var rendered = _.template(mainTemplate, { model: this.model, user: this.user });
             this.$el.html(rendered);
             
-            this.$('#main-sidebar').html(this.sidebar.el);
             this.$('#main-sync').html(this.syncView.el);
             this.$('#main-download-mail').html(this.downloadMailView.el);
+            this.$('#main-folders-container').html(this.folderListView.el);
             return this;
         },
         

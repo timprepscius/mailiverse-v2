@@ -28,13 +28,13 @@ Progress:
  * There are cases of multipart/signed which fail.  (see example mail 2)
  * Encrypts mail with text & html blocks using PGP.  Correctly deciphered by gpg/applemail. 
       However, only tested with small messages.  Problems may arise with \r\n messages, etc, encodings.
- * Signs mail with text & html blocks using PGP.  Correctly deciphered by gpg/applemail.
-      Again, only small messages.
  * Looks up PGP keys using the mit pgp server.
  * Keys which are ONLY found from server are Orange, keys which have been used to check a signature are Green.
  * Decodes QP inlines in the subject, haven't applied this to mail bodies yet.   
 
 Todo:
+ * Signing mail with text & html blocks using PGP.  The signature is too small to be correct.  But GPG
+   somehow accepts it.  Which I find disturbing.
  * QP all around.
  * Re-enable web worker.
  * Backbone paging of conversations.

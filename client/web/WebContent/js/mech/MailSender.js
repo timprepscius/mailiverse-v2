@@ -2,12 +2,11 @@ define([
         'jquery',
         'underscore',
         'backbone',
-        'text!templates/sidebarTemplate.html',
         'text!templates/mailContentTemplate.mime',
         'text!templates/signedMailTemplate.mime',
 
         'modelBinder',
-        ], function ($,_,Backbone,sidebarTemplate, mailContentTemplate, signedMailTemplate) {
+        ], function ($,_,Backbone,mailContentTemplate, signedMailTemplate) {
 
 	MailSender = Backbone.View.extend({
 
