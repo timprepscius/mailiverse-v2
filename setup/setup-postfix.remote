@@ -1,0 +1,18 @@
+set -x
+
+apt-get update
+echo "1" | apt-get install postfix postfix-mysql postfix-pcre --yes
+apt-get install sasl2-bin --yes
+
+cp sudoers.d-postfix-user /etc/sudoers.d/mv-postfix
+chmod 0440 /etc/sudoers.d/mv-postfix
+
+cd /etc/postfix
+rm main.cf
+rm master.cf
+
+ln -fs /home/mv/deploy/postfix/config/main.cf
+ln -fs /home/mv/deploy/postfix/config/master.cf
+ln -fs /home/mv/deploy/postfix/config
+
+

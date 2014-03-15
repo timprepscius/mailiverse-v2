@@ -1,0 +1,6 @@
+set -x
+
+M_HOST=$1
+
+scp setup-tomcat.remote mv@$M_HOST:
+ssh mv@$M_HOST ./setup-tomcat.remote

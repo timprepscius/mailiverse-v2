@@ -1,0 +1,5 @@
+set -x
+
+./create-server-account-user.remote mv
+./create-server-account-user.remote web
+./create-server-account-user.remote tomcat

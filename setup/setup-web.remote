@@ -1,0 +1,20 @@
+set -x
+
+sudo ./setup-nginx.remote
+
+sudo mkdir -p /var/log/nginx
+chdown nginx /var/log/nginx
+
+cp sudoers.d-web /etc/sudoers.d/mv-web
+chmod 0440 /etc/sudoers.d/mv-web
+
+cd /opt/nginx/conf
+ln -fs /home/mv/deploy/nginx/config/nginx-ssl.crt
+ln -fs /home/mv/deploy/nginx/config/nginx-ssl.key
+ln -fs /home/mv/deploy/nginx/config/nginx.conf
+
+cd /var/local
+mkdir www
+chown mv www
+
+
