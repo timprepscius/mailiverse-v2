@@ -47,27 +47,28 @@ Todo:
 Build and deploy:
 
 Requirements: ----
-1.  "Ant"
+ * "Ant"
 The automated build uses Ant.
 
-2.  The setup assumes that you have public/privatekey ssh access to the root account of the target computer.
+ * The setup assumes that you have public/privatekey ssh access to the root account of the target computer.
 There is a script "get_rsa_pub" which will copy your public key for the setup scripts to use.
 
-3.  The setup scripts use apt-get, so.. ubuntu.
+ * The setup scripts use apt-get, so.. ubuntu.
 
 
 Build: -----
-1.  cd server && ./build
+ 1. cd server
+ 2. ./build
 
 Setup: -----
 (assuming you have root access to the target machine:
-1.  cd setup
-2.  ./setup-server target-machine-name
+ 1. cd setup
+ 2. ./setup-server target-machine-name
 
 Deploy: -----
-1.  cd deploy
-2.  echo "target-machine-name" > config.domain
-3.  ./server-deploy
+ 1. cd deploy
+ 2. echo "target-machine-name" > config.domain
+ 3. ./server-deploy
 
 ===
 
