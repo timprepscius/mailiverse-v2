@@ -46,9 +46,8 @@ Todo:
 
 Build and deploy:
 
-Requirements: ----
- * "Ant"
-The automated build uses Ant.
+Requirements:
+ * Ant: The automated build uses Ant.
 
  * The setup assumes that you have public/privatekey ssh access to the root account of the target computer.
 There is a script "get_rsa_pub" which will copy your public key for the setup scripts to use.
@@ -56,7 +55,7 @@ There is a script "get_rsa_pub" which will copy your public key for the setup sc
  * The setup scripts use apt-get, so.. ubuntu.
 
 
-Build: -----
+Build:
  1. cd server
  2. ./build
 
