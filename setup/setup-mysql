@@ -1,12 +1,9 @@
 set -x
 
-M_ROOT=`cat requirements/server_root_account`
-
-M_HOST=$1
+source ./config
 
 cat setup-mysql.sql.template > setup-mysql.sql
 
-
-scp setup-mysql.remote $M_ROOT@$M_HOST:
-scp setup-mysql.sql $M_ROOT@$M_HOST:
-ssh $M_ROOT@$M_HOST ./setup-mysql.remote
+$SCP setup-mysql.remote $M_ROOT@$M_HOST:
+$SCP setup-mysql.sql $M_ROOT@$M_HOST:
+$SSH $M_ROOT@$M_HOST ./setup-mysql.remote

@@ -1,13 +1,9 @@
-if [ -z "$1" ]; then echo "Must supply name"; exit 0; fi
-
 set -x
 
-M_HOST=$1
-
-./create-server-accounts $M_HOST
-./setup-java $M_HOST
-./setup-mongo $M_HOST
-./setup-mysql $M_HOST
-./setup-tomcat $M_HOST
-./setup-postfix $M_HOST
-./setup-web $M_HOST
+./create-server-accounts
+./setup-java 
+./setup-mongo
+./setup-mysql
+./setup-tomcat
+./setup-postfix
+./setup-web

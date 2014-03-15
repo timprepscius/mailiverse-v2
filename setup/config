@@ -1,0 +1,5 @@
+M_ROOT=`cat requirements/server_root_account`
+M_HOST=`cat ../host-name`
+
+SCP=scp
+SSH=ssh

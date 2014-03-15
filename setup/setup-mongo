@@ -1,7 +1,6 @@
 set -x
 
-M_ROOT=`cat requirements/server_root_account`
-M_HOST=$1
+source ./config
 
-scp setup-mongo.remote $M_ROOT@$M_HOST:
-ssh $M_ROOT@$M_HOST sudo ./setup-mongo.remote
+$SCP setup-mongo.remote $M_ROOT@$M_HOST:
+$SSH $M_ROOT@$M_HOST sudo ./setup-mongo.remote

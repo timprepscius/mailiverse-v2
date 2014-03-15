@@ -50,24 +50,26 @@ Requirements:
  * Ant: The automated build uses Ant.
 
  * The setup assumes that you have public/privatekey ssh access to the root account of the target computer.
-There is a script "get_rsa_pub" which will copy your public key for the setup scripts to use.
+There is a script "copy_rsa_from_ssh_keys" which will copy your public key for the setup scripts to use.
 
  * The setup scripts use apt-get, so.. ubuntu.
 
+Setup:
+ 1. echo "target-machine-name" > host-name
+ 2. make sure you have pub/priv key access to root/ubuntu of the target machine - ssh ubuntu@target-machine - must work
+ 3. cd setup
+ 4. (cd requirements && ./copy_rsa_from_ssh_keys)
+ 5. ./setup-server
+
+If you want to use special keys (not your own), you need to put the pub in that directory and modify the config file.
 
 Build:
  1. cd server
  2. ./build
 
-Setup:
- 1. make sure you have pub/priv key access to root/ubuntu of the target machine - ssh ubuntu@target-machine - must work
- 2. cd setup
- 3. ./setup-server target-machine-name
-
 Deploy:
  1. cd deploy
- 2. echo "target-machine-name" > config.domain
- 3. ./server-deploy
+ 2. ./server-deploy
 
 ===
 
@@ -77,13 +79,13 @@ The encryption is broken into three segments, user authentication and key retrie
 (SHA-256, 32768 iterations), caching via AES-256, and mail encryption via PGP (2048) bit.
 
 To view the user authentication look at:
-client/web/WebContent/js/view/SignupView.js && LoginView.js
+client/web/WebContent/js/view/SignupView.js & LoginView.js
 
 To view the AES-256 encryption look at:
 client/web/WebContent/js/mech/BackboneEncryption.js  
 
 To view the PGP encryption look at:
-client/web/WebContent/js/mech/MailReceiver.js && MailSender.js
+client/web/WebContent/js/mech/MailReceiver.js & MailSender.js
 
 ===
 
