@@ -19,7 +19,7 @@ public abstract class RecordDb implements DbClosable
 		String orderBy, Integer orderDirection, 
 		Integer limitBegin, Integer limitSize, 
 		String insertedAfterId,
-		boolean onlyIds
+		boolean onlyIds, boolean onlyCount
 	);
 	
 	abstract public Pair<String, String> getLogin(String user, String password);

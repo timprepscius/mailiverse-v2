@@ -16,6 +16,7 @@ define([
         {
         	if (!this.conversations) {
         		this.conversations = new ConversationReferencePages([], { field:'folder', id:this.id, folder:this });
+        		this.conversations.fetch();
         	}
         	return this.conversations;
         },

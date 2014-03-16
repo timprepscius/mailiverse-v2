@@ -109,7 +109,20 @@ define([
     });
     
 	// @TODO what should this be?
-    ConversationReferencePages = Backbone.Collection.extend({
+    ConversationReferencePages = Backbone.Model.extend({
+    	
+    	url: function () { 
+    		var r = 
+    			Constants.REST + 'ConversationReferences' +
+    				'?field=' + this.field + 
+    				"&id=" + this.id + 
+    				"&orderBy=date&orderDirection=-1" +
+    				"&onlyCount";
+    		
+    		return r;
+    	},
+    	
+    	
         initialize:function(objects, options)
         {
         	this.field = options.field;

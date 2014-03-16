@@ -55,11 +55,40 @@ define([
         initialize: function(options) 
         {
         	var that = this;
-            _.bindAll(this, 'render');
-            this.collection.on('all', function () {
-        		Util.keyTimeout("ConversationListViewPage-collection-all", 100, that.render);
-            });
+            _.bindAll(this, 'render', 'onAppear', 'onDisappear', 'checkAppeared');
+            
+            this.parent = options.parent;
         	this.views = {};
+
+            this.collection.on('all', function () {
+        		Util.keyTimeout("ConversationListViewPage-collection-all-" + that.collection.page, 100, that.render);
+            });
+            
+            this.$el.on('appear', this.onAppear);
+            this.$el.on('disappear', this.onDisappear);
+
+            // this doesn't work right, so I rig my own
+            // this.$el.appear();
+        	this.appearedState = false;
+        	this.checkAppearedTimeout = setInterval(this.checkAppeared, 250);
+        },
+        
+        checkAppeared: function()
+        {
+        	var lastState = this.appearedState;
+        	this.appearedState = this.$el.is(":appeared");
+        	if (lastState != this.appearedState)
+        		this.appearedState ? this.onAppear() : this.onDisappear();
+        },
+        
+        onAppear: function()
+        {
+        	this.parent.onAppear(this.collection.page, this);
+        },
+        
+        onDisappear: function()
+        {
+        	this.parent.onDisappear(this.collection.page, this);
         },
                        
         render: function() {
@@ -91,45 +120,70 @@ define([
 
 	ConversationListView = Backbone.View.extend({
 
-		events: {
-			'scroll': 'checkScroll'
-		},
-		
-		checkScroll: function () 
-		{
-			var triggerPoint = 100; // 100px from the bottom
-			if( !this.isLoading && this.el.scrollTop + this.el.clientHeight + triggerPoint > this.el.scrollHeight ) {
-				this.twitterCollection.page += 1; // Load next page
-				this.loadResults();
-			}
-		},
-
 	    initialize: function(options) 
         {
         	var that = this;
-            _.bindAll(this, 'render');
+            _.bindAll(this, 'render', 'onSync');
             this.isLoading = false;
+            this.maxPages = 0;
+            this.numPagesDisplayed = 0;
+            this.pageSize = 50;
+            this.views = [];
             
-            this.collection.bind("all", function(){ 
-//            	Util.keyTimeout("ConversationListView-collection-all", 100, that.render);
+            // fill in the container html immediately
+    		this.$el.html(_.template(conversationListTemplate, { model : this.collection }));
+
+    		if (this.collection.isSyncedOnce())
+            	this.onSync();
+            
+            this.collection.on("sync", this.onSync);
+            
+            this.collection.bind("addPage", function(){ 
+            	Util.keyTimeout("ConversationListView-collection-all", 100, that.render);
             });
+        },
+        
+        onSync: function()
+        {
+        	this.maxPages = Math.ceil(this.collection.get('count') / this.pageSize);
+        	
+        	if (this.views.length < this.maxPages && 
+        		(this.views.length == 0 || this.views[this.views.length-1].$el.is(":appeared")))
+        		
+        		this.addPage();
+        },
+        
+        onAppear: function(page, view)
+        {
+        	console.log('onAppear', page);
+        	while (this.views.length <= page+1 && this.views.length < this.maxPages)
+        		this.addPage();
+        },
+        
+        onDisappear: function(page, view)
+        {
+        	console.log('onDisappear', page);
+        	
+        },
+        
+        addPage: function() {
+        	var page = this.views.length;
+            var view = new ConversationListViewPage({ parent: this, tagName:'tbody', collection: this.collection.getPage(page), page:page });
+            view.render();
+            this.views.push(view);
             
-            this.views = {};
-        	_.bindAll(this, 'render');
+            this.collection.trigger('addPage');
         },
                         
-        render: function() {
-        	this.$el.html(_.template(conversationListTemplate, { model : this.collection }));
-
-        	if (this.collection.synced)
-        		this.$("#main-conversation-list-pages").empty();
-        	
-            var view = new ConversationListViewPage({ tagName:'tbody', collection: this.collection.getPage(0), page:0 });
-            view.render();
-            this.views[view.page] = view;
-			view.delegateEvents();
-            this.$("#main-conversation-list-pages").append(view.el);
-        	
+        render: function() 
+        {
+    		for (; this.numPagesDisplayed<this.views.length; this.numPagesDisplayed++)
+    		{
+    			var view = this.views[this.numPagesDisplayed];
+                this.$("#main-conversation-list-pages").append(view.el);
+    			view.delegateEvents();
+    		}
+            
         	return this;
         }
     });  

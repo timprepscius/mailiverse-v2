@@ -183,7 +183,8 @@ public class RecordDbMongo extends RecordDb
 		String field, String objectId, 
 		String orderBy, Integer orderDirection, 
 		Integer limitBegin, Integer limitSize, String insertedAfterId,
-		boolean onlyIds
+		boolean onlyIds,
+		boolean onlyCount
 	)
 	{
 		if (field != null)
@@ -201,6 +202,9 @@ public class RecordDbMongo extends RecordDb
 		
 		if (afterVersion != null)
 			q.put("syncVersion", Mongos.toDBObject(S._GT, afterVersion));
+		
+		if (onlyCount)
+			return JSON.serialize(Mongos.toDBObject("count", db.getCollection(clazz).count(q)));
 		
 		DBCursor c = db.getCollection(clazz).find(q);
 

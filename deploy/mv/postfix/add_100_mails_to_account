@@ -1,0 +1,5 @@
+for (( k=1; k<=100; k+=1 )); do
+  subject=${2}_${k}
+  echo $subject
+  sed s/__SUBJECT__/$subject/g < example_mail.template | java -jar StoreMail.jar RECIEVED $1
+done

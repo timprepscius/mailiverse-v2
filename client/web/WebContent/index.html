@@ -22,7 +22,7 @@ require.config({
 	baseUrl: '__VERSION__',
 	paths: {
 		jquery: 'js/lib/jquery-min',
-//		jqueryui: 'js/lib/jquery-ui/jquery-ui',
+		jqueryappear: 'js/lib/jquery.appear',
 		typeahead: 'js/lib/typeahead',
 		underscore: 'js/lib/underscore-min',
 		bootstrap: 'bootstrap/js/bootstrap',
@@ -52,7 +52,7 @@ require.config({
 		ckeditor_adapter : { deps: ['ckeditor'] },
 		sjcl : { deps: [] },
 		aes: { deps: [] },
-		jqueryui : { deps: ['jquery'] },
+		jqueryappear: { deps: ['jquery'] },
 		typeahead: { deps: ['jquery'] },
 	}
 });
@@ -68,6 +68,7 @@ require ([
 	'js/lib/require-plugin-text',
 	
 	'jquery',
+	'jqueryappear',
 	'typeahead',
 	'bootstrap',
 	'backbone',

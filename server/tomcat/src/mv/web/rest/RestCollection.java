@@ -69,6 +69,7 @@ public class RestCollection extends HttpServlet {
 			
 			String id = request.getParameter("id");
 			boolean onlyIds = request.getParameterMap().containsKey("onlyIds");
+			boolean onlyCount = request.getParameterMap().containsKey("onlyCount");
 			String orderBy = request.getParameter("orderBy");
 			String orderDirectionStr = request.getParameter("orderDirection");
 			Integer orderDirection = orderDirectionStr != null ? Integer.parseInt(orderDirectionStr) : null;
@@ -87,7 +88,8 @@ public class RestCollection extends HttpServlet {
 					orderBy, orderDirection, 
 					offset, limit, 
 					insertedAfter, 
-					onlyIds
+					onlyIds,
+					onlyCount
 				);
 			System.out.println("response: " + result);
 			
