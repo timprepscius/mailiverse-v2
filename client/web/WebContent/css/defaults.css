@@ -78,6 +78,14 @@ html, body {
 	overflow-y: scroll;
 }
 
+.conversation-date {
+	text-align: right;
+}
+
+.conversation-select {
+	width: 0px;
+}
+
 /* ****************************** */
 
 #main-conversation {
