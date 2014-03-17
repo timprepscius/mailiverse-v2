@@ -286,7 +286,7 @@ define([
     		var date = null;
     		try
     		{
-    			date = new Date(this.getHeaderValueQPDecode(key));
+    			date = new Date(this.getHeaderValueQPDecode("date"));
     		}
     		catch (exception)
     		{
