@@ -154,12 +154,14 @@ define([
     	{
     		// @TODO what should this do, needs to be sorted of course
     		this.getPage(0).unshift(reference);
+    		this.set('count', this.get('count') + 1);
     	},
     	
     	removeReference: function(referenceId)
     	{
-    		//@TODO each page
+    		//@TODO check each page
     		this.getPage(0).remove(referenceId);
+    		this.set('count', this.get('count') -1);
     	}
     });
 });

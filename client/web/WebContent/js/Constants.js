@@ -3,10 +3,10 @@ define([
 ], function ($,_,openpgp) {
 
 	var BASE = (window.location.hostname == 'localhost') ? 'http://localhost:8080' : '';
-	BASE = "http://pmx.mooo.com:8080";
+	//BASE = "http://pmx.mooo.com:8080";
 
 	var HOSTNAME = window.location.hostname;
-	HOSTNAME = "pmx.mooo.com";
+	//HOSTNAME = "pmx.mooo.com";
 	
 	Constants = {
 		ATHOST: '@' + HOSTNAME,
