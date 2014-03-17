@@ -39,8 +39,8 @@ define([
 			success: function (decryptedBlocks) {
 				while (jsons.length)
 				{
-					var json = jsons.pop();
-					var decryptedBlock = decryptedBlocks.pop();
+					var json = jsons.shift();
+					var decryptedBlock = decryptedBlocks.shift();
 					var decrypted = decryptedBlock ? JSON.parse(decryptedBlock) : {};
 					
 					_.each(exposedFields, function(field) { 

@@ -161,7 +161,7 @@ define([
 			this.model.set('bcc', this.$('.bcc input').not(':disabled').val());
 			this.model.set('subject', this.$('.subject input').not(':disabled').val());
 			this.model.set('from', 'me');
-			this.model.set('date', Util.getDateString());
+			this.model.set('date', Util.toDateSerializable());
 			this.model.save();
 			
 			this.model.getParentConversation().recomputeAttributesAndFolderMemberships();

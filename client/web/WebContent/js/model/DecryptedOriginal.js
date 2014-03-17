@@ -276,12 +276,26 @@ define([
     		var mail = new Mail({ syncId: Util.guid(), originalId: this.id });
     		
     		// put in the standard mail properties
-    		var keys = ['subject', 'from', 'to', 'cc', 'bcc', 'date', 'reply-to'];
+    		var keys = ['subject', 'from', 'to', 'cc', 'bcc', 'reply-to'];
     		_.each(keys, function(key) { 
     			var value = this.getHeaderValueQPDecode(key);
     			mail.set(key, value);
     		}, this);
     		
+    		// special processing of the date string
+    		var date = null;
+    		try
+    		{
+    			date = new Date(this.getHeaderValueQPDecode(key));
+    		}
+    		catch (exception)
+    		{
+    			date = new Date();
+    		}
+    		
+    		mail.set('date', Util.toDateSerializable(date));
+    		
+    		// do final processing
     		this.process({
     			success: function()
     			{

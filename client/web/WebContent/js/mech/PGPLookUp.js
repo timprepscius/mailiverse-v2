@@ -19,7 +19,7 @@ define([
 						var key = keyFinder.key || appSingleton.user.getKeyRing().createKey(address);
 						if (publicKey != key.get('publicKey'))
 						{
-							key.set('publicKeyChanged', Util.getDateString());
+							key.set('publicKeyChanged', Util.toDateSerializable());
 							key.set('publicKeyOnServer', server);
 							key.set('publicKey', publicKey);
 							key.save();

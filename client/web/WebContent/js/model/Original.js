@@ -238,6 +238,7 @@ define([
     	url: function () { 
     		return Constants.REST + 'Originals?field=' +this.field + 
     			"&id="+ this.id + 
+    			"&orderBy=syncVersion&orderDirection=1" +
     			"&onlyIds" +
     			(this.after?"&insertedAfter=" + this.after:""); 
     	},

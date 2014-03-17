@@ -49,10 +49,10 @@ define([
 		onVerifySuccess : function(originalId, contact, key)
 		{
 			key.set('verified', 'success');
-			key.set('lastVerificationDate', Util.getDateString());
+			key.set('lastVerificationDate', Util.toDateSerializable());
 			key.set('lastVerifiedMail', originalId);
 			
-			contact.set('keyStatus', { status: 'success', date: Util.getDateString() });
+			contact.set('keyStatus', { status: 'success', date: Util.toDateSerializable() });
 
 			contact.save();
 			key.save();
@@ -61,9 +61,9 @@ define([
 		onVerifyFailure: function (contact, key)
 		{
 			key.set('verified', 'failure');
-			key.set('lastVerificationDate', Util.getDateString());
+			key.set('lastVerificationDate', Util.toDateSerializable());
 			
-			contact.set('keyStatus', { status: 'failure', date: Util.getDateString() });
+			contact.set('keyStatus', { status: 'failure', date: Util.toDateSerializable() });
 
 			contact.save();
 			key.save();

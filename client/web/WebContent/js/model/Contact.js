@@ -52,7 +52,7 @@ define([
         	var model = this.get(nameHash);
         	if (!model)
         	{
-        		model = new this.model({ syncId: nameHash, date: Util.getDateString(), email: email }); 
+        		model = new this.model({ syncId: nameHash, date: Util.toDateSerializable(), email: email }); 
         		model.fetchOrCreate();
         		this.add(model);
         	}

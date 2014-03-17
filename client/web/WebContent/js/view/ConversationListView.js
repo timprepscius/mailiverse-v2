@@ -166,7 +166,8 @@ define([
         	
         },
         
-        addPage: function() {
+        addPage: function() 
+        {
         	var page = this.views.length;
             var view = new ConversationListViewPage({ parent: this, tagName:'tbody', collection: this.collection.getPage(page), page:page });
             view.render();

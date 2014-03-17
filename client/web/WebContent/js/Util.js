@@ -68,7 +68,7 @@ define([
 			var now = new Date();
 			var nowT = now.getTime();
 			
-			var date = new Date(dateString);
+			var date = Util.fromDateSerializable(dateString);
 			var dateT = date.getTime();
 			
 			var dt = (nowT - dateT)/1000;
@@ -83,10 +83,15 @@ define([
 			return full;
 		},
 		
-		getDateString: function(date)
+		toDateSerializable: function(date)
 		{
 			var d = date || new Date();
-			return "" + d;
+			return d.getTime();
+		},
+		
+		fromDateSerializable: function(str)
+		{
+			return new Date(parseInt(str));
 		},
 		
 		timeouts: {},

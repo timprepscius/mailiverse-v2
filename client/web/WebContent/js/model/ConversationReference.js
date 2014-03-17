@@ -89,7 +89,13 @@ define([
     	
     	addToFolder: function(folder)
     	{
-    		var reference = new this.model({conversation:this.id, folder:folder.id, syncId:Util.guid()});
+    		var reference = new this.model({
+    			conversation:this.id, 
+    			folder:folder.id, 
+    			syncId:Util.guid(), 
+    			date:this.conversation.get('date') 
+    		});
+    		
     		reference.conversation = this.conversation;
     		reference.save();
 

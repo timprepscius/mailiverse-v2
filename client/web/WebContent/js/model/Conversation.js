@@ -19,7 +19,7 @@ define([
         		this.mails = new Mails([], { field:'conversation', id:this.id, conversation:this });
 
         	if (!this.references)
-        		this.references = new ConversationReferences([], {field:'conversation', id:this.id, conversation:this});
+        		this.references = new ConversationReferences([], {field:'conversation', id:this.id, conversation:this });
 
         	this.mails.onCreate();
     		this.references.onCreate();
@@ -36,7 +36,7 @@ define([
         },
         
         newMail: function () {
-    		var mail = new Mail({conversation: this.id, syncId:Util.guid(), date:Util.getDateString()});
+    		var mail = new Mail({conversation: this.id, syncId:Util.guid(), date:Util.toDateSerializable()});
     		mail.onCreate();
 
     		mail.set('draft', true);
