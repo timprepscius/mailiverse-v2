@@ -11,6 +11,7 @@ define([
 		
         events: {
         	'click #main-compose-button': 'loadCompose',
+        	'click #main-profile': 'showProfile',
         },
         
         currentView: null,
@@ -30,7 +31,7 @@ define([
         	this.folderListView = new FolderListView({ collection:this.user.getFolders() });
         	this.folderListView.render();
         	
-        	_.bindAll(this, 'loadCompose');
+        	_.bindAll(this, 'loadCompose', 'showProfile');
         },
         
         render: function( model ) {
@@ -77,6 +78,12 @@ define([
     		this.loadConversation(conversation);
         },
         
+        showProfile: function()
+        {
+        	var profile = new ProfileView({ el: this.$('#main-modal'), model:this.user});
+        	profile.render();
+        },
+        
         closeCurrentView: function() {
         	if (this.currentView)
         	{
@@ -89,6 +96,6 @@ define([
         showCurrentView: function (view) {
         	this.currentView = view;
         	view.$el.show();
-        }
+        },
 	});
 });

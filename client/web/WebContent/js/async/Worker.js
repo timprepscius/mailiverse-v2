@@ -18,7 +18,7 @@ var MIN_SIZE_RANDOM_BUFFER = 40000;
 var MAX_SIZE_RANDOM_BUFFER = 60000;
 
 window.openpgp.crypto.random.randomBuffer.init(MAX_SIZE_RANDOM_BUFFER);
-
+window.sjcl = sjcl;
 
 self.onmessage = function(e) 
 {
@@ -27,13 +27,13 @@ self.onmessage = function(e)
 	
 	var data = e.data;
 
-	try
+//	try
 	{
 		var result = Support[data.cmd].apply(null, data.args);
 		self.postMessage({callback:data.callback, result:result, original:data});
 	}
-	catch (exception)
+//	catch (exception)
 	{
-		self.postMessage({callback:data.callback, exception:exception.toString(), original:data});
+//		self.postMessage({callback:data.callback, exception:exception.toString(), original:data});
 	}
 };

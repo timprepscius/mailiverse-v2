@@ -156,14 +156,13 @@ Dispatch = {
 	
 	startWorker: function()
 	{
-		return ;
 		if (this.mode != 'native')
 		{
 			var that = this;
 			this.log("starting worker");
 			
 			this.mode = 'worker';
-			this.worker = new Worker('js/async/Worker.js');
+			this.worker = new Worker(VERSION + '/js/async/Worker.js');
 			this.worker.onmessage = function(message) { that.onWorkerResponse.apply(that, arguments); };
 			this.worker.postMessage({cmd:'ping', args:[], callback:-1});
 		}

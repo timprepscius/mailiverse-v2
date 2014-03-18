@@ -37,11 +37,17 @@
 </div>
 <div class="conversation-mail-body">
 	<% _.each(model.get('content'), function(c) { %>
-	<% var v = (c.tags.signatureVerified || c.tags.decrypted); %>
+	<% var s = c.tags.signatureVerified; %>
+	<% var d = c.tags.decrypted; %>
 	<div class="body-part">
-		<% if (v) { %>
-			<span class="glyphicon glyphicon-lock verified-indicator-<%- v ? 'success' : 'failure' %>"></span>
+		<span class="body-part-tags">
+		<% if (s) { %>
+			<span class="glyphicon glyphicon-certificate signed" data-toggle="tooltip" title="Signature verified"></span>
 		<% } %>
+		<% if (d) { %>
+			<span class="glyphicon glyphicon-lock decrypted" data-toggle="tooltip" title="Decrypted"></span>
+		<% } %>
+		</span>
 		
 		<%= c.content %>
 	</div>	

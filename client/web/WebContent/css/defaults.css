@@ -86,7 +86,11 @@ html, body {
 	width: 0px;
 }
 
-/* ****************************** */
+/*****************************************************
+
+single conversation 
+
+*****************************************************/
 
 #main-conversation {
 	padding-top: 0px;	
@@ -126,7 +130,7 @@ html, body {
 	z-index:1;
 }
 
-.conversation-mail-body .verified-indicator-success {
+.conversation-mail-body .body-part-tags {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -150,7 +154,11 @@ html, body {
 	color: red;
 }
 
-/******************************* **************/
+/*****************************************************
+
+compose 
+
+*****************************************************/
 
 .conversation-compose {
 	background-color: #f9f9f9;	
