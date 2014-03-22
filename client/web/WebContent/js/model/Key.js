@@ -39,7 +39,7 @@ define([
         
         getKey: function(address)
         {
-        	var addressHash = Crypto.cryptoHash(appSingleton.login.get("privateKeys").aes, address);
+        	var addressHash = Crypto.cryptoHash16(appSingleton.login.get("privateKeys").aes, address);
         	
         	var model = this.get(addressHash);
         	if (!model)
@@ -54,7 +54,7 @@ define([
         
         createKey: function(address)
         {
-        	var addressHash = Crypto.cryptoHash(appSingleton.login.get("privateKeys").aes, address);
+        	var addressHash = Crypto.cryptoHash16(appSingleton.login.get("privateKeys").aes, address);
         	
         	var model = this.get(addressHash);
         	if (!model)
@@ -70,7 +70,7 @@ define([
         findKey: function(address)
         {
         	var keyFinder = new KeyFinder();
-        	var addressHash = Crypto.cryptoHash(appSingleton.login.get("privateKeys").aes, address);
+        	var addressHash = Crypto.cryptoHash16(appSingleton.login.get("privateKeys").aes, address);
         	var model = this.get(addressHash);
         	if (!model || !model.isSyncedOnce())
         	{

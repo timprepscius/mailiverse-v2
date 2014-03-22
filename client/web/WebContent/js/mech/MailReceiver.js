@@ -77,10 +77,29 @@ define([
 			
 			decrypted.toMail({ 
 				success: function(mail) {
-					that.putInContainers(original,mail);
+					that.seeIfDuplicateMailExists(original,mail);
 				},
 				failure: this.callbacks.failure
 			});
+		},
+		
+		seeIfDuplicateMailExists: function(original, mail)
+		{
+			var that = this;
+			mail.fetch({
+				success: function() {
+					that.mailAlreadyExists(original, mail);
+				},
+				error: function() {
+					that.putInContainers(original, mail);
+				},
+			});
+		},
+		
+		mailAlreadyExists: function(original, mail)
+		{
+			appSingleton.user.set("lastMailProcessed", mail.get('originalId'));
+			this.trigger('next');
 		},
 		
 		putInContainers: function(original, mail)
@@ -89,7 +108,6 @@ define([
 			var user = appSingleton.user;
 			mail.set('sent', original.get('sent'));
 			mail.set('received', !original.get('sent'));
-			mail.id = Util.guid();
 
 			var conversations = appSingleton.user.getConversations();
 

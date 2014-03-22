@@ -150,7 +150,10 @@ public class StoreMail
 	 */
 	public static void main(String[] args) throws IOException, PGPException, NoSuchProviderException 
 	{
-		LogNull log = new LogNull(StoreMail.class);
+		System.setOut(new PrintStream(new FileOutputStream(new File("postfix.store.log"), true)));
+		System.setErr(System.out);
+		
+		LogOut log = new LogOut(StoreMail.class);
 
 		for (int i=0; i<args.length; ++i)
 			log.println(args[i]);
@@ -159,14 +162,25 @@ public class StoreMail
 
 		boolean wasSent = args[0].equals("SENT");
 		
-		String toAddress = args[1];
-		log.println("using " + toAddress);
-
-		byte[] bytes = Streams.readFullyBytes(System.in);
+		// @TODO handle multiple addresses ??
+		// SENT/RECEIVED sender recipients.
+		
+		String userAddress = wasSent ? args[1] : args[2];
+		log.println("using " + userAddress);
 
 		RecordDb db = DbFactory.instantiateRecordDb();
 		
-		String userId = db.getLoginId(toAddress);
+		// the SENT filter is called on receiving from outside world TOO
+		// unfortunately, I wish I didn't have to deal with postfix
+		if (wasSent && !db.hasLogin(userAddress))
+		{
+			log.println("user doesn't exist and called with SENT, so I'm assuming this is actually a received mail.");
+			return;
+		}
+		
+		byte[] bytes = Streams.readFullyBytes(System.in);
+
+		String userId = db.getLoginId(userAddress);
 		log.println("found " + userId);
 		
 		String publicKeyString = db.getLoginProperty(userId, "publicKey");

@@ -110,12 +110,19 @@ define([
 			);
 		},
 		
-		cryptoHash: function(aes, string) {
-			return "#" + string;
+		cryptoHash64: function(aes, string) {
+			return Support.sha256_hash(Base64.encode(Utf.toBytes(aes + "!" + string)));
 		},
 		
-		simpleHash: function(string) {
-			return "#hash";
+		cryptoHash16: function(aes, string) {
+			return Base16.encode(Base64.decode(this.cryptoHash64(aes,string)));
+		},
+		
+		simpleHash64: function(string) {
+			return Support.sha256_hash(Base64.encode(Utf.toBytes(string)));
+		},
+		simpleHash16: function(string) {
+			return Base16.encode(Base64.decode(this.simpleHash64(string)));
 		},
 	} ;
 });

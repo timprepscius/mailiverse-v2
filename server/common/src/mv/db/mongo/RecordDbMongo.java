@@ -322,6 +322,14 @@ public class RecordDbMongo extends RecordDb
 		throw new DbException("Unknown login " + toAddress);
 	}
 	
+	@Override
+	public boolean hasLogin(String toAddress) 
+	{
+		DBObject q = Mongos.toDBObject("address", toAddress);
+		return db.getCollection("Login").count(q) > 0;
+	}
+
+	
 	public String putObjectsWithClazzes(String user, String json) {
 		BasicDBList l = new BasicDBList();
 		

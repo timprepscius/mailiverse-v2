@@ -32,11 +32,14 @@ recipient_delimiter = +
 inet_interfaces = all
 inet_protocols = all
 
-javapipe_destination_recipient_limit = 1
+received_to_store_destination_recipient_limit = 1
 virtual_mailbox_domains = /etc/postfix/config/virtual_domains
 virtual_mailbox_maps = mysql:/etc/postfix/config/virtual_mailbox_maps.cf
-virtual_transport = javapipe
+virtual_transport = received_to_store
 
 
 smtp_sasl_auth_enable = yes
 smtp_sasl_password_maps = mysql:/etc/postfix/config/sasl_password.cf
+
+#content_filter = sent_to_store
+#receive_override_options = no_address_mappings

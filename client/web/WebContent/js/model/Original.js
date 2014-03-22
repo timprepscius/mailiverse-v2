@@ -130,14 +130,14 @@ define([
 	    			div.text(text);
 	    			var result = "<pre>" + div.html() + "</pre>";
 	    			
-	    			return { type: 'text', content: result, hash: Crypto.simpleHash(part.data), tags:_.clone(tags) };
+	    			return { type: 'text', content: result, tags:_.clone(tags) };
 	    		}
 	    		else
 	    		if (contentType == 'text/html')
 	    		{
 	    			var result = Sandbox.strip(part.data);
 	    			
-	    			return { type: 'html', content: result, hash: Crypto.simpleHash(part), tags:_.clone(tags) };    			
+	    			return { type: 'html', content: result, tags:_.clone(tags) };    			
 	    		}
 			}
     		

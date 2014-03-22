@@ -273,14 +273,16 @@ define([
 			var that = this;
 			
 			// construct the mail
-    		var mail = new Mail({ syncId: Util.guid(), originalId: this.id });
+    		var mail = new Mail({ originalId: this.id });
     		
     		// put in the standard mail properties
-    		var keys = ['subject', 'from', 'to', 'cc', 'bcc', 'reply-to'];
+    		var keys = ['subject', 'from', 'to', 'cc', 'bcc', 'reply-to', 'message-id'];
     		_.each(keys, function(key) { 
     			var value = this.getHeaderValueQPDecode(key);
     			mail.set(key, value);
     		}, this);
+    		
+    		mail.computeIdFromMessageId();
     		
     		// special processing of the date string
     		var date = null;

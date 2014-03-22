@@ -31,4 +31,6 @@ public abstract class RecordDb implements DbClosable
 
 	abstract public void deleteObjectWithClazz(String user, String clazz, String json);
 
+	abstract public boolean hasLogin(String userAddress);
+
 }

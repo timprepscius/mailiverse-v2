@@ -8,7 +8,10 @@
 # service type  private unpriv  chroot  wakeup  maxproc command + args
 #               (yes)   (yes)   (yes)   (never) (100)
 # ==========================================================================
+
 smtp       inet  n       -       -       -       -       smtpd
+   -o content_filter=sent_to_store:dummy
+
 #smtp      inet  n       -       -       -       1       postscreen
 #smtpd     pass  -       -       -       -       -       smtpd
 #dnsblog   unix  -       -       -       -       0       dnsblog
@@ -60,8 +63,9 @@ lmtp      unix  -       -       -       -       -       lmtp
 anvil     unix  -       -       -       -       1       anvil
 scache    unix  -       -       -       -       1       scache
 
-javapipe  unix  -       n       n       -       -       pipe
-  directory=/home/mv user=mv flags=DRhuX argv=java -jar /home/mv/deploy/postfix/StoreMail.jar RECEIVED $recipient
+received_to_store  unix  -       n       n       -       -       pipe
+  directory=/home/mv user=mv flags=DRhuX argv=/home/mv/deploy/postfix/ReceivedToStore ${sender} ${recipient}
 
-filter    unix  -       n       n       -       10      pipe
-  directory=/home/mv user=mv flags=Rq null_sender= argv=java -jar /home/mv/deploy/postfix/StoreMail.jar SENT ${sender} -- ${recipient}
+sent_to_store unix  -       n       n       -       10      pipe
+  directory=/home/mv user=mv flags=Rq null_sender= argv=/home/mv/deploy/postfix/SentToStore ${sender} ${recipient}
+

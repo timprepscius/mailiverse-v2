@@ -41,14 +41,14 @@ define([
         
         getContact: function(email)
         {
-        	var nameHash = Crypto.cryptoHash(appSingleton.login.get("privateKeys").aes, email);
+        	var nameHash = Crypto.cryptoHash16(appSingleton.login.get("privateKeys").aes, email);
         	var model = this.get(nameHash);
         	return model;
         },
 
         ensureContact: function(email)
         {
-        	var nameHash = Crypto.cryptoHash(appSingleton.login.get("privateKeys").aes, email);
+        	var nameHash = Crypto.cryptoHash16(appSingleton.login.get("privateKeys").aes, email);
         	var model = this.get(nameHash);
         	if (!model)
         	{

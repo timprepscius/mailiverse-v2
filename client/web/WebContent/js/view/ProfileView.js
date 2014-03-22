@@ -11,24 +11,32 @@ define([
 		
         events: {
             'click .done' : 'onDone',
+            'click #save-changes' : 'onSaveChanges',
         },
         
         initialize: function(options) 
         {
         	this.modelBinders = [];
         	this.appView = options.appView;
-        	_.bindAll(this, 'onDone');
-        	
-        	this.$el.modal();
+        	_.bindAll(this, 'onDone', 'onSaveChanges');
         },
           
         onDone: function()
         {
+        	
+        },
+        
+        onSaveChanges: function()
+        {
+        	appSingleton.user.set('name', this.$('#name').val());
+        	appSingleton.user.save();
         },
         
         render: function( model ) {
         	var rendered = _.template(template, { model: this.model });
-            $(this.el).html(rendered);
+            this.$el.html(rendered);
+            
+            this.$('#profile-modal').modal({ show: true });    
             return this;
         },
         

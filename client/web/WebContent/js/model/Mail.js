@@ -2,6 +2,7 @@ define([
 	'jquery',
 	'underscore',
 	'backbone',
+	'base16',
 ], function ($,_,Backbone) {
 
 	MailExposedFields = [ 'syncId', 'syncOwner', 'syncVersion', 'conversation' ];
@@ -115,6 +116,17 @@ define([
     		return val ? val.content : null;
     	},
     	
+    	assignNewId: function()
+    	{
+    		this.set('message-id', Util.guid() + Constants.ATHOST);
+    		this.computeIdFromMessageId();
+    	},
+    	
+    	computeIdFromMessageId: function()
+    	{
+			var mailId = this.has('message-id') ? this.get('message-id') : Util.guid();
+			this.set('syncId', Crypto.cryptoHash16(appSingleton.login.get('privateKeys').aes, mailId));
+    	},
     });
 
     Mails = Backbone.Collection.extend({

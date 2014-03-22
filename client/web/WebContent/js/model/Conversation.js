@@ -38,9 +38,9 @@ define([
         newMail: function () {
     		var mail = new Mail({conversation: this.id, syncId:Util.guid(), date:Util.toDateSerializable()});
     		mail.onCreate();
+    		mail.assignNewId();
 
     		mail.set('draft', true);
-    		mail.set('message-id', Util.guid());
     		
     		this.getMails().add(mail);
     		return mail;

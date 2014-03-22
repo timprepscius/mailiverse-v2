@@ -15,6 +15,8 @@ define([
 			if (!methodWrite && model.lastModificationTime && syncTime.getTime() < model.lastModificationTime)
 			{
 				console.log("modification was made after sync, disregarding");
+				console.log("reissuing fetch");
+				model.fetch();
 			}
 			else
 			{

@@ -153,7 +153,7 @@ define([
 			var val = this.ckeditor.ckeditorGet().getData();
 
 			this.model.set('content', [
-			 	{ type: 'html', content: val, hash:Crypto.simpleHash(val), tags:{}}
+			 	{ type: 'html', content: val, tags:{}}
 			 ]);
 			
 			this.model.set('to', this.$('.to input').not(':disabled').val());

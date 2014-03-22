@@ -132,7 +132,7 @@ define([
         
         getNickName: function ()
         {
-        	return this.get('name') && appSingleton.login.get('address');
+        	return this.get('name') || appSingleton.login.get('address');
         },
     });
 

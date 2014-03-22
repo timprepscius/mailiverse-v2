@@ -4,8 +4,8 @@
 #       /path/to/script -f sender recipients...
 
 # Localize these. The -G option does nothing before Postfix 2.3.
-INSPECT_DIR=/var/spool/filter
-SENDMAIL="/usr/sbin/sendmail -G -i" # NEVER NEVER NEVER use "-t" here.
+INSPECT_DIR=/home/mv/postfix-filter
+SENDMAIL="/usr/sbin/sendmail -G -i -f" # NEVER NEVER NEVER use "-t" here.
 
 # Exit codes from <sysexits.h>
 EX_TEMPFAIL=75
@@ -13,6 +13,10 @@ EX_UNAVAILABLE=69
 
 # Clean up when done or when aborting.
 trap "rm -f in.$$" 0 1 2 3 15
+
+echo SENT "$@"
+
+mkdir -p $INSPECT_DIR
 
 # Start processing.
 cd $INSPECT_DIR || {
@@ -22,8 +26,10 @@ cat >in.$$ || {
     echo Cannot save mail to file; exit $EX_TEMPFAIL; }
 
 # Specify your content filter here.
-# filter <in.$$ || {
-#   echo Message content rejected; exit $EX_UNAVAILABLE; }
+java -jar /home/mv/deploy/postfix/StoreMail.jar SENT "$@" <in.$$ || {
+    echo Message content rejected; exit $EX_UNAVAILABLE; }
+
+cat in.$$ >> mailz
 
 $SENDMAIL "$@" <in.$$
 

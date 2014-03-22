@@ -2,11 +2,11 @@ define([
 	'base64',
 ], function ($,_,openpgp) {
 
-	var BASE = (window.location.hostname == 'localhost') ? 'http://localhost:8080' : '';
-	BASE = "http://pmx.mooo.com:8080";
+	var DEV_BASE = "http://pmx.mooo.com:8080";
+	var BASE = (window.location.hostname == 'localhost') ? DEV_BASE : '';
 
-	var HOSTNAME = window.location.hostname;
-	HOSTNAME = "pmx.mooo.com";
+	var DEV_HOSTNAME = "pmx.mooo.com";
+	var HOSTNAME = (window.location.hostname == 'localhost') ? DEV_HOSTNAME : window.location.hostname;
 	
 	Constants = {
 		ATHOST: '@' + HOSTNAME,

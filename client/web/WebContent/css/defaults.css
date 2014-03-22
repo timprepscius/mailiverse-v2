@@ -221,3 +221,10 @@ compose
 .conversation-compose-body button.discard {
 	float: right;
 }
+
+/****************************************************/
+
+#profile-modal .profile-public-key {
+	height: 200px;
+	overflow-y: scroll;
+}
