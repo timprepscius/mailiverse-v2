@@ -154,6 +154,7 @@ define([
     	{
     		// @TODO what should this do, needs to be sorted of course
     		this.getPage(0).unshift(reference);
+    		this.getPage(0).trigger('change');
     		this.set('count', this.get('count') + 1);
     	},
     	
