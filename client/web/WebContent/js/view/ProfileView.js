@@ -30,6 +30,7 @@ define([
         {
         	appSingleton.user.set('name', this.$('#name').val());
         	appSingleton.user.save();
+        	appSingleton.user.trigger('change');
         },
         
         render: function( model ) {

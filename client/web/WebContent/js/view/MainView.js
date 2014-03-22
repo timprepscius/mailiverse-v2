@@ -16,7 +16,6 @@ define([
         
         currentView: null,
         
-        
         initialize: function(options) 
         {
         	this.modelBinders = [];
@@ -35,8 +34,17 @@ define([
         },
         
         render: function( model ) {
-        	var rendered = _.template(mainTemplate, { model: this.model, user: this.user });
+            var that = this;
+
+            var rendered = _.template(mainTemplate, { model: this.model, user: this.user });
             this.$el.html(rendered);
+
+            var mb = new Backbone.ModelBinder();
+            var bindings = {
+            	name: { selector: '[name=nickname]', converter: function() { return that.user.getNickName(); } },
+            } ;
+            this.modelBinders.push(mb);
+            mb.bind(this.user, this.el, bindings);
             
             this.$('#main-sync').html(this.syncView.el);
             this.$('#main-download-mail').html(this.downloadMailView.el);
