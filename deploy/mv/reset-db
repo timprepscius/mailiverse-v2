@@ -1,0 +1,9 @@
+use mv;
+
+db.Original.drop();
+db.Mail.drop();
+db.Conversation.drop();
+db.ConversationReference.drop();
+db.User.drop();
+db.Folder.drop();
+db.Login.drop();

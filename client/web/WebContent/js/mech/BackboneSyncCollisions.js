@@ -12,7 +12,7 @@ define([
 
 		options.success = function () {
 			var methodWrite = (method === 'create' || method === 'update' || method === 'patch');
-			if (!methodWrite && model.lastModificationTime && syncTime.getTime() < model.lastModificationTime)
+			if (!methodWrite && model.lastModificationTime && syncTime.getTime() < model.lastModificationTime.getTime())
 			{
 				console.log("modification was made after sync, disregarding");
 				console.log("reissuing fetch");
@@ -42,6 +42,14 @@ define([
 		this.updateModificationTime();
 		return add_save.apply(this,arguments);
 	};
+	
+	var create_save = Backbone.Collection.prototype.create;
+	Backbone.Collection.prototype.create = function ()
+	{
+		this.updateModificationTime();
+		return create_save.apply(this,arguments);
+	};
+
 	
 	var remove_save = Backbone.Collection.prototype.remove;
 	Backbone.Collection.prototype.remove = function ()

@@ -29,7 +29,7 @@ define([
         getFolders: function() 
         {
         	if (!this.folders) {
-        		this.folders = new Folders([], { user:this});
+        		this.folders = new Folders([], { user:this });
         		this.folders.fetch();
         	}
         	return this.folders;
@@ -63,8 +63,8 @@ define([
         
         getNewMail: function()
         {
-        	var originals = new Originals([], { after: null });
-//        	var originals = new Originals([], { after: this.get('lastMailProcessed')});
+//        	var originals = new Originals([], { after: null });
+        	var originals = new Originals([], { after: this.get('lastMailProcessed')});
         	originals.fetch();
         	
         	return originals;
@@ -78,47 +78,50 @@ define([
 
         	if (!_.contains(updates, 'createdFolders'))
         	{
-        		this.getFolders().create({ 
+        		var folders = new Folders([], { user:this });
+        		
+        		folders.create({ 
         			name: 'Inbox', 
         			ordering: 0, 
         			inclusion_criteria : { received: true }, 
         			exclusion_criteria : { spam: true, trash: true },
         			syncId: Util.guid()
         		});
-        		this.getFolders().create({ 
+        		folders.create({ 
         			name: 'Sent', ordering: 1, 
         			inclusion_criteria : { sending: true, sent: true }, 
         			exclusion_criteria : { trash: true },
         			syncId: Util.guid()
         		});
-        		this.getFolders().create({ 
+        		folders.create({ 
         			name: 'Drafts', 
         			ordering: 2, 
         			inclusion_criteria : { draft: true }, 
         			exclusion_criteria : { trash: true },
         			syncId: Util.guid()
         		});
-        		this.getFolders().create({ 
+        		folders.create({ 
         			name: 'All', 
         			ordering: 3, 
         			inclusion_criteria : { all: true }, 
         			exclusion_criteria : { spam: true, trash: true },
         			syncId: Util.guid()
         		});
-        		this.getFolders().create({ 
+        		folders.create({ 
         			name: 'Spam', 
         			ordering: 4, 
         			inclusion_criteria : { spam: true }, 
         			exclusion_criteria : { trash: true },
         			syncId: Util.guid()
         		});
-        		this.getFolders().create({ 
+        		folders.create({ 
         			name: 'Trash', 
         			ordering: 5, 
         			inclusion_criteria : { trash: true }, 
         			syncId: Util.guid()
         		});
         		
+        		this.folders = folders;
         		updates.push('createdFolders');
         		this.set('updates', updates);
         		this.save();
