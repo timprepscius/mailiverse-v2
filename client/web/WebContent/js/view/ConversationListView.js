@@ -147,6 +147,11 @@ define([
         {
         	this.maxPages = Math.ceil(this.collection.get('count') / this.pageSize);
         	
+        	// we should always display atleast one page, so we can catch the download mail
+        	// add events
+        	if (this.maxPages == 0)
+        		this.maxPages = 1;
+        	
         	if (this.views.length < this.maxPages && 
         		(this.views.length == 0 || this.views[this.views.length-1].$el.is(":appeared")))
         		
