@@ -79,6 +79,7 @@ define([
         	if (!_.contains(updates, 'createdFolders'))
         	{
         		var folders = new Folders([], { user:this });
+        		folders.onCreate();
         		
         		folders.create({ 
         			name: 'Inbox', 
