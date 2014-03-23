@@ -147,11 +147,11 @@ define([
     	getSignatureHashType: function(multipart)
     	{
     		var header = this.getHeaderValueInPart(multipart, 'content-type');
-    		var re = /micalg=(\S+)/gm;
+    		var re = /micalg=pgp-(\S+)/gm;
     		var matches = re.exec(header);
     		
     		if (matches)
-    			return matches[1];
+    			return matches[1].toUpperCase();
     		
     		return "error";
     	},
@@ -171,7 +171,7 @@ define([
     					"-----BEGIN PGP SIGNED MESSAGE-----" + "\n" + 
 						"Hash: " + this.getSignatureHashType(multipart) + "\n" + 
 						multipart.data[0].original +
-						multipart.data[1].data + "\n";
+						$.trim(multipart.data[1].data) + "\n";
     				
     				partsToCheck.push({ part: multipart, block: block, shouldReplace: false });
     			}
