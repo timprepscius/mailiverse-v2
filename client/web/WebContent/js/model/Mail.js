@@ -118,7 +118,7 @@ define([
     	
     	assignNewId: function()
     	{
-    		this.set('message-id', Util.guid() + Constants.ATHOST);
+    		this.set('message-id', "<" + Util.guid() + Constants.ATHOST + ">");
     		this.computeIdFromMessageId();
     	},
     	
