@@ -3,7 +3,7 @@ mv (aka: mailiverse.v2)
 ==
 
 This project is a PGP mail service which caches using AES to provide a UI of the standard, "click on
-folder, see conversations instantaineously, etc etc."
+folder, see conversations instantaneously, etc etc."
 
 It uses Backbone for the model/view architecture.  The backone syncronization code is overridden before
 ajax is performed to encrypt and decrypt the models as they are transfered.
@@ -23,6 +23,13 @@ include some sort of script to generate default certs.
 ===
 
 Progress:
+
+03/23/2014 - Work on stability
+ * Signs mail a bit more correctly, will canonicalize in next batch of fixes.
+ * Does infinite scrolling of conversations correctly.
+ * Fixes lots of data creation/initialization bugs.
+ * Integrates mail ids so that mails are correctly read.
+ * Folder listings seem to be correct.
 
 03/15/2014 - Initial git push.
  * Decrypts mail sent using gpg/applemail.
@@ -70,6 +77,7 @@ Setup:
 If you want to use special keys (not your own), you need to put the pub in that directory and modify the config file.
 
 Build:
+ R. (cd server/ext && ./setup)
  1. cd server
  2. ./build
 
