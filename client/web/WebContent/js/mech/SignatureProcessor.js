@@ -10,16 +10,17 @@ define([
 			var that = this;
 			var address = Util.getAddressFromEmail(author);
 			
-			PGPLookUp.lookup(address, {
-				success: function(key) {
+			appSingleton.user.getKeyRing().getKeysForAllAddressesPGPLookupFirst([address], {
+				success: function(addressesToKeys) {
+					var key = addressesToKeys[address];
+					
 					var contact = appSingleton.user.getContacts().ensureContact(author);
 					contact.syncedOnce(function () {
 						that.check(originalId, dataSigPair, contact, key, callbacks);
 					});
 				},
-				failure: function() {
-					callbacks.failure();
-				},
+				
+				failure: callbacks.failure
 			});
 		},
 				

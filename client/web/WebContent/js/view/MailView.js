@@ -33,6 +33,8 @@ define([
 		{
 			this.modelBinders = [];
 			_.bindAll(this, 'render');
+			
+			this.model.on('changed', this.render);
 		},
 
 		render: function() {

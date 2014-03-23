@@ -82,20 +82,22 @@ define([
         		});
         		
         		xhr.success ( function() {
+        			keyFinder.key = model;
         			Util.onNextTick( function () { keyFinder.trigger('success'); keyFinder.trigger('sync'); } );
         		});
         	}
         	else
         	{
-        		// we already have the key
+    			keyFinder.key = model;
+
+    			// we already have the key
     			Util.onNextTick( function () { keyFinder.trigger('success'); keyFinder.trigger('sync'); } );
         	}
         	
-			keyFinder.key = model;
     		return keyFinder;
         },
         
-    	getKeysForAllAddresses: function(addresses, callbacks)
+    	getKeysForAllAddressesCachedFirst: function(addresses, callbacks)
     	{
 			var addressesToKeyFinders = {};
 			var findKeyFailure = false;
@@ -132,6 +134,49 @@ define([
 			afterAllKeys();
     	},
         
+    	getKeysForAllAddressesPGPLookupFirst: function(addresses, callbacks)
+    	{
+			var addressesToKeyFinders = {};
+			var findKeyFailure = false;
+			
+			var onAllKeys = function () {
+				var addressesToKeys = {};
+
+				_.each (addresses, function(address) {
+					addressesToKeys[address] = addressesToKeyFinders[address].key;
+					if (!addressesToKeyFinders[address].key)
+						findKeyFailure = true;
+				});
+				
+				if (!findKeyFailure)
+					callbacks.success(addressesToKeys);
+				else
+					callbacks.failure(addressesToKeys);
+			};
+    
+			var afterAllKeys = _.after(addresses.length+1, onAllKeys);
+			
+			_.each (addresses, function(address) {
+				
+				PGPLookUp.lookup(address, {
+					
+					success: function (key) {
+						var keyFinder = { key: key };
+						addressesToKeyFinders[address] = keyFinder;
+						afterAllKeys();
+					},
+
+					failure: function () {
+						var keyFinder = appSingleton.user.getKeyRing().findKey(address);
+						addressesToKeyFinders[address] = keyFinder;
+						keyFinder.syncedOnce(afterAllKeys);
+					},
+						
+				});
+			});
+
+			afterAllKeys();
+    	},
     });
     
 });

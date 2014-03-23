@@ -76,7 +76,7 @@ pgp_verify: function(keyS, data)
 	var message = new window.openpgp.cleartext.readArmored(data);
 //	var message = window.openpgp.message.fromText(data);
 	var result = window.openpgp.verifyClearSignedMessage([key],message);
-	return result.signatures.length > 0;
+	return result.signatures.length > 0 && result.signatures[0].valid;
 },
 
 pgp_sign: function(privateKeyS, data)

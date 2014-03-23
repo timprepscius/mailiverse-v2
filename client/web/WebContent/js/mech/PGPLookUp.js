@@ -15,6 +15,7 @@ define([
 			this.doLookup(lookupAddress, {
 				success: function (publicKey, server) {
 					var keyFinder = appSingleton.user.getKeyRing().findKey(address);
+					
 					keyFinder.syncedOnce(function() {
 						var key = keyFinder.key || appSingleton.user.getKeyRing().createKey(address);
 						if (publicKey != key.get('publicKey'))

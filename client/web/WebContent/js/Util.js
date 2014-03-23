@@ -52,6 +52,18 @@ define([
 			return email;
 		},
 		
+		getSignatureHashTypeFromSignedContent: function(content_)
+		{
+			var content = content_.replace(/\r/gm, "");
+			var re = /-+BEGIN PGP SIGNED MESSAGE-+\nHash:\s*(\S+)\n[\s\S]*?/gm;
+			var matches = re.exec(content);
+		
+			if (matches)
+				return matches[1];
+			
+			return null;
+		},
+		
 		getSignatureFromSignedContent: function(content)
 		{
 			var re = /(-+BEGIN PGP SIGNATURE-+([\s\S]*?)-+END PGP SIGNATURE-+)/gm;
@@ -62,7 +74,7 @@ define([
 			
 			return null;
 		},
-		
+
 		getUserFriendlyDate : function(dateString)
 		{
 			var now = new Date();

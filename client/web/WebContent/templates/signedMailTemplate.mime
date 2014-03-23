@@ -1,13 +1,11 @@
 Content-Type: multipart/signed;
 	boundary="<%- mailBoundary %>";
 	protocol="application/pgp-signature";
-	micalg=pgp-sha512
+	micalg=<%- signatureHashType %>
 
 
 --<%- mailBoundary %>
-<%= mailContent %>
-
---<%- mailBoundary %>
+<%= mailContent %>--<%- mailBoundary %>
 Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment;
 	filename=signature.asc

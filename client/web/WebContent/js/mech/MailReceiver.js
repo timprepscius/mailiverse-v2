@@ -99,8 +99,6 @@ define([
 		
 		mailAlreadyExists: function(original, mail, existingMail)
 		{
-			appSingleton.user.set("lastMailProcessed", mail.get('originalId'));
-			
 			if (existingMail.get('originalId')==null)
 			{
 				existingMail.set('originalId', original.id);
@@ -112,6 +110,9 @@ define([
 				});
 				existingMail.save();
 			}
+			
+			appSingleton.user.set("lastMailProcessed", original.id);
+			appSingleton.user.save();
 			
 			this.trigger('next');
 		},
@@ -152,7 +153,7 @@ define([
 				});
 				
 				// save things
-				appSingleton.user.set("lastMailProcessed", mail.get('originalId'));
+				appSingleton.user.set("lastMailProcessed", original.id);
 
 				conversation.save();
 				mail.save();

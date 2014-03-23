@@ -24,7 +24,7 @@ define([
 			mail.save();
 			
 			var that = this;
-			appSingleton.user.getKeyRing().getKeysForAllAddresses(
+			appSingleton.user.getKeyRing().getKeysForAllAddressesPGPLookupFirst(
 				mail.getRecipientAddresses(), 
 				{
 					success: function (addressesToKeys)
@@ -53,11 +53,12 @@ define([
 		    	success: function(signedContent) {
 
 		    		var signature = Util.getSignatureFromSignedContent(signedContent);
+		    		var signatureHashType = Util.getSignatureHashTypeFromSignedContent(signedContent);
 		    		
 				    var multiPart = 
 				    	_.template(
 				    		signedMailTemplate, 
-				    		{ mailBoundary: Util.guid(), mailContent: mailContent, signature: signature }
+				    		{ mailBoundary: Util.guid(), mailContent: mailContent, signature: signature, signatureHashType: signatureHashType }
 				    	);
 
 				    var data = {

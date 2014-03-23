@@ -47,7 +47,7 @@ define(['jquery'], function(jQuery) {
                         };
 
                         var currentKey = null;
-                    	var currentValue = null;
+                    	var currentKeyValue = null;
 
                         for (var item in partData) {
 
@@ -57,7 +57,7 @@ define(['jquery'], function(jQuery) {
                         	{
                         		if (line[0] == ' ' || line[0] == '\t')
                         		{
-                        			currentValue += '\r\n' + line;
+                        			currentKeyValue.value += '\r\n' + line;
                         		}
                         		else
                         		{
@@ -65,10 +65,10 @@ define(['jquery'], function(jQuery) {
                         			var key = line.substr(0, colon);
                         			var value = line.substr(colon+2);
                         			
-                        			currentValue = value;
                         			currentKey = key;
+                        			currentKeyValue = {key:currentKey, value:value};
                         			
-                        			message.headers.push({key:currentKey, value:currentValue});
+                        			message.headers.push(currentKeyValue);
                         		}
                         	}
                         	else

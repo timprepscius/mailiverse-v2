@@ -125,7 +125,7 @@ define([
 				}) ? 'verified' : 'keys';
 			};
 
-			appSingleton.user.getKeyRing().getKeysForAllAddresses(addresses, {
+			appSingleton.user.getKeyRing().getKeysForAllAddressesCachedFirst(addresses, {
 				success: function(addressesToKeys) { 
 					callback(computeState(addressesToKeys)); 
 				},

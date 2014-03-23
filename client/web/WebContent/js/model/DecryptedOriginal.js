@@ -144,6 +144,18 @@ define([
     		return null;
     	},
     	
+    	getSignatureHashType: function(multipart)
+    	{
+    		var header = this.getHeaderValueInPart(multipart, 'content-type');
+    		var re = /micalg=(\S+)/gm;
+    		var matches = re.exec(header);
+    		
+    		if (matches)
+    			return matches[1];
+    		
+    		return "error";
+    	},
+    	
     	collectPartsToCheckSignature: function()
     	{
     		var that = this;
@@ -157,13 +169,13 @@ define([
     				// @TODO this isn't right
     				var block = 
     					"-----BEGIN PGP SIGNED MESSAGE-----" + "\n" + 
-						"Hash: pgp-sha1" + "\n" + 
-						multipart.data[0].original + "\n" +
+						"Hash: " + this.getSignatureHashType(multipart) + "\n" + 
+						multipart.data[0].original +
 						multipart.data[1].data + "\n";
     				
     				partsToCheck.push({ part: multipart, block: block, shouldReplace: false });
     			}
-    		});
+    		}, this);
     		
     		var textParts = this.collectPartsWithContentType(parts, "text/plain");
     		_.each(textParts, function(textPart) {

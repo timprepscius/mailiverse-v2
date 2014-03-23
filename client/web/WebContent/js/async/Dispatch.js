@@ -156,7 +156,7 @@ Dispatch = {
 	
 	startWorker: function()
 	{
-//		return;
+		return;
 		
 		if (this.mode != 'native')
 		{
