@@ -39,8 +39,10 @@ define([
             	from: { selector: '[name=from]', converter: function() { return that.model.getFromFirstNames(); } },
         		subject: { selector: '[name=subject]' }, 
             	date: { selector: '[name=formatted_date]', converter: function() { return that.model.userFriendlyDate(); } },
-            	draft: { selector: '[name=draft]', converter: function() { return that.model.get('draft') ? 'Draft' : '' } },
-            	draft: { selector: '[name=sending]', converter: function() { return that.model.get('sending') ? 'Sending' : '' } },
+            	draft: { selector: '[name=draft]', elAttribute:'style', 
+            		converter: function() { return that.model.get('draft') ? 'display: inline' : 'display: none'; } },
+            	sending: { selector: '[name=sending]', elAttribute:'style', 
+            		converter: function() { return that.model.get('sending') ? 'display: inline' : 'display: none'; } },
             } ;
             this.modelBinders.push(mb);
             mb.bind(this.model, this.el, bindings);
