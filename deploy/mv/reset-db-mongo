@@ -7,3 +7,5 @@ db.ConversationReference.drop();
 db.User.drop();
 db.Folder.drop();
 db.Login.drop();
+db.Session.drop();
+
