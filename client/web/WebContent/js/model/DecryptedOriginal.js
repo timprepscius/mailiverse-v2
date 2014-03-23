@@ -65,8 +65,8 @@ define([
 
     		var multipartEncrypteds = this.collectPartsWithContentType(parts, "multipart/encrypted");
     		_.each(multipartEncrypteds, function(multipart) {
-    			if (multipart.data && multipart.data.length == 3 && multipart.data[2].data )
-    				partsToDecrypt.push( { part: multipart, block: multipart.data[2].data } );
+    			if (multipart.data && multipart.data.length >= 2 && multipart.data[multipart.data.length-1].data )
+    				partsToDecrypt.push( { part: multipart, block: multipart.data[multipart.data.length-1].data } );
     		});
     		
     		var textParts = this.collectPartsWithContentType(parts, "text/plain");

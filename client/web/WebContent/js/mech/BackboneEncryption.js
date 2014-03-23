@@ -39,16 +39,23 @@ define([
 			success: function (decryptedBlocks) {
 				while (jsons.length)
 				{
-					var json = jsons.shift();
-					var decryptedBlock = decryptedBlocks.shift();
-					var decrypted = decryptedBlock ? JSON.parse(decryptedBlock) : {};
-					
-					_.each(exposedFields, function(field) { 
-						if (_.has(json,field)) 
-							decrypted[field] = json[field]; 
-					});
-					
-					results.push(decrypted);
+					try
+					{
+						var json = jsons.shift();
+						var decryptedBlock = decryptedBlocks.shift();
+						var decrypted = decryptedBlock ? JSON.parse(decryptedBlock) : {};
+						
+						_.each(exposedFields, function(field) { 
+							if (_.has(json,field)) 
+								decrypted[field] = json[field]; 
+						});
+						
+						results.push(decrypted);
+					}
+					catch (exception)
+					{
+						console.log("caught exception during decryption, CryptoJS doesn't handle 0 length blocks correctly");
+					}
 				}
 				
 				callbacks.success(results);
@@ -79,7 +86,9 @@ define([
 					json[field] = data[field]; 
 			});
 			
-			var plainText =  JSON.stringify(_.omit(data, exposedFields));
+			var plainText = JSON.stringify(_.omit(data, exposedFields));
+			if (plainText.length < 2)
+				alert('woah');
 			
 			Crypto.encryptAESBlock(aes, plainText, {
 				success: function(encryptedBlock) {
@@ -111,7 +120,10 @@ define([
 						successArguments[0] = decrypted;
 						success_save.apply(this, successArguments);
 					},
-					failure: params.failure
+					failure: function() {
+						if (params.failure)
+							params.failure(arguments);
+					}
 				}
 			);
 		};
@@ -137,7 +149,10 @@ define([
 						options.data = JSON.stringify(encrypted);
 						sync_save.apply(this, [method, model, options]);
 					},
-					failure: options.failure
+					failure: function() {
+						if (options.failure)
+							options.failure(arguments);
+					}
 				}
 			);
 		}

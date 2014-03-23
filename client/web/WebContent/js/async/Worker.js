@@ -11,6 +11,8 @@ importScripts(
 	"../crypt/zip/inflate.js",
 	"../crypt/zip/deflate.js",
 	
+	"../lib/underscore-min.js",
+	
 	'Support.js'
 );
 
@@ -27,13 +29,13 @@ self.onmessage = function(e)
 	
 	var data = e.data;
 
-//	try
+	try
 	{
 		var result = Support[data.cmd].apply(null, data.args);
 		self.postMessage({callback:data.callback, result:result, original:data});
 	}
-//	catch (exception)
+	catch (exception)
 	{
-//		self.postMessage({callback:data.callback, exception:exception.toString(), original:data});
+		self.postMessage({callback:data.callback, exception:exception.toString(), original:data});
 	}
 };

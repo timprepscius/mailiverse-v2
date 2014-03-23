@@ -86,9 +86,10 @@ define([
 		seeIfDuplicateMailExists: function(original, mail)
 		{
 			var that = this;
-			mail.fetch({
+			var existingMail = new Mail({ syncId: mail.id });
+			existingMail.fetch({
 				success: function() {
-					that.mailAlreadyExists(original, mail);
+					that.mailAlreadyExists(original, mail, existingMail);
 				},
 				error: function() {
 					that.putInContainers(original, mail);
@@ -96,9 +97,22 @@ define([
 			});
 		},
 		
-		mailAlreadyExists: function(original, mail)
+		mailAlreadyExists: function(original, mail, existingMail)
 		{
 			appSingleton.user.set("lastMailProcessed", mail.get('originalId'));
+			
+			if (existingMail.get('originalId')==null)
+			{
+				existingMail.set('originalId', original.id);
+				
+				var copy = ['content', 'from', 'to', 'cc', 'bcc', 'reply-to', 'date', 'subject' ];
+				_.each (copy, function(c) {
+					if (mail.has(c))
+					existingMail.set(c, mail.get(c));
+				});
+				existingMail.save();
+			}
+			
 			this.trigger('next');
 		},
 		
