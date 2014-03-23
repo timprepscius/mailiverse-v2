@@ -38,7 +38,7 @@ define([
         getContacts: function()
         {
         	if (!this.contacts) {
-        		this.contacts = new Contacts([], { user:this});
+        		this.contacts = new Contacts([], { user:this });
         		this.contacts.fetch();
         	}
         	return this.contacts;

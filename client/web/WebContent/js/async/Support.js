@@ -203,7 +203,14 @@ aes_generate: function()
 
 aes_encrypt: function(key64, iv64, block)
 {
-	return Support.aes_encrypt_CryptoJS(key64, iv64, Base64.encode(Utf.toBytes(block)));
+	var result = Support.aes_encrypt_CryptoJS(key64, iv64, Base64.encode(Utf.toBytes(block)));
+	
+	if (this.aes_decrypt(key64, iv64, result) !== block)
+	{
+		throw "encryption failed";
+	}
+	
+	return result;
 },
 
 aes_encrypt_CryptoJS: function(key64, iv64, bytes64)
