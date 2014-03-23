@@ -28,7 +28,7 @@ Progress:
  * Signs mail a bit more correctly, will canonicalize in next batch of fixes.
  * Does infinite scrolling of conversations correctly.
  * Fixes lots of data creation/initialization bugs.
- * Integrates mail ids so that mails are correctly read.
+ * Integrates mail ids so that duplicate mails are correctly detected.
  * Folder listings seem to be correct.
 
 03/15/2014 - Initial git push.
