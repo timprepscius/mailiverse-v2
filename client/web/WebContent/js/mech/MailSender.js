@@ -49,7 +49,6 @@ define([
 		    var mailContent = 
 		    	_.template(mailContentTemplate, { contentBoundary: Util.guid(), text: text, html: html });
 
-		    // Embed the subject into the body for verification
 		    Crypto.signPGP(mailContent, {
 		    	success: function(signedContent) {
 

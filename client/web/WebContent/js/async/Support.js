@@ -83,7 +83,7 @@ pgp_sign: function(privateKeyS, data)
 {
 	var privateKey = window.openpgp.key.readArmored(privateKeyS).keys[0];
 	privateKey.decrypt();
-	var result = window.openpgp.signClearMessage(privateKey, data);
+	var result = window.openpgp.signClearMessage([privateKey], data);
 	return result;
 },
 
