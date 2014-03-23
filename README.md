@@ -77,7 +77,7 @@ Setup:
 If you want to use special keys (not your own), you need to put the pub in that directory and modify the config file.
 
 Build:
- R. (cd server/ext && ./setup)
+ 0. (cd server/ext && ./setup)
  1. cd server
  2. ./build
 
