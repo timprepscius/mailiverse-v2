@@ -125,7 +125,8 @@ define([
 		    $.ajax({ 
 		    	method: 'PUT',
 		    	url: Constants.URL + 'util/Send', 
-		    	data: JSON.stringify(data)
+		    	data: JSON.stringify(data),
+		    	headers: { 'X-Session' : appSingleton.login.get('session') }
 		    }).success(function () {
 		    	
 		    	mail.set('sent', true);

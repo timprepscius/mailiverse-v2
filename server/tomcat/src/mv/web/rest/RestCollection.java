@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 import mv.core.util.DbCloser;
+import mv.core.util.ExternalException;
 import mv.core.util.Streams;
 import mv.db.DbFactory;
 import mv.db.RecordDb;
@@ -80,7 +81,10 @@ public class RestCollection extends HttpServlet {
 			
 			String insertedAfter = request.getParameter("insertedAfter");
 			db = DbFactory.instantiateRecordDb();
-			String user = db.getSession(request.getHeader("X-Session"));
+
+			String user = db.getSessionUserId(request.getHeader("X-Session"));
+			if (user == null)
+				throw new ExternalException("Unknown session");
 			
 			String result =
 				db.getObjectCollectionWithClassAndFieldId(
@@ -121,9 +125,12 @@ public class RestCollection extends HttpServlet {
 					System.out.println(kv.getKey() + ":" + v);
 			String json = Streams.readFullyString(new InflaterInputStream(request.getInputStream()), "UTF-8");
 			System.out.println("doPost: " + json);
-			String user = (String) request.getSession().getAttribute("user");
 			
 			db = DbFactory.instantiateRecordDb();
+			String user = db.getSessionUserId(request.getHeader("X-Session"));
+			if (user == null)
+				throw new ExternalException("Unknown session");
+
 			String results = db.putObjectsWithClazz(user, clazz, json);
 			
 			response.setContentType("text/json; charset=UTF-8");
@@ -137,7 +144,8 @@ public class RestCollection extends HttpServlet {
 	}
 
 	@Override
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
 		RecordDb db = null;
 		try
 		{
@@ -149,6 +157,10 @@ public class RestCollection extends HttpServlet {
 			System.out.println(json);
 		
 			db = DbFactory.instantiateRecordDb();
+			String user = db.getSessionUserId(request.getHeader("X-Session"));
+			if (user == null)
+				throw new ExternalException("Unknown session");
+
 //			db.deleteObjectWithClazz(clazz, request.getParameterValues("objectId"));
 		}
 		finally

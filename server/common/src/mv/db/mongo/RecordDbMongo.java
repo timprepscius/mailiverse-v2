@@ -277,9 +277,9 @@ public class RecordDbMongo extends RecordDb
 	}
 	
 	@Override
-	public String getSession(String session)
+	public String getSessionUserId(String session)
 	{
-		DBObject q = Mongos.toDBObject("session", session);
+		DBObject q = Mongos.toDBObject(S.session, session);
 		String result = (String)db.getCollection("Session").findOne(q).get(S.syncId);
 		return result;
 	}

@@ -76,7 +76,7 @@ public class Send extends HttpServlet
 		{
 			db = DbFactory.instantiateRecordDb();
 
-			String user = db.getSession(request.getHeader("X-Session"));
+			String user = db.getSessionUserId(request.getHeader("X-Session"));
 			String userAddress = db.getLoginProperty(user, "address");
 		
 	        log.debug("localRelay");
