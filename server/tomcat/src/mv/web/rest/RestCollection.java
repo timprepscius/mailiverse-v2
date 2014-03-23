@@ -79,8 +79,8 @@ public class RestCollection extends HttpServlet {
 			Integer limit = limitStr != null ? Integer.parseInt(limitStr) : null;
 			
 			String insertedAfter = request.getParameter("insertedAfter");
-			String user = (String) request.getSession().getAttribute("user");
 			db = DbFactory.instantiateRecordDb();
+			String user = db.getSession(request.getHeader("X-Session"));
 			
 			String result =
 				db.getObjectCollectionWithClassAndFieldId(

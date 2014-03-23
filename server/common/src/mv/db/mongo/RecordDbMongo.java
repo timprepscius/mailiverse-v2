@@ -40,6 +40,8 @@ public class RecordDbMongo extends RecordDb
 			query = "query",
 			_id = "_id",
 			
+			session = "session",
+			
 			UNIQUE = "unique",
 			DROPDUPS = "dropdups";
 	};
@@ -246,6 +248,43 @@ public class RecordDbMongo extends RecordDb
 	}
 	
 	@Override
+	public String createSession(String user)
+	{
+		db.getCollection("Session").ensureIndex(
+			Mongos.toDBObject(S.session, true),
+			Mongos.toDBObject (
+					S.UNIQUE, true,
+					S.DROPDUPS, true
+				)
+		);	
+		db.getCollection("Session").ensureIndex(
+			Mongos.toDBObject(S.syncId, true),
+			Mongos.toDBObject (
+					S.UNIQUE, true,
+					S.DROPDUPS, true
+				)
+		);	
+		Mongos.checkThrowError(db);
+
+		String session = new ObjectId().toString();
+		
+		DBObject q = Mongos.toDBObject(S.syncId, user);
+		DBObject r = Mongos.toDBObject(S.syncId, user, S.session, session);
+		
+		db.getCollection("Session").update(q, r, true, false);
+		
+		return session;
+	}
+	
+	@Override
+	public String getSession(String session)
+	{
+		DBObject q = Mongos.toDBObject("session", session);
+		String result = (String)db.getCollection("Session").findOne(q).get(S.syncId);
+		return result;
+	}
+	
+	@Override
 	public Pair<String, String> getLogin(String user, String verification) 
 	{
 		DBObject q = Mongos.toDBObject("address", user, "verification", verification);
@@ -254,7 +293,9 @@ public class RecordDbMongo extends RecordDb
 		{
 			BasicDBObject d = (BasicDBObject) c.next();
 			d.removeField(S._id);
-			return new Pair<String,String>((String)d.get("syncId"), JSON.serialize(d));
+			
+			d.put("session", createSession((String)d.get(S.syncId)));
+			return new Pair<String,String>((String)d.get(S.syncId), JSON.serialize(d));
 		}
 		
 		throw new DbException("Unknown user " + user);
@@ -269,10 +310,10 @@ public class RecordDbMongo extends RecordDb
 			throw new RuntimeException("invalid user");
 		
 		u.put("address", user);
-		u.put("syncId", "syncId_" + user);
+		u.put(S.syncId, "syncId_" + user);
 		u.put("verification", verification);
-		putObjectWithClazz(u.getString("syncId"), "Login", u);
-		putObjectWithClazz(u.getString("syncId"), "User", Mongos.toDBObject("syncId", "user"));
+		putObjectWithClazz(u.getString(S.syncId), "Login", u);
+		putObjectWithClazz(u.getString(S.syncId), "User", Mongos.toDBObject(S.syncId, "user"));
 		
 		return getLogin(user, verification);
 	}

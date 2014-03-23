@@ -62,7 +62,6 @@ public class Signup extends HttpServlet {
 			
 			db = DbFactory.instantiateRecordDb();
 			Pair<String,String> r = db.createLogin(user, verification, json);
-			request.getSession().setAttribute("user", r.first);
 			
 			ExternalDataFactory.createInstance().addUser(user, db.getLoginProperty(r.first, "verification"));
 			System.out.println("Signup " + r);

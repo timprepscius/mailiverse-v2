@@ -4,7 +4,7 @@ define([
 	'backbone',
 ], function ($,_,Backbone) {
 
-	LoginExposedFields = [ 'syncId', 'syncOwner', 'syncVersion', 'verification', 'publicKey', 'address' ];
+	LoginExposedFields = [ 'syncId', 'syncOwner', 'syncVersion', 'verification', 'publicKey', 'address', 'session' ];
 	
     Login = Backbone.Model.extend({
     	idAttribute: "syncId",

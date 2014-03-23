@@ -33,4 +33,7 @@ public abstract class RecordDb implements DbClosable
 
 	abstract public boolean hasLogin(String userAddress);
 
+	abstract public String createSession(String userId);
+	abstract public String getSession(String session);
+
 }

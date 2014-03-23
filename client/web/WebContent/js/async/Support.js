@@ -207,6 +207,7 @@ aes_encrypt: function(key64, iv64, block)
 	
 	if (this.aes_decrypt(key64, iv64, result) !== block)
 	{
+		alert('aes bug, set breakpoint');
 		throw "encryption failed";
 	}
 	

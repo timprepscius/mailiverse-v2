@@ -52,7 +52,6 @@ public class Login extends HttpServlet {
 			db = DbFactory.instantiateRecordDb();
 			Pair<String, String> r = db.getLogin(user,verification);
 			System.out.println("Login " + r);
-			request.getSession().setAttribute("user", r.first);
 			
 			response.setContentType("text/json; charset=UTF-8");
 			response.getWriter().println(r.second);

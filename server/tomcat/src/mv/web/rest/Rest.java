@@ -63,8 +63,8 @@ public class Rest extends HttpServlet {
 		{
 			String urlPath = request.getPathInfo();
 			String id = urlPath.substring(urlPath.lastIndexOf("/")+1);
-			String user = (String) request.getSession().getAttribute("user");
 			db = DbFactory.instantiateRecordDb();
+			String user = db.getSession(request.getHeader("X-Session"));
 			
 			String result = db.getObjectWithClassAndId(user, clazz, id);
 			System.out.println("response: " + result);
