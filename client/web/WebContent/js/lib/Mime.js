@@ -16,10 +16,10 @@ define(['jquery'], function(jQuery) {
 
                         for (var item in temp) {
                             if (temp[item].indexOf("boundary") !== -1) {
-                                var result = $.trim(temp[item]).split('=');
-                                result = Util.trimQuotes(result[1]);
-
-                                return result;
+                            	var re = /boundary=([\S]+)/gmi;
+                            	var matches = re.exec(temp[item]);
+                            	if (matches)
+                            		return Util.trimQuotes(matches[1]);
                             }
                         }
                     }
@@ -31,7 +31,7 @@ define(['jquery'], function(jQuery) {
             function processBody(boundary, body) {
                 if (body == null)
                     return null;
-                    
+                
                 var data;
             	if (boundary != null)
             		data = body.split("--" + boundary);
@@ -40,8 +40,16 @@ define(['jquery'], function(jQuery) {
                 var messages = [];
 
                 for (var part in data) {
-                    if ($.trim(data[part]) !== "" && $.trim(data[part]) !== "--") {
-                        var partData = $.trim(data[part]).replace(/\r\n/,'\n').split('\n');
+                    var partData = $.trim(data[part]);
+                    if (partData == '')
+                    	continue;
+                    
+                    partData = partData.replace(/\r\n/,'\n').split('\n');
+                    if (boundary && partData.length && partData[0]=="--")
+                    	partData.shift();
+                    
+                    // if there are lines
+                    if (partData.length) {
                         var message = {
                         	headers : [],
                         	data: null
