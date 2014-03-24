@@ -99,7 +99,8 @@ define([
 		
 		mailAlreadyExists: function(original, mail, existingMail)
 		{
-			if (existingMail.get('originalId')==null)
+			// @TODO debugging remember to remove
+			if (existingMail.get('originalId')==null || true)
 			{
 				existingMail.set('originalId', original.id);
 				
@@ -128,7 +129,7 @@ define([
 
 			var subject = mail.getTrimmedSubject();
 			var matchings = subject ? conversations.where({subject: subject }) : null;
-			var conversation = matchings.length ? matchings[0] : null;
+			var conversation = (matchings && matchings.length) ? matchings[0] : null;
 
 			if (!conversation)
 			{

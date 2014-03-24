@@ -45,15 +45,63 @@ define([
 					this.removeOriginals(part.data, part);
 			}, this);
     	},
-    	
-    	getPGPEncryptedBlockIfAny: function(text)
+
+    	replacePartDataWithContentTriple: function(part, content, tags)
     	{
-			var re = /(-+BEGIN PGP MESSAGE-+[\s\S]*?-+BEGIN PGP MESSAGE-+)/gm;
+    		var prefix = content[0];
+    		var body = content[1];
+    		var postfix = content[2];
+    		
+			var contentType = this.getHeaderValueInPart(part, 'content-type');
+			var contentEncoding = this.getHeaderValueInPart(part, 'Content-Transfer-Encoding');
+			
+			this.replaceHeaderValueInPart(part, 'content-type', 'multipart/mixed');
+			this.replaceHeaderValueInPart(part, 'recursive-content-type', contentType);
+			
+			part.data = [];
+
+			if (prefix)
+				part.data.push({ 
+					headers: [
+					    { key: 'Content-Type', value: contentType },
+					    { key: 'Content-Transfer-Encoding', value: contentEncoding }
+					], 
+					data: prefix 
+				});
+
+			part.data.push($.extend({ 
+				headers: [
+				    { key: 'Content-Type', value: contentType },
+				    { key: 'Content-Transfer-Encoding', value: contentEncoding }
+				], 
+				data: body
+			}, tags));
+			
+			if (postfix)
+				part.data.push({ 
+					headers: [
+					    { key: 'Content-Type', value: contentType },
+					    { key: 'Content-Transfer-Encoding', value: contentEncoding }
+					], 
+					data: postfix 
+				});
+    	},
+
+    	
+    	getPGPEncryptedContent: function(text)
+    	{
+			var re = /([\s\S]*?)(-+BEGIN PGP MESSAGE-+[\s\S]*?-+END PGP MESSAGE-+)([\s\S]*)/gm;
 			var matches = re.exec(text);
 		
 			if (matches)
-				return matches[1];
-    		
+			{
+				var prefix = matches[1].trim();
+				var encrypted = matches[2].trim();
+				var postfix = matches[3].trim();
+								
+				return [prefix, encrypted, postfix];
+			}
+			
     		return null;
     	},
     	
@@ -66,35 +114,66 @@ define([
     		var multipartEncrypteds = this.collectPartsWithContentType(parts, "multipart/encrypted");
     		_.each(multipartEncrypteds, function(multipart) {
     			if (multipart.data && multipart.data.length >= 2 && multipart.data[multipart.data.length-1].data )
-    				partsToDecrypt.push( { part: multipart, block: multipart.data[multipart.data.length-1].data } );
-    		});
+    			{
+        			var encrypted = multipart.data[multipart.data.length-1];
+    				partsToDecrypt.push( { part: multipart, block:this.getDecodedPart(encrypted) } );
+    			}
+    		}, this);
     		
     		var textParts = this.collectPartsWithContentType(parts, "text/plain");
     		_.each(textParts, function(textPart) {
-    			var pgpBlock = that.getPGPEncryptedBlockIfAny(textPart.data);
+    			var pgpBlock = this.getPGPEncryptedContent(this.getDecodedPart(textPart));
     			if (pgpBlock)
-    				partsToDecrypt.push({ part: textPart, block: pgpBlock });
-    		});
+    				partsToDecrypt.push({ part: textPart, block: pgpBlock[1], isInline:true });
+    		}, this);
 	
+    		var htmlParts = this.collectPartsWithContentType(parts, "text/html");
+    		_.each(htmlParts, function(htmlPart) {
+    			var pgpBlock = this.getPGPEncryptedContent(Util.toText(this.getDecodedPart(htmlPart)));
+    			if (pgpBlock)
+    				partsToDecrypt.push({ part: htmlPart, block: pgpBlock[1], isInline:true });
+    		}, this);
 			return partsToDecrypt;
     	},
     	
     	decryptParts: function(callbacks)
     	{
+    		var that = this;
     		var partsToDecrypt = this.collectPartsToDecrypt();
     		
     		var onAllDecrypted = _.after(partsToDecrypt.length+1, function() {
     			
     			_.each (partsToDecrypt, function (partToDecrypt) {
+    				
     				var part = partToDecrypt.part;
     				if (part.decryptedBlock)
     				{
-	    				var mime = new Mime();
-						var decryptedParts = mime.processMessage(part.decryptedBlock);
-						part.data = decryptedParts;
-						part.decrypted = true;
+    					if (partToDecrypt.isInline)
+    					{
+    						// do *not* do the content decoding, because each part should do its own
+    						// (i think)
+    						var contentTriple = this.getPGPEncryptedContent(part.data);
+    						contentTriple[1] = part.decryptedBlock;
+
+    						this.replacePartDataWithContentTriple(
+    							part, 
+    							contentTriple, 
+    							{ decrypted:true }
+    						);
+
+    						delete part.decrypted;
+    					}
+    					else
+    					{
+							this.replaceHeaderValueInPart(part, 'content-type', 'multipart/mixed');
+
+							var mime = new Mime();
+							var decryptedParts = mime.processMessage(part.decryptedBlock);
+							part.data = decryptedParts;
+							part.decrypted = true;
+    					}
     				}
-    			});
+    			}, that);
 
     			callbacks.success();
     		});
@@ -181,12 +260,12 @@ define([
     		_.each(textParts, function(textPart) {
     			var pgpBlock = that.getPGPSignedBlockIfAny(textPart.data);
     			if (pgpBlock)
-    				partsToCheck.push({ part: textPart, block: pgpBlock, shouldReplace: true });
+    				partsToCheck.push({ part: textPart, block: pgpBlock, isInline: true });
     		});
 	
 			return partsToCheck;
     	},
-
+    	
     	processSignatures: function(callbacks)
     	{
     		var that = this;
@@ -209,39 +288,18 @@ define([
     				{
     					// take out the part which we should read
     					// the signatureVerified icon will appear
-    					if (partToCheck.shouldReplace)
+    					if (partToCheck.isInline)
     					{
-    						var content = that.getPGPSignedContent(part.data);
-							var prefix = content[0];
-							var signed = content[1];
-							var postfix = content[2];
+    						this.replacePartDataWithContentTriple(
+    							part, 
+    							this.getPGPSignedContent(part.data), 
+    							{ signatureVerified:true }
+    						);
 
-							var contentType = that.getHeaderValueInPart(part, 'content-type');
-							that.replaceHeaderValueInPart(part, 'content-type', 'multipart/mixed');
-    						part.data = [];
-
-    						if (prefix)
-								part.data.push({ 
-									headers: [{ key: 'content-type', value: contentType }], 
-									data: prefix 
-								});
-
-    						part.data.push({ 
-    							headers: [{ key: 'content-type', value: contentType }], 
-    							data: signed,
-    							signatureVerified:true
-    						});
-    						
-    						if (postfix)
-								part.data.push({ 
-									headers: [{ key: 'content-type', value: contentType }], 
-									data: postfix 
-								});
-    						
     						delete part.signatureVerified;
     					}
     				}
-    			});
+    			}, that);
 
     			callbacks.success();
     		});

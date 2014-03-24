@@ -100,8 +100,8 @@ define([
     	{
     		var value = this.getHeaderValue(key, defaultValue);
     		
-			if (EncoderQpInline.is(value))
-				value = EncoderQpInline.decode(value);
+			if (EncodersInline.is(value))
+				value = EncodersInline.decode(value);
 
 			return value;
     	},
@@ -117,6 +117,17 @@ define([
     		return null;
     	},
     	
+    	getDecodedPart: function(part)
+    	{
+    		var encoding = this.getHeaderValueInPartBeforeSemicolon(part, "Content-Transfer-Encoding");
+    		if (encoding)
+    		{
+    			return Encoders.decode(part.data, encoding);
+    		}
+    		
+    		return part.data;
+    	},
+    	
     	convertToReadable: function(part, tags)
     	{
 			var contentType = this.getHeaderValueInPartBeforeSemicolon(part, 'Content-Type');
@@ -125,7 +136,7 @@ define([
 	    		if (contentType == 'text/plain')
 	    		{
 	    			var div = $("<div/>");
-	    			var text = part.data;
+	    			var text = this.getDecodedPart(part);
 	    			text = text.replace(/\r/gm, "");
 	    			div.text(text);
 	    			var result = "<pre>" + div.html() + "</pre>";
@@ -135,7 +146,7 @@ define([
 	    		else
 	    		if (contentType == 'text/html')
 	    		{
-	    			var result = Sandbox.strip(part.data);
+	    			var result = Sandbox.strip(this.getDecodedPart(part));
 	    			
 	    			return { type: 'html', content: result, tags:_.clone(tags) };    			
 	    		}
@@ -149,10 +160,10 @@ define([
     		mode = mode || "all";
     		var parentTags = tags || {};
     		
-    		var alternativeBestPart = null;
-    		var alternativeBestContentType = "0 none";
-    		
 			results = results || [];
+    		var alternativeBest = null;
+    		var alternativeBestContentType = "0 none";
+			
 			_.each(parts, function (part) {
 				// propagate the tags 
 				var tags = _.clone(parentTags);
@@ -161,47 +172,61 @@ define([
 				if (part.decrypted)
 					tags.decrypted = true;
 
+				var subresults = [];
+
 				var contentType = this.getHeaderValueInPartBeforeSemicolon(part, 'Content-Type');
 				
-
-				var readable = this.convertToReadable(part, tags);
-				if (readable)
+				if (contentType && contentType.startsWith('multipart/alternative'))
 				{
+					this.collectUserReadableContents(part.data, subresults, "alternative", tags);
+				}
+				else
+				if (contentType && contentType.startsWith('multipart'))
+				{
+					this.collectUserReadableContents(part.data, subresults, "all", tags);
+				}
+				else
+				{
+					var readable = this.convertToReadable(part, tags);
+					if (readable)
+						subresults.push(readable);
+				}
+				
+				if (mode == 'alternative')
+				{
+					var recursiveContentType = this.getHeaderValueInPartBeforeSemicolon(part, 'recursive-content-type');
+					var alternativeContentType = recursiveContentType || contentType;
+
 					var ratedContentType = "0 none";
 					
-					if (contentType == "text/plain")
+					if (alternativeContentType == "text/plain")
 						ratedContentType = "1 text/plain";
-					if (contentType == "text/html")
+					if (alternativeContentType == "text/html")
 						ratedContentType = "2 text/html";
 						
-					if (ratedContentType > alternativeBestContentType && mode == 'alternative')
+					if (ratedContentType > alternativeBestContentType)
 					{
 						alternativeBestContentType = ratedContentType;
-						alternativeBestPart = readable;
-					}
-					else
-					{
-						results.push(readable);
+						alternativeBest = subresults;
 					}
 				}
 				else
 				{
-					if (contentType && contentType.startsWith('multipart/alternative'))
-					{
-						this.collectUserReadableContents(part.data, results, "alternative", tags);
-					}
-					else
-					if (contentType && contentType.startsWith('multipart'))
-					{
-						this.collectUserReadableContents(part.data, results, "all", tags);
-					}
+					_.each(subresults, function(readable) {
+						results.push(readable);
+					});
 				}
+				
 			}, this);
 			
 			if (mode == 'alternative')
 			{
-				if (alternativeBestPart)
-					results.push(alternativeBestPart);
+				if (alternativeBest)
+				{
+					_.each(alternativeBest, function(readable) {
+						results.push(readable);
+					});
+				}
 			}
 			
 			return results;

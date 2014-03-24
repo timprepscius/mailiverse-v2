@@ -116,6 +116,7 @@ single conversation
 
 .conversation-mail-body .body-part {
 	position: relative;
+	border-bottom: 1px solid lightgrey;
 }
 
 .conversation-mail-body pre {

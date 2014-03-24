@@ -27,6 +27,24 @@ define([
 			return str.trim();
 		},
 		
+		trimChars: function(str, chars)
+		{
+			var b = 0;
+			while (b < str.length && chars.indexOf(str[b])!=-1)
+				++b;
+			
+			var e = str.length -1;
+			while (e >= b && chars.indexOf(str[e])!=-1)
+				--e;
+			
+			return str.substr(b, e-b+1);
+		},
+		
+		trimQuotes: function(str)
+		{
+			return this.trimChars(str, "'\"");
+		},
+		
 		getNameFromEmail: function(email)
 		{
 			email = email || "";
@@ -132,15 +150,26 @@ define([
 			return d.html();
 		},
 		
-		toText: function(html)
+		toText: function(html_)
 		{
 			var d = $('<div/>');
+			var html = html_;
+			html = html.replace(/\r/gm, '');
+			html = html.replace(/\n/gm, '');
+			html = html.replace(/\<[\s]*br/gmi,'\n<br');
+			html = html.replace(/\<[\s]*p/gmi,'\n\n<p');
 			d.html(html);
 			var value = d.text();
 			
+			// left over from mailiverse, not sure if we need this
 			value = value.replace(/\u00A0/g,""); // somehow weird A0 control characters are showing up
 			var lines = value.split(/\r\n|\r|\n/);	
 			return lines.join("\r\n");
+		},
+		
+		toInputValText: function(text)
+		{
+			return $('<div/>').text(text).text();
 		},
 		
 		fixTypeAheadToWorkWithCommas: function (input) {

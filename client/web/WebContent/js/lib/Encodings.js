@@ -1,24 +1,63 @@
 define([], function() {
 	
-	EncoderQpInline = {
-		is : function (str) {
-			return str && str.indexOf('=?') >= 0;
-		},
-		
-		decode: function (str) {
-			var decoded = str.replace(/=\?.*?\?=/g, function(part) {
-				var i = part.indexOf('Q?');
-				var j = part.lastIndexOf('?=');
-				if (i)
-					return EncoderQp.decode(part.substr(i+2, j-(i+2)));
+	// =?UTF-8?B?RGFuacOrbCBCb3MgKOi/nOa0iyk=?=
+	
+	EncodersInline = {
+			is : function (str) {
+				return str && str.indexOf('=?')!=-1;
+			},
+			
+			decode: function (str) {
+				//              UTF         B         BLOCK
+				var re0 = /=\?([\S]*?)\?([\S]*?)\?([\S]*?)\?=/gm;
+				var decoded = str.replace(re0, function(m0, charset, encoder, block) {
+					if (encoder == 'Q')
+						return EncoderQp.decode(block);
+					else
+					if (encoder == 'B')
+						return EncoderB64.decode(block);
+					
+					return m0;
+				});
 				
-				return EncoderQp.decode(part);
-			});
-			return decoded;
+				return decoded;
+			},
+			
+			encode: function (str) {
+				return '=?UTF-8?Q?'+ EncoderQp.encode(str) + '=?=';
+			},
+		};
+	
+	Encoders = {
+		decode: function(str, contentEncoding) {
+			if (contentEncoding.toLowerCase().startsWith('quoted-printable'))
+				return EncoderQp.decode(str);
+
+			if (contentEncoding.toLowerCase().startsWith('base64'))
+				return EncoderB64.decode(str);
+			
+			return str;
+		},
+		encode: function(str, contentEncoding) {
+			if (contentEncoding.toLowerCase().startsWith('quoted-printable'))
+				return EncoderQp.encode(str);
+
+			if (contentEncoding.toLowerCase().startsWith('base64'))
+				return EncoderB64.encode(str);
+			
+			return str;
+		},
+	};
+	
+	EncoderB64 = {
+		decode: function(str)
+		{
+			return Utf.toString(Base64.decode(str));
 		},
 		
-		encode: function (str) {
-			return EncoderQp.encode(str);
+		encode: function(str)
+		{
+			return Base64.encode(Utf.toBytes(str));
 		},
 	};
 	
@@ -42,15 +81,23 @@ define([], function() {
 		  // *     example 4: quoted_printable_decode("Lorem ipsum dolor sit amet=23, consectetur adipisicing elit");
 		  // *     returns 4: 'Lorem ipsum dolor sit amet#, consectetur adipisicing elit'
 		  // Removes softline breaks
-		  var RFC2045Decode1 = /=\r\n/gm,
+		  var
+		  	TJP_NoSlashR_IsMessingThingsUp = /\r/gm,
+		  	RFC2045Decode1 = /=\n/gm,
 		    // Decodes all equal signs followed by two hex digits
 		    RFC2045Decode2IN = /=([0-9A-F]{2})/gim,
 		    // the RFC states against decoding lower case encodings, but following apparent PHP behavior
 		    // RFC2045Decode2IN = /=([0-9A-F]{2})/gm,
 		    RFC2045Decode2OUT = function (sMatch, sHex) {
 		      return String.fromCharCode(parseInt(sHex, 16));
-		    };
-		  return str.replace(RFC2045Decode1, '').replace(RFC2045Decode2IN, RFC2045Decode2OUT);
+		    },
+		    TJP_PutSlashRBack = /\n/gm;
+		    
+		  return str
+	  		.replace(TJP_NoSlashR_IsMessingThingsUp, '')
+	  		.replace(RFC2045Decode1, '')
+	  		.replace(RFC2045Decode2IN, RFC2045Decode2OUT)
+	  		.replace(TJP_PutSlashRBack, '\r\n');
 		},
 		encode : function(str) {
 		  //  discuss at: http://phpjs.org/functions/quoted_printable_encode/

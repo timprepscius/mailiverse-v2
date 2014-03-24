@@ -16,9 +16,10 @@ define(['jquery'], function(jQuery) {
 
                         for (var item in temp) {
                             if (temp[item].indexOf("boundary") !== -1) {
-                                var result = $.trim(temp[item]).split('"');
+                                var result = $.trim(temp[item]).split('=');
+                                result = Util.trimQuotes(result[1]);
 
-                                return result[1];
+                                return result;
                             }
                         }
                     }
