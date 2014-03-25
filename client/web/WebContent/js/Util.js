@@ -152,6 +152,9 @@ define([
 		
 		toText: function(html_)
 		{
+			if (html_ == null)
+				return null;
+			
 			var d = $('<div/>');
 			var html = html_;
 			html = html.replace(/\r/gm, '');
