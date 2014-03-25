@@ -133,6 +133,7 @@ define([
     	url: function () { return Constants.REST + 'Mails?field=' +this.field + "&id="+ this.id; },
         model: Mail,
     	exposedFields: MailExposedFields,
+    	comparator: "date", 
     	
         initialize: function(objects, options)
         {
