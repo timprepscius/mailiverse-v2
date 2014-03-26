@@ -3,10 +3,11 @@ define([
         'underscore',
         'backbone',
         'text!templates/mailContentTemplate.mime',
+        'text!templates/mailContentTextOnlyTemplate.mime',
         'text!templates/signedMailTemplate.mime',
 
         'modelBinder',
-        ], function ($,_,Backbone,mailContentTemplate, signedMailTemplate) {
+        ], function ($,_,Backbone,mailContentTemplate, mailContentTextOnlyTemplate, signedMailTemplate) {
 
 	MailSender = Backbone.View.extend({
 
@@ -23,60 +24,101 @@ define([
 	    	mail.recomputeParent();
 			mail.save();
 			
-			var that = this;
-			appSingleton.user.getKeyRing().getKeysForAllAddressesPGPLookupFirst(
-				mail.getRecipientAddresses(), 
-				{
-					success: function (addressesToKeys)
+			if (!mail.get('sendEncrypt'))
+			{
+				return this.sendPlainText(mail, callbacks);
+			}
+			else
+			{
+				var that = this;
+				appSingleton.user.getKeyRing().getKeysForAllAddressesPGPLookupFirst(
+					mail.getRecipientAddresses(), 
 					{
-						that.sendEncrypted(addressesToKeys, mail, callbacks);
-					},
-					failure: function ()
-					{
-						that.sendPlainText(mail, callbacks);
-					},
-				}
-			);
+						success: function (addressesToKeys)
+						{
+							that.sendEncrypted(addressesToKeys, mail, callbacks);
+						},
+						failure: function ()
+						{
+							that.sendPlainText(mail, callbacks);
+						},
+					}
+				);
+			}
+		},
+		
+		createMailContent: function(mail)
+		{
+		    var html = mail.getHtml();
+		    var text = mail.getOrSynthesizeText();
+		    
+		    var encodedHtml = Encoders.encode(html);
+		    var encodedText = Encoders.encode(text);
+		    
+		    var mailContent = 
+		    	mail.get('sendTextOnly') ?
+			    	_.template(mailContentTextOnlyTemplate, { 
+			    		contentBoundary: Util.guid(), 
+			    		text: encodedText.block, 
+			    		textEncoding: encodedText.encoding
+			    	}) :
+		    		_.template(mailContentTemplate, { 
+		    			contentBoundary: Util.guid(), 
+			    		text: encodedText.block, 
+			    		textEncoding: encodedText.encoding,
+		    			html: encodedHtml.block, 
+		    			htmlEncoding: encodedHtml.encoding 
+		    		});
+			
+			return mailContent;
 		},
 		
 		sendPlainText: function(mail, callbacks)
 		{
 			var that = this;
 			
-		    var html = mail.getHtml();
-		    var text = mail.getOrSynthesizeText();
-
-		    var mailContent = 
-		    	_.template(mailContentTemplate, { contentBoundary: Util.guid(), text: text, html: html });
-
-		    Crypto.signPGP(mailContent, {
-		    	success: function(signedContent) {
-
-		    		var signature = Util.getSignatureFromSignedContent(signedContent);
-		    		var signatureHashType = Util.getSignatureHashTypeFromSignedContent(signedContent);
-		    		
-				    var multiPart = 
-				    	_.template(
-				    		signedMailTemplate, 
-				    		{ mailBoundary: Util.guid(), mailContent: mailContent, signature: signature, signatureHashType: signatureHashType }
-				    	);
-
-				    var data = {
-				    	to: Util.splitAndTrim(mail.get('to'), ','),
-				    	cc: Util.splitAndTrim(mail.get('cc'), ','),
-				    	bcc: Util.splitAndTrim(mail.get('bcc'), ','),
-				    	subject: mail.get('subject'),
-				    	content: multiPart,
-				    	messageId: mail.get('message-id'),
-				    	password: appSingleton.login.get('verification'),
-				    	fromName: appSingleton.user.get('name'),
-				    	version: Constants.VERSION,
-				    };
-				    
-				    that.doSend(mail, data, callbacks);
-		    	},
-		    	failure: callbacks.failure
-		    });
+			var mailContent = this.createMailContent(mail);
+			
+			if (mail.get('sendSign'))
+			{
+			    Crypto.signPGP(mailContent, {
+			    	success: function(signedContent) {
+	
+			    		var signature = Util.getSignatureFromSignedContent(signedContent);
+			    		var signatureHashType = Util.getSignatureHashTypeFromSignedContent(signedContent);
+			    		
+					    var multiPart = 
+					    	_.template(
+					    		signedMailTemplate, 
+					    		{ mailBoundary: Util.guid(), mailContent: mailContent, signature: signature, signatureHashType: signatureHashType }
+					    	);
+	
+					    that.sendPlainTextDo (mail, multiPart, callbacks);
+			    	},
+			    	failure: callbacks.failure
+			    });
+			}
+			else
+			{
+				this.sendPlainTextDo(mail, mailContent, callbacks);
+			}
+		},
+		
+		sendPlainTextDo: function(mail, mailContent, callbacks)
+		{
+		    var data = {
+		    	to: Util.splitAndTrim(mail.get('to'), ','),
+		    	cc: Util.splitAndTrim(mail.get('cc'), ','),
+		    	bcc: Util.splitAndTrim(mail.get('bcc'), ','),
+		    	subject: mail.get('subject'),
+		    	content: mailContent,
+		    	messageId: mail.get('message-id'),
+		    	password: appSingleton.login.get('verification'),
+		    	fromName: appSingleton.user.get('name'),
+		    	version: Constants.VERSION,
+		    };
+		    
+		    this.doSend(mail, data, callbacks);
 		},
 		
 		sendEncrypted: function(addressesToPublicKeys, mail, callbacks)
@@ -91,12 +133,7 @@ define([
 		    pubKeys.push(publicKey);
 		    pubKeys = _.uniq(pubKeys);
 		    
-		    var subject = mail.get('subject');
-		    var html = mail.getHtml();
-		    var text = mail.getOrSynthesizeText();
-		    
-		    var mailContent = 
-		    	_.template(mailContentTemplate, { contentBoundary: Util.guid(), text: text, html: html });
+			var mailContent = this.createMailContent(mail);
 		    
 			Crypto.encryptPGP(pubKeys, mailContent, {
 		    	
@@ -105,7 +142,7 @@ define([
 				    	to: Util.splitAndTrim(mail.get('to'), ','),
 				    	cc: Util.splitAndTrim(mail.get('cc'), ','),
 				    	bcc: Util.splitAndTrim(mail.get('bcc'), ','),
-				    	subject: subject,
+				    	subject: mail.get('subject'),
 				    	encryptedContent: encryptedMultiPart,
 				    	version: Constants.VERSION,
 				    	messageId: mail.get('message-id'),

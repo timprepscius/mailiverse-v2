@@ -174,6 +174,23 @@ compose
 	margin-top:10px;	
 }
 
+.below-textarea .disable {
+	opacity: 0.2;
+}
+
+.below-textarea .send.btn {
+	margin-right:20px;
+}
+
+.below-textarea .label input {
+	margin-right: 5px;	
+}
+
+.below-textarea label {
+	display: inline-block;
+	line-height: 28px;
+}
+
 .conversation-compose-header .tt-suggestion .keystatus-success {
 	color: green;
 }
@@ -205,16 +222,20 @@ compose
 	display: block;
 }
 
-.conversation-compose-body .send-lock-marker {
-	display: none;
+.conversation-compose-body .send-encrypt-marker {
+	color: green;
 }
 
-.conversation-compose-body .send-lock-marker.pgp-verified {
+.conversation-compose-body .send-sign-marker {
+	color: green;
+}
+
+.conversation-compose-body .send-encrypt-marker.pgp-verified {
 	color: green;
 	display: inline-block;
 }
 
-.conversation-compose-body .send-lock-marker.pgp-keys {
+.conversation-compose-body .send-encrypt-marker.pgp-keys {
 	color: orange;
 	display: inline-block;
 }

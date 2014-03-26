@@ -131,7 +131,7 @@ public class LocalRelay
         if (content != null)
         {
         	MimeMessage parsed = new MimeMessage(Session.getInstance(new Properties()), new ByteArrayInputStream(content.getBytes()));
-        	message.setContent((Multipart) parsed.getContent());
+        	message.setContent(parsed.getContent(), parsed.getContentType());
         }
         else
 		if (encryptedContent != null)

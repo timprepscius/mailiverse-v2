@@ -39,13 +39,46 @@ define([], function() {
 			return str;
 		},
 		encode: function(str, contentEncoding) {
-			if (contentEncoding.toLowerCase().startsWith('quoted-printable'))
-				return EncoderQp.encode(str);
-
-			if (contentEncoding.toLowerCase().startsWith('base64'))
-				return EncoderB64.encode(str);
+			if (!contentEncoding)
+			{
+				var numCharsNeedingEncoding = 0;
+				_.each(str, function(c) {
+					if (c.charCodeAt(0) >= (1 << 8))
+						numCharsNeedingEncoding++;
+				});
+				
+				if (numCharsNeedingEncoding > str.length/2)
+				{
+					contentEncoding = 'base64';
+				}
+				else
+				if (numCharsNeedingEncoding > 0)
+				{
+					contentEncoding = 'quoted-printable';
+				}
+				else
+				{
+					contentEncoding = '7bit';
+				}
+			}
 			
-			return str;
+			var results = {};
+			results.encoding = contentEncoding;
+			
+			if (contentEncoding.toLowerCase().startsWith('quoted-printable'))
+				results.block = EncoderQp.encode(str);
+			else
+			if (contentEncoding.toLowerCase().startsWith('base64'))
+				results.block = EncoderB64.encode(str);
+			else
+			if (contentEncoding.toLowerCase().startsWith('7bit'))
+				results.block = str;
+			else
+			{
+				alert('woah');
+			}
+			
+			return results;
 		},
 	};
 	

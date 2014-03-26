@@ -28,10 +28,29 @@
 <div class="conversation-compose-body">
 	<textarea class="textarea" />
 	<div class="line below-textarea">
+	<div class="row">
+	<div class="input-group">
 		<button class="save btn btn-primary">Save</button>
 		<button class="send btn">Send</button>
-	  	<span class="glyphicon glyphicon-lock send-lock-marker" />
+
+	    <label class="label label-default send-encrypt" name="sendEncrypt">
+	      <input type="checkbox" value="encrypt" <%- model.get('sendEncrypt') ? 'checked' : '' %>>Encrypt
+		  <span class="glyphicon glyphicon-lock send-encrypt-marker" />
+	    </label>
+		
+	    <label class="label label-default send-sign">
+	      <input type="checkbox" value="sign" <%- model.get('sendSign') ? 'checked' : '' %>>Sign
+		  <span class="glyphicon glyphicon-certificate send-sign-marker" />
+	    </label>
+
+	    <label class="label label-default send-text-only">
+	      <input type="checkbox" value="textOnly" <%- model.get('sendTextOnly') ? 'checked' : '' %>>Text only
+		  <span class="glyphicon glyphicon-book send-text-marker" />
+	    </label>
+
 		<button class="discard btn btn-warning">Discard</button>
+	</div>
+	</div>
 	</div>	
 </div>
 </td>

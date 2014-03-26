@@ -88,6 +88,9 @@ define([
 				}, that);
 			} );
 
+			this.$('.send-encrypt input').attr('checked', this.model.get('sendEncrypt'));
+			this.$('.send-sign input').attr('checked', this.model.get('sendSign'));
+			this.$('.send-text-only input').attr('checked', this.model.get('sendTextOnly'));
 			
 			this.ckeditor = this.$('.textarea').ckeditor();
 			var body = this.model.getHtml();
@@ -113,8 +116,8 @@ define([
 			
 			function callback(state) {
 				var div = $(input).parents('.input-group');
-				Util.addOrRemoveClass(div, 'pgp-verified', state=='verified' && addresses.length);
-				Util.addOrRemoveClass(div, 'pgp-keys', state=='keys' && addresses.length);
+				Util.addOrRemoveClass(div, 'pgp-verified', state=='verified' && addresses.length>0);
+				Util.addOrRemoveClass(div, 'pgp-keys', state=='keys' && addresses.length>0);
 				that.locks[input.name] = addresses.length ? state : 'none';
 				that.updateSendLock();
 			};
@@ -137,8 +140,11 @@ define([
 		{
 			var allVerified = _.every(_.values(this.locks), function(x) { return x=='verified' || x=='none'; });
 			var allKeys = _.every(_.values(this.locks), function(x) { return x != 'failure'; });
-			Util.addOrRemoveClass(this.$('.send-lock-marker'), 'pgp-verified', allVerified);
-			Util.addOrRemoveClass(this.$('.send-lock-marker'), 'pgp-keys', allKeys && !allVerified);
+			Util.addOrRemoveClass(this.$('.send-encrypt-marker'), 'pgp-verified', allVerified);
+			Util.addOrRemoveClass(this.$('.send-encrypt-marker'), 'pgp-keys', allKeys && !allVerified);
+
+			Util.addOrRemoveClass(this.$('.send-encrypt'), 'disable', !allKeys);
+			this.$('.send-encrypt input').attr('disabled', !allKeys);
 		},
 
 		onSend: function ()
@@ -155,6 +161,10 @@ define([
 			this.model.set('content', [
 			 	{ type: 'html', content: val, tags:{}}
 			 ]);
+			
+			this.model.set('sendEncrypt', this.$('.send-encrypt input').is(':checked'));
+			this.model.set('sendSign', this.$('.send-sign input').is(':checked'));
+			this.model.set('sendTextOnly', this.$('.send-text-only input').is(':checked'));
 			
 			this.model.set('to', this.$('.to input').not(':disabled').val());
 			this.model.set('cc', this.$('.cc input').not(':disabled').val());

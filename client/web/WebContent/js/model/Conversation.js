@@ -39,6 +39,9 @@ define([
     		var mail = new Mail({conversation: this.id, syncId:Util.guid(), date:Util.toDateSerializable()});
     		mail.onCreate();
     		mail.assignNewId();
+    		mail.set('sendEncrypt', true);
+    		mail.set('sendSign', true);
+    		mail.set('sendTextOnly', false);
 
     		mail.set('draft', true);
     		
