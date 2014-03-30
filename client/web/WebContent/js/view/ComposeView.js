@@ -50,7 +50,8 @@ define([
 				// at the moment, sick of reading through typeahead code
 				typeaheadContactsLocal = _.map(appSingleton.user.getContacts().models,
 					function (model) {
-						return { email: model.get('email'), status: model.getKeyStatus() };
+//						return { email: model.get('email'), status: model.getKeyStatus() };
+					return { email: model.get('email') };
 					}
 				);
 				
@@ -77,7 +78,8 @@ define([
 					  templates: {
 						    suggestion: function (model) {
 						      return '<p><span class="email">' + Util.toHtml(model.email) + '</span>' + 
-						      '<span class="glyphicon glyphicon-lock pull-right keystatus-' + model.status + '"></span></p>';
+						      ''
+//						      '<span class="glyphicon glyphicon-lock pull-right keystatus-' + model.status + '"></span></p>';
 						    }
 						  }				  
 					});
@@ -88,8 +90,8 @@ define([
 				}, that);
 			} );
 
-			this.$('.send-encrypt input').attr('checked', this.model.get('sendEncrypt'));
-			this.$('.send-sign input').attr('checked', this.model.get('sendSign'));
+			this.$('.send-encrypt input').attr('checked', this.model.get('sendEncrypted'));
+			this.$('.send-sign input').attr('checked', this.model.get('sendSigned'));
 			this.$('.send-text-only input').attr('checked', this.model.get('sendTextOnly'));
 			
 			this.ckeditor = this.$('.textarea').ckeditor();
@@ -144,6 +146,8 @@ define([
 			Util.addOrRemoveClass(this.$('.send-encrypt-marker'), 'pgp-keys', allKeys && !allVerified);
 
 			Util.addOrRemoveClass(this.$('.send-encrypt'), 'disable', !allKeys);
+
+			this.model.set('canSendEncrypted', allKeys);
 			this.$('.send-encrypt input').attr('disabled', !allKeys);
 		},
 
@@ -162,8 +166,8 @@ define([
 			 	{ type: 'html', content: val, tags:{}}
 			 ]);
 			
-			this.model.set('sendEncrypt', this.$('.send-encrypt input').is(':checked'));
-			this.model.set('sendSign', this.$('.send-sign input').is(':checked'));
+			this.model.set('sendEncrypted', this.$('.send-encrypt input').is(':checked'));
+			this.model.set('sendSigned', this.$('.send-sign input').is(':checked'));
 			this.model.set('sendTextOnly', this.$('.send-text-only input').is(':checked'));
 			
 			this.model.set('to', this.$('.to input').not(':disabled').val());

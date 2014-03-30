@@ -96,7 +96,7 @@ define([
     		return this.getHeaderValueInPart(part, key, defaultValue);
     	},
     	
-    	getHeaderValueQPDecode: function(key, defaultValue)
+    	getHeaderValueDecode: function(key, defaultValue)
     	{
     		var value = this.getHeaderValue(key, defaultValue);
     		

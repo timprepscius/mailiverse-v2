@@ -5,10 +5,18 @@ Async =
 	crypt_seedRandom: function(callback) { Dispatch.dispatch('crypt_seedRandom', arguments); },
 
 	pgp_genKeyPair: function(callback) { Dispatch.dispatch('pgp_genKeyPair', arguments); },
-	pgp_encrypt: function(callback) { Dispatch.dispatch('pgp_encrypt', arguments); },
-	pgp_decrypt: function(callback) { Dispatch.dispatch('pgp_decrypt', arguments); },
+	
+	pgp_encrypt: function(callback, key, bytes64) { 
+		Dispatch.dispatch('pgp_encrypt_serialized_key', arguments); 
+	},
+
+	pgp_decrypt: function(callback, key, bytes64) { 
+		Dispatch.dispatch('pgp_decrypt_serialized_key', arguments); 
+	},
+	
 	pgp_verify: function(callbacks) { Dispatch.dispatch('pgp_verify', arguments); },
 	pgp_sign: function(callbacks) { Dispatch.dispatch('pgp_sign', arguments); },
+	pgp_info: function(callbacks) { Dispatch.dispatch('pgp_info', arguments); },
 	
 	pbe_genKey: function(callback) { Dispatch.dispatch('pbe_genKey', arguments); },
 
@@ -37,14 +45,6 @@ Async =
 			Dispatch.dispatch('rsa_decrypt_serialized_key', [callback, hex2b64(key.genPKCS1()), bytes64]); 
 		else
 			Dispatch.dispatch('rsa_decrypt_serialized_key', [callback, key.serialize(), bytes64]); 
-	},
-	
-	pgp_encrypt: function(callback, key, bytes64) { 
-		Dispatch.dispatch('pgp_encrypt_serialized_key', arguments); 
-	},
-
-	pgp_decrypt: function(callback, key, bytes64) { 
-		Dispatch.dispatch('pgp_decrypt_serialized_key', arguments); 
 	},
 	
 	srp_dispatch: function(cmd, callback, state, arg) {

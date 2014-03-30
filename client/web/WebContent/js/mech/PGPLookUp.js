@@ -18,12 +18,20 @@ define([
 					
 					keyFinder.syncedOnce(function() {
 						var key = keyFinder.key || appSingleton.user.getKeyRing().createKey(address);
-						if (publicKey != key.get('publicKey'))
+						
+						// @TODO this should come from the key id from openpgp
+						var keyId = Crypto.cryptoHash64(publicKey);
+						
+						if (keyId != key.get('publicKeyId'))
 						{
 							key.set('publicKeyChanged', Util.toDateSerializable());
-							key.set('publicKeyOnServer', server);
-							key.set('publicKey', publicKey);
+							key.set('publicKeySource', server);
+							key.set('publicKeyId', keyId);
 							key.save();
+							
+							var crypto = appSingleton.user.getKeyRing().createKeyCrypto(address); 
+							crypto.set('publicKey', publicKey);
+							crypto.save();
 						}
 						
 						callbacks.success(key);

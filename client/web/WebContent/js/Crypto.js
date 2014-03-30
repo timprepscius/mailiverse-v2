@@ -4,6 +4,7 @@ define([
  	'openpgp',
 	'async',
 	'base64',
+	'base16',
 	'sjcl',
 	'aes',
 	'js/crypt/Utf',
@@ -35,8 +36,8 @@ define([
 			Async.pgp_decrypt(callbacks, appSingleton.login.get('privateKeys').pgp, data);
 		},
 		
-		encryptPGP: function (publicKeys, data, callbacks) {
-			Async.pgp_encrypt(callbacks, appSingleton.login.get('privateKeys').pgp, publicKeys, data);
+		encryptPGP: function (publicKeys, data, shouldSign, callbacks) {
+			Async.pgp_encrypt(callbacks, appSingleton.login.get('privateKeys').pgp, publicKeys, data, shouldSign);
 		},
 		
 		signPGP: function (data, callbacks) {
@@ -45,6 +46,10 @@ define([
 
 		verifyPGP: function (pgp, data, callbacks) {
 			Async.pgp_verify(callbacks, pgp, data);
+		},
+		
+		infoPGP: function (pgp, callbacks) {
+			Async.pgp_info(callbacks, pgp);
 		},
 		
 		generatePBEs: function(password, callbacks) {
@@ -110,19 +115,36 @@ define([
 			);
 		},
 		
-		cryptoHash64: function(aes, string) {
-			return Support.sha256_hash(Base64.encode(Utf.toBytes(aes + "!" + string)));
+		
+		cryptoHash64: function(aes, block) {
+			// @TODO get rid of this, just a hack for debugging
+			aes = aes || "none";
+			return Support.sha256_hash(Base64.encode(Utf.toBytes(aes + "!" + block)));
 		},
 		
-		cryptoHash16: function(aes, string) {
-			return Base16.encode(Base64.decode(this.cryptoHash64(aes,string)));
+		cryptoHash16: function(aes, block) {
+			return Base16.encode(Base64.decode(this.cryptoHash64(aes,block)));
 		},
 		
-		simpleHash64: function(string) {
-			return Support.sha256_hash(Base64.encode(Utf.toBytes(string)));
+/*		
+		nullIV: Base64.encode(Base16.decode("00000000")),
+		
+		cryptoHash64: function(aes, block) {
+			return Support.aes_encrypt(aes, this.nullIV, block);
 		},
-		simpleHash16: function(string) {
-			return Base16.encode(Base64.decode(this.simpleHash64(string)));
+		
+		cryptoHash16: function(aes, block) {
+			return Base16.encode(Base64.decode(this.cryptoHash64(aes,block)));
 		},
+		
+		cryptoDehash64: function(aes, block) {
+			return Support.aes_decrypt(aes, this.nullIV, block);
+		},
+		
+		cryptoDehash16: function(aes, block) {
+			return this.cryptoDehash64(aes, Base64.encode(Base16.decode(block)));
+		},
+		
+*/
 	} ;
 });

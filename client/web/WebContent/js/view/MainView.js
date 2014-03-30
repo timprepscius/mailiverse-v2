@@ -12,6 +12,7 @@ define([
         events: {
         	'click #main-compose-button': 'loadCompose',
         	'click #main-profile': 'showProfile',
+        	'click #main-keys': 'showKeys',
         },
         
         currentView: null,
@@ -90,6 +91,12 @@ define([
         {
         	var profile = new ProfileView({ el: this.$('#main-modal'), model:this.user});
         	profile.render();
+        },
+        
+        showKeys: function()
+        {
+        	var keys = new KeysView({ el: this.$('#main-modal'), model:this.user});
+        	keys.render();
         },
         
         closeCurrentView: function() {

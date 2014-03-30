@@ -10,7 +10,7 @@ define([
 			var that = this;
 			var address = Util.getAddressFromEmail(author);
 			
-			appSingleton.user.getKeyRing().getKeysForAllAddressesPGPLookupFirst([address], {
+			appSingleton.user.getKeyRing().getKeyCryptosForKeys([address], {
 				success: function(addressesToKeys) {
 					var key = addressesToKeys[address];
 					
@@ -36,37 +36,32 @@ define([
 					}
 					else
 					{
-						that.onVerifyFailure(contact, key);
+						that.onVerifyFailure(originalId, contact, key);
 						callbacks.failure();
 					}
 				},
 				failure: function () {
-					that.onVerifyFailure(contact, key);
+					that.onVerifyFailure(originalId, contact, key);
 					callbacks.failure();
 				},
 			});
 		},
 		
-		onVerifySuccess : function(originalId, contact, key)
+		onVerifySuccess : function(originalId, key)
 		{
 			key.set('verified', 'success');
 			key.set('lastVerificationDate', Util.toDateSerializable());
 			key.set('lastVerifiedMail', originalId);
 			
-			contact.set('keyStatus', { status: 'success', date: Util.toDateSerializable() });
-
-			contact.save();
 			key.save();
 		},
 		
-		onVerifyFailure: function (contact, key)
+		onVerifyFailure: function (originalId, key)
 		{
 			key.set('verified', 'failure');
 			key.set('lastVerificationDate', Util.toDateSerializable());
+			key.set('lastVerifiedMail', originalId);
 			
-			contact.set('keyStatus', { status: 'failure', date: Util.toDateSerializable() });
-
-			contact.save();
 			key.save();
 		},
 	};

@@ -122,6 +122,8 @@ single conversation
 .conversation-mail-body pre {
 	border: none;	
 	line-height: normal;
+	word-wrap: soft; 
+	white-space: pre-wrap;
 }
 
 .top-right {
@@ -249,4 +251,17 @@ compose
 #profile-modal .profile-public-key {
 	height: 200px;
 	overflow-y: scroll;
+}
+
+/****************************************************/
+
+.key-input {
+	width: 100%;
+	height: 100px;
+}
+
+.key-list {
+	height:200px;
+	overflow: scroll;
+	
 }

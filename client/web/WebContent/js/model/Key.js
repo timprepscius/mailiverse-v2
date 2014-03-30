@@ -4,9 +4,22 @@ define([
 	'backbone',
 ], function ($,_,Backbone) {
 
-	KeyExposedFields = [ 'syncId', 'syncOwner', 'syncVersion' ];
+	KeyCryptoExposedFields = [ 'syncId', 'syncOwner', 'syncVersion' ];
 	
-    Key = Backbone.Model.extend({
+    KeyCrypto = Backbone.Model.extend({
+    	idAttribute: "syncId",
+    	urlRoot: Constants.REST + 'KeyCrypto',
+    	exposedFields: KeyCryptoExposedFields,
+    	
+    	// 	attributes:
+    	// 	{
+    	//		publicKey: string
+    	// 	}
+    });
+
+	KeyExposedFields = [ 'syncId', 'syncOwner', 'syncVersion' ];
+
+	Key = Backbone.Model.extend({
     	idAttribute: "syncId",
     	urlRoot: Constants.REST + 'Key',
     	exposedFields: KeyExposedFields,
@@ -21,13 +34,13 @@ define([
     	// 	}
     });
     
-    
 	KeyFinder = Backbone.Model.extend({
 		key: null,
     });
-	
     
     Keys = Backbone.Collection.extend({
+    	url: function () { return Constants.REST + 'Keys'; },
+    	
         model: Key,
         exposedFields: KeyExposedFields,
         user: null,
@@ -39,7 +52,7 @@ define([
         
         getKey: function(address)
         {
-        	var addressHash = Crypto.cryptoHash16(appSingleton.login.get("privateKeys").aes, address);
+        	var addressHash = Crypto.cryptoHash16(appSingleton.login.get("privateKeys").hashKey, address);
         	
         	var model = this.get(addressHash);
         	if (!model)
@@ -54,12 +67,12 @@ define([
         
         createKey: function(address)
         {
-        	var addressHash = Crypto.cryptoHash16(appSingleton.login.get("privateKeys").aes, address);
+        	var addressHash = Crypto.cryptoHash16(appSingleton.login.get("privateKeys").hashKey, address);
         	
         	var model = this.get(addressHash);
         	if (!model)
         	{
-        		model = new this.model({ syncId: addressHash }); 
+        		model = new this.model({ syncId: addressHash, address: address }); 
         		model.onCreate();
         		this.add(model);
         	}
@@ -67,10 +80,17 @@ define([
         	return model;
         },
 
+        createKeyCrypto: function(address)
+        {
+        	var addressHash = Crypto.cryptoHash16(appSingleton.login.get("privateKeys").hashKey, address);
+        	var model = new KeyCrypto({ syncId: addressHash });
+        	return model;
+        },
+
         findKey: function(address)
         {
         	var keyFinder = new KeyFinder();
-        	var addressHash = Crypto.cryptoHash16(appSingleton.login.get("privateKeys").aes, address);
+        	var addressHash = Crypto.cryptoHash16(appSingleton.login.get("privateKeys").hashKey, address);
         	var model = this.get(addressHash);
         	if (!model || !model.isSyncedOnce())
         	{
@@ -95,6 +115,39 @@ define([
         	}
         	
     		return keyFinder;
+        },
+        
+        getKeyCryptosForKeys: function(addresses, callbacks)
+        {
+        	var addressesToCryptos = {};
+        	
+        	var keyFailure = false;
+        	var onAllKeys = function() {
+        		if (keyFailure)
+        			callbacks.failure();
+        		else
+        			callbacks.success(addressesToCryptos);
+        	};
+        	
+			var afterAllKeys = _.after(addresses.length+1, onAllKeys);
+			_.each (addresses, function(address) {
+        		var addressHash = Crypto.cryptoHash16(appSingleton.login.get("privateKeys").hashKey, address);
+
+        		var crypto = new KeyCrypto({ syncId: addressHash });
+        		crypto.fetch({
+        			success: function() {
+        				addressesToCryptos[address] = crypto;
+        				onAllKeys();
+        			},
+        			error: function() {
+        				keyFailure = true;
+        				onAllKeys();
+        			}
+        		});
+			});
+			
+			afterAllKeys();
+        			
         },
         
     	getKeysForAllAddressesCachedFirst: function(addresses, callbacks)
@@ -122,7 +175,10 @@ define([
 				key.on('success', afterAllKeys);
 				key.on('failure', function() {
 					PGPLookUp.lookup(address, {
-						success: afterAllKeys,
+						success: function (foundKey) {
+							key.key = foundKey;
+							afterAllKeys();
+						},
 						failure: function () {
 							findKeyFailure = true;
 							afterAllKeys();

@@ -70,6 +70,12 @@ pgp_encrypt: function(privateKey, publicKey, bytes64)
 	return Base64.encode(window.openpgp.write_encrypted_message(key,Base64.decode(bytes64)));
 },
 
+pgp_info: function(keyS)
+{
+	var key = window.openpgp.key.readArmored(keyS).keys[0];
+	return key.users[0].userId.userid;
+},
+
 pgp_verify: function(keyS, data)
 {
 	var key = window.openpgp.key.readArmored(keyS).keys[0];
@@ -87,7 +93,7 @@ pgp_sign: function(privateKeyS, data)
 	return result;
 },
 
-pgp_encrypt_serialized_key: function(privateKeyS, publicKeyS, text)
+pgp_encrypt_serialized_key: function(privateKeyS, publicKeyS, text, shouldSign)
 {
 	var privateKey = window.openpgp.key.readArmored(privateKeyS).keys[0];
 	var publicKeys = _.map(publicKeyS, function(keyS) { 
@@ -95,7 +101,12 @@ pgp_encrypt_serialized_key: function(privateKeyS, publicKeyS, text)
 		return keys_[0];
 	});
 	privateKey.decrypt();
-	var result = window.openpgp.signAndEncryptMessage(publicKeys, privateKey, text);
+	
+	var result = 
+		shouldSign ?
+			window.openpgp.signAndEncryptMessage(publicKeys, privateKey, text) :
+			window.openpgp.encryptMessage(publicKeys, text);
+			
 	return result;
 },
 

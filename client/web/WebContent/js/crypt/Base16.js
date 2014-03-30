@@ -46,6 +46,7 @@ var Base16 = {
 		
 		var j=0, i = 0;
 		var enc1, enc2;
+		var out = [];
 		
 		while (j < input.length) 
 		{	

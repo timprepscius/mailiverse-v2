@@ -15,35 +15,49 @@ define([
 		{
 		},
 
-		send: function(mail, callbacks)
+		send: function(mail, callbacks_)
 		{
-			callbacks = callbacks || { success: function() {}, failure: function() {} };
+			callbacks_ = callbacks_ || {};
+			
+			callbacks = { 
+				success: function() {
+					if (callbacks_.success)
+						callbacks_.success(arguments);
+				},
+				
+				failure: function() {
+			    	mail.set('draft', true);
+			    	mail.unset('sending');
+			    	mail.recomputeParent();
+			    	mail.save();
+			    	
+			    	if (callbacks_.failure)
+			    		callacks_.failure();
+				} 
+			};
 			
 	    	mail.set('sending', true);
 	    	mail.unset('draft');
 	    	mail.recomputeParent();
 			mail.save();
 			
-			if (!mail.get('sendEncrypt'))
-			{
-				return this.sendPlainText(mail, callbacks);
-			}
-			else
+			if (mail.get('sendEncrypted') && mail.get('canSendEncrypted'))
 			{
 				var that = this;
-				appSingleton.user.getKeyRing().getKeysForAllAddressesPGPLookupFirst(
+				appSingleton.user.getKeyRing().getKeyCryptosForKeys(
 					mail.getRecipientAddresses(), 
 					{
 						success: function (addressesToKeys)
 						{
 							that.sendEncrypted(addressesToKeys, mail, callbacks);
 						},
-						failure: function ()
-						{
-							that.sendPlainText(mail, callbacks);
-						},
+						failure: callbacks.failure
 					}
 				);
+			}
+			else
+			{
+				return this.sendPlainText(mail, callbacks);
 			}
 		},
 		
@@ -79,7 +93,7 @@ define([
 			
 			var mailContent = this.createMailContent(mail);
 			
-			if (mail.get('sendSign'))
+			if (mail.get('sendSigned'))
 			{
 			    Crypto.signPGP(mailContent, {
 			    	success: function(signedContent) {
@@ -135,7 +149,7 @@ define([
 		    
 			var mailContent = this.createMailContent(mail);
 		    
-			Crypto.encryptPGP(pubKeys, mailContent, {
+			Crypto.encryptPGP(pubKeys, mailContent, mail.get('sendSigned'), {
 		    	
 		    	success: function(encryptedMultiPart) {
 				    var data = {
@@ -175,14 +189,7 @@ define([
 		    		callbacks.success();
 		    	
 		    }).fail(function () {
-		    	
-		    	mail.set('draft', true);
-		    	mail.unset('sending');
-		    	mail.recomputeParent();
-		    	mail.save();
-		    	
-		    	if (callbacks.failure)
-		    		callbacks.failure();
+	    		callbacks.failure();
 		    });
 		},
 		

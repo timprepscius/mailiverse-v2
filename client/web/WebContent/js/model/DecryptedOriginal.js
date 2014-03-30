@@ -226,13 +226,18 @@ define([
     	getSignatureHashType: function(multipart)
     	{
     		var header = this.getHeaderValueInPart(multipart, 'content-type');
-    		var re = /micalg=pgp-(\S+)/gm;
+    		var re = /micalg=(\S+)/gm;
     		var matches = re.exec(header);
     		
     		if (matches)
-    			return matches[1].toUpperCase();
+    			match = Util.trimChars(matches[1], '\'";').toUpperCase();
+    		else
+    			match = "error";
     		
-    		return "error";
+    		if (match.startsWith("PGP-"))
+    			match = match.substr(4);
+    		
+    		return match;
     	},
     	
     	collectPartsToCheckSignature: function()
@@ -243,14 +248,16 @@ define([
     		
     		var multipartEncrypteds = this.collectPartsWithContentType(parts, "multipart/signed");
     		_.each(multipartEncrypteds, function(multipart) {
-    			if (multipart.data && multipart.data.length == 2 && multipart.data[0].original)
+    			if (multipart.data && multipart.data.length >= 2)
     			{
-    				// @TODO this isn't right
+    				var signed =  multipart.data[multipart.data.length-2].original || "ERROR";
+    				var signature = multipart.data[multipart.data.length-1].data || "ERROR";
+    				// @TODO this probably isn't right, but seems to be working
     				var block = 
     					"-----BEGIN PGP SIGNED MESSAGE-----" + "\n" + 
 						"Hash: " + this.getSignatureHashType(multipart) + "\n" + 
-						multipart.data[0].original +
-						$.trim(multipart.data[1].data) + "\n";
+						signed +
+						$.trim(signature) + "\n";
     				
     				partsToCheck.push({ part: multipart, block: block, shouldReplace: false });
     			}
@@ -258,11 +265,18 @@ define([
     		
     		var textParts = this.collectPartsWithContentType(parts, "text/plain");
     		_.each(textParts, function(textPart) {
-    			var pgpBlock = that.getPGPSignedBlockIfAny(textPart.data);
+    			var pgpBlock = that.getPGPSignedBlockIfAny(this.getDecodedPart(textPart));
     			if (pgpBlock)
     				partsToCheck.push({ part: textPart, block: pgpBlock, isInline: true });
-    		});
+    		}, this);
 	
+    		var htmlParts = this.collectPartsWithContentType(parts, "text/html");
+    		_.each(htmlParts, function(htmlPart) {
+    			var pgpBlock = this.getPGPSignedBlockIfAny(Util.toText(this.getDecodedPart(htmlPart)));
+    			if (pgpBlock)
+    				partsToDecrypt.push({ part: htmlPart, block: pgpBlock, isInline:true });
+    		}, this);
+    		
 			return partsToCheck;
     	},
     	
@@ -270,7 +284,7 @@ define([
     	{
     		var that = this;
     		
-    		var author = this.getHeaderValueQPDecode('from');
+    		var author = this.getHeaderValueDecode('from');
     		
     		if (!author)
     		{
@@ -284,7 +298,6 @@ define([
     			
     			_.each (partsToCheck, function (partToCheck) {
     				var part = partToCheck.part;
-    				if (part.signatureVerified)
     				{
     					// take out the part which we should read
     					// the signatureVerified icon will appear
@@ -293,7 +306,7 @@ define([
     						this.replacePartDataWithContentTriple(
     							part, 
     							this.getPGPSignedContent(part.data), 
-    							{ signatureVerified:true }
+    							{ signatureVerified:part.signatureVerified }
     						);
 
     						delete part.signatureVerified;
@@ -323,6 +336,24 @@ define([
     		var that = this;
     		this.assignParents(this.processed);
     		
+    		var startDecryptionFunction = function() { that.startDecryption(callbacks); };
+    		
+    		that.updateAuthorKeys({
+    			success: startDecryptionFunction,
+		    	failure: startDecryptionFunction,
+    		});
+    	},
+    	
+    	updateAuthorKeys: function(callbacks) {
+    		var author = this.getHeaderValueDecode('from');
+    		var address = Util.getAddressFromEmail(author);
+    		
+    		appSingleton.user.getKeyRing().getKeysForAllAddressesPGPLookupFirst([address], callbacks);
+    	},
+    	
+    	startDecryption: function(callbacks)
+    	{
+    		var that = this;
     		that.decryptParts({
     			success: function () {
     				that.processSignatures({
@@ -336,6 +367,7 @@ define([
     			},
     			failure: callbacks.failure
     		});
+    		
     	},
     	
     	toMail: function(callbacks)
@@ -348,7 +380,7 @@ define([
     		// put in the standard mail properties
     		var keys = ['subject', 'from', 'to', 'cc', 'bcc', 'reply-to', 'message-id'];
     		_.each(keys, function(key) { 
-    			var value = this.getHeaderValueQPDecode(key);
+    			var value = this.getHeaderValueDecode(key);
     			mail.set(key, value);
     		}, this);
     		
@@ -358,7 +390,7 @@ define([
     		var date = null;
     		try
     		{
-    			date = new Date(this.getHeaderValueQPDecode("date"));
+    			date = new Date(this.getHeaderValueDecode("date"));
     		}
     		catch (exception)
     		{
