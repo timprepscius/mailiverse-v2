@@ -24,6 +24,24 @@ include some sort of script to generate default certs.
 
 Progress:
 
+03/30/2014 - Work on sending encrypted/signed/text only
+ * Signing mail is optional
+ * Encrypting mail is optional
+ * Sending text only is optional
+ * Changed the way that keys work, before the meta data for a key was included with the pgp crypto block.  Now
+the crypto is in a KeyCrypto record.  This allows me to load all known keys quickly.  Have big pgp blocks which I
+look up only when needed.
+ * Creates a "Keys" modal dialog which shows all the keys you know about, and allows you to add one manually.
+ * Checking signatures is working with all but one test case.  Not sure why.
+ * Odds and ends, pre blocks have word wrap. (prob should have a different word wrap)
+
+Things to work on next:
+ * I'm not detecting when a pgp encrypted with embedded signature is signed.  I should.  OpenPGP is telling me, I just
+need to record it.
+ * The sorting of conversations doesn't update correctly.  (immediately after I reply to in a conversation)
+ * need to remove quotes from nick-names.
+ * start thinking about attachments.
+
 03/23/2014 - Work on stability
  * Signs mail a bit more correctly, will canonicalize in next batch of fixes.
  * Does infinite scrolling of conversations correctly.
