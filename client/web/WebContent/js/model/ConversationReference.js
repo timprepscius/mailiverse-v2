@@ -105,8 +105,9 @@ define([
     	
     	markDate: function(date)
     	{
+    		var that = this;
     		this.syncedOnce(function() {
-    			_.each(this.models, function(model) {
+    			_.each(that.models, function(model) {
     				model.set('date', date);
     				model.save();
     			});
