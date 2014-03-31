@@ -50,7 +50,7 @@ define([
 			email = email || "";
 			var name = email.substr(0, email.indexOf('<')).trim();
 			if (name != '')
-				return name;
+				return Util.trimQuotes(name);
 			
 			var name = email.substr(0, email.indexOf('@')).trim();
 			if (name != '')
