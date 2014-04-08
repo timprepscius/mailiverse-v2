@@ -253,12 +253,13 @@ define([
     				var signed =  multipart.data[multipart.data.length-2].original || "ERROR";
     				var signature = multipart.data[multipart.data.length-1].data || "ERROR";
     				// @TODO this probably isn't right, but seems to be working
-    				var block = 
-    					"-----BEGIN PGP SIGNED MESSAGE-----" + "\n" + 
+    				var block = [ Util.trimOneNewLine(signed), signature ];
+/*
+     					"-----BEGIN PGP SIGNED MESSAGE-----" + "\n" + 
 						"Hash: " + this.getSignatureHashType(multipart) + "\n" + 
 						signed +
 						$.trim(signature) + "\n";
-    				
+*/    				
     				partsToCheck.push({ part: multipart, block: block, shouldReplace: false });
     			}
     		}, this);
@@ -306,9 +307,10 @@ define([
     						this.replacePartDataWithContentTriple(
     							part, 
     							this.getPGPSignedContent(part.data), 
-    							{ signatureVerified:part.signatureVerified }
+    							{ signatureVerified:part.signatureVerified, signatureFailed:part.signatureFailed }
     						);
 
+    						delete part.signatureFailed;
     						delete part.signatureVerified;
     					}
     				}
@@ -323,7 +325,10 @@ define([
     					partToCheck.part.signatureVerified = true;
     					onAllChecked();
     				},
-    				failure: onAllChecked
+    				failure: function() {
+    					partToCheck.part.signatureFailed = true;
+    					onAllChecked();
+    				},
     			});
     		}, this);
     		
@@ -336,19 +341,7 @@ define([
     		var that = this;
     		this.assignParents(this.processed);
     		
-    		var startDecryptionFunction = function() { that.startDecryption(callbacks); };
-    		
-    		that.updateAuthorKeys({
-    			success: startDecryptionFunction,
-		    	failure: startDecryptionFunction,
-    		});
-    	},
-    	
-    	updateAuthorKeys: function(callbacks) {
-    		var author = this.getHeaderValueDecode('from');
-    		var address = Util.getAddressFromEmail(author);
-    		
-    		appSingleton.user.getKeyRing().getKeysForAllAddressesPGPLookupFirst([address], callbacks);
+    		that.startDecryption(callbacks);
     	},
     	
     	startDecryption: function(callbacks)

@@ -44,7 +44,7 @@ define([
 			if (mail.get('sendEncrypted') && mail.get('canSendEncrypted'))
 			{
 				var that = this;
-				appSingleton.user.getKeyRing().getKeyCryptosForKeys(
+				appSingleton.user.getKeyRing().getKeyCryptosForAddresses(
 					mail.getRecipientAddresses(), 
 					{
 						success: function (addressesToKeys)

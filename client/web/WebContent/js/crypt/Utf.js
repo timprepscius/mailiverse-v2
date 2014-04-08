@@ -1,6 +1,10 @@
 Utf = {
 	
 	toBytes : function (string) {
+		return TextEncoder("utf-8").encode(string);
+	},
+
+	toBytesOld: function(string) {
 //		log("toBytes", string);
 		var bytes = [];
 		
@@ -43,6 +47,10 @@ Utf = {
 	},
 
 	toString : function (bytes) {
+		return TextDecoder("utf-8").decode(new Uint8Array(bytes));
+	},
+	
+	toStringOld : function (bytes) {
 		var string = "";
 		var i = 0;
 		var c = c1 = c2 = 0;

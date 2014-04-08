@@ -5,37 +5,31 @@ define([
 
 	PGPLookUp = {
 
-		lookup: function(address, callbacks)
+		lookupId: function(id, model, callbacks)
+		{
+			model = model || new KeyCrypto({ syncId: Crypto.cryptoHash16(id), keyId:id});
+			var server = Constants.PGP_SERVERS[0];
+			
+			$.ajax(server + "?op=get&options=mr&search=0x" + id)
+				.success(function(response) {
+					model.set('publicKey', response);
+					model.save();
+					
+					callbacks.success();
+				})
+				
+				.fail(callbacks.failure);
+		},
+			
+		lookupAddress: function(address, model, callbacks)
 		{
 			if (!address.match(/.+@.+/))
 				return callbacks.failure();
 			
-			var lookupAddress = "<" + address + ">";
-			
-			this.doLookup(lookupAddress, {
-				success: function (publicKey, server) {
-					var keyFinder = appSingleton.user.getKeyRing().findKey(address);
-					
-					keyFinder.syncedOnce(function() {
-						var key = keyFinder.key || appSingleton.user.getKeyRing().createKey(address);
-						
-						// @TODO this should come from the key id from openpgp
-						var keyId = Crypto.cryptoHash64(publicKey);
-						
-						if (keyId != key.get('publicKeyId'))
-						{
-							key.set('publicKeyChanged', Util.toDateSerializable());
-							key.set('publicKeySource', server);
-							key.set('publicKeyId', keyId);
-							key.save();
-							
-							var crypto = appSingleton.user.getKeyRing().createKeyCrypto(address); 
-							crypto.set('publicKey', publicKey);
-							crypto.save();
-						}
-						
-						callbacks.success(key);
-					});
+			this.doLookup(address, {
+				success: function (keys, server) {
+					model.updateKeys(keys, server);
+					callbacks.success(model);
 				},
 				failure: callbacks.failure
 			});
@@ -46,57 +40,62 @@ define([
 			var that = this;
 			var server = Constants.PGP_SERVERS[0];
 			var url = server;
-			$.ajax(url + "?op=index&exact=on&options=mr&search=" + address)
+			var lookupAddress = "<" + address + ">";
+			
+			$.ajax(url + "?op=index&exact=on&options=mr&search=" + lookupAddress)
 				.success(function(response) { that.parseLookUpIndex(server, address, response, callbacks); })
 				.fail(callbacks.failure);
 		},
 		
 		parseLookUpIndex: function(server, address, response, callbacks)
 		{
-	    	var info = null;
-	    	var pub = null;
-	    	var uid = null;
-	    	var found = false;
+			var keys = [];
+			var key = null;
+			
 	    	var lines = response.split("\n");
 	    	for (var i in lines)
 	    	{
-	    		var line = lines[i];
+	    		var line = lines[i].trim();
 	    		if (line.startsWith("info:"))
-	    			info = line;
+	    		{
+	    		}
 	    		else
 	    		if (line.startsWith("pub:"))
-	    			pub = line;
+	    		{
+	    			var parts = line.split(":");
+	    			if (key != null && key.userId.contains(address))
+	    				keys.push(key);
+	    			
+	    			key = {};
+	    			
+	    			key.keyId = parts[1].toLowerCase();
+	    			key.keySize = parts[3];
+	    			key.timeStamp = parseInt(parts[4]);
+	    			key.revoked = line.endsWith(":r");
+	    			key.address = address;
+	    		}
+	    		
 	    		else
 	    		if (line.startsWith("uid:"))
-	    			uid = line;
-	    		
-	    		if (uid!=null && uid.toLowerCase().contains(address) &&
-	    			pub!=null && !pub.endsWith(":r"))
 	    		{
-	    			found = true;
-	    			break;
+	    			var parts = line.split(":");
+	    			var uid = parts[1];
+	    			if (uid.contains(address))
+	    				key.userId = parts[1];
 	    		}
 	    	}
 	    	
-	    	if (!found)
+			if (key != null && key.userId.contains(address))
+				keys.push(key);
+
+			if (keys.length)
 	    	{
-	    		callbacks.failure("Could not find address");
+	    		callbacks.success(keys, server);
 	    	}
 	    	else
 	    	{
-	    		var pubParts = pub.split(":");
-	    		var publicKeyId = pubParts[1];
-	    		
-	    		this.lookupPublicKey(server, address, publicKeyId, callbacks);
+	    		callbacks.failure();
 	    	}
-		},
-		
-		lookupPublicKey: function(server, address, publicKeyId, callbacks)
-		{
-			var url = server;
-			$.ajax(url + "?op=get&options=mr&search=0x" + publicKeyId)
-				.success(function(response) { callbacks.success(response, server); })
-				.fail(callbacks.failure);
 		},
 	};
 	

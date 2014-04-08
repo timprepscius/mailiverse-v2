@@ -8,61 +8,62 @@ define([
 		checkSignature: function(originalId, author, dataSigPair, callbacks)
 		{
 			var that = this;
-			var address = Util.getAddressFromEmail(author);
-			
-			appSingleton.user.getKeyRing().getKeyCryptosForKeys([address], {
-				success: function(addressesToKeys) {
-					var key = addressesToKeys[address];
+			Crypto.signatureInfoPGP(dataSigPair[1], {
+				success: function (info) {
 					
-					var contact = appSingleton.user.getContacts().ensureContact(author);
-					contact.syncedOnce(function () {
-						that.check(originalId, dataSigPair, contact, key, callbacks);
+					appSingleton.user.getKeyRing().getKeyCryptosForKeyIds(info.keyIds, {
+						success: function(keyIdsToCrypto) {
+							that.check(originalId, dataSigPair, _.values(keyIdsToCrypto), callbacks);
+						},
+						
+						failure: callbacks.failure
 					});
 				},
-				
 				failure: callbacks.failure
 			});
 		},
 				
-		check: function (originalId, dataSigPair, contact, key, callbacks)
+		check: function (originalId, dataSigPair, keys, callbacks)
 		{
 			var that = this;
-			Crypto.verifyPGP (key.get('publicKey'), dataSigPair, {
+			Crypto.verifyPGP (_.map(keys, function(key) { return key.get('publicKey'); }), dataSigPair, {
 				success: function (result) {
 					if (result)
 					{
-						that.onVerifySuccess(originalId, contact, key);
+						that.onVerifySuccess(originalId, keys);
 						callbacks.success();
 					}
 					else
 					{
-						that.onVerifyFailure(originalId, contact, key);
+						that.onVerifyFailure(originalId, keys);
 						callbacks.failure();
 					}
 				},
 				failure: function () {
-					that.onVerifyFailure(originalId, contact, key);
+					that.onVerifyFailure(originalId, keys);
 					callbacks.failure();
 				},
 			});
 		},
 		
-		onVerifySuccess : function(originalId, key)
+		onVerifySuccess : function(originalId, keys)
 		{
-			key.set('verified', 'success');
-			key.set('lastVerificationDate', Util.toDateSerializable());
-			key.set('lastVerifiedMail', originalId);
-			
-			key.save();
+			_.each(keys, function(key) {
+				key.set('verified', 'success');
+				key.set('lastVerificationDate', Util.toDateSerializable());
+				key.set('lastVerifiedMail', originalId);
+				key.save();
+			});
 		},
 		
-		onVerifyFailure: function (originalId, key)
+		onVerifyFailure: function (originalId, keys)
 		{
-			key.set('verified', 'failure');
-			key.set('lastVerificationDate', Util.toDateSerializable());
-			key.set('lastVerifiedMail', originalId);
-			
-			key.save();
+			_.each(keys, function(key) {
+				key.set('verified', 'failure');
+				key.set('lastVerificationDate', Util.toDateSerializable());
+				key.set('lastVerifiedMail', originalId);
+				key.save();
+			});
 		},
 	};
 	

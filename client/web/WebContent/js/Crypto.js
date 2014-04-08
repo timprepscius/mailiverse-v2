@@ -8,6 +8,7 @@ define([
 	'sjcl',
 	'aes',
 	'js/crypt/Utf',
+	'js/crypt/Base64Dead',
 ], function ($,_, openpgp) {
 
 	var MIN_SIZE_RANDOM_BUFFER = 40000;
@@ -50,6 +51,10 @@ define([
 		
 		infoPGP: function (pgp, callbacks) {
 			Async.pgp_info(callbacks, pgp);
+		},
+		
+		signatureInfoPGP: function (pgp, callbacks) {
+			Async.pgp_signature_info(callbacks, pgp);
 		},
 		
 		generatePBEs: function(password, callbacks) {
@@ -116,14 +121,15 @@ define([
 		},
 		
 		
-		cryptoHash64: function(aes, block) {
+		cryptoHash64: function(block) {
 			// @TODO get rid of this, just a hack for debugging
+			var aes = appSingleton.login.get('privateKeys').hashKey;
 			aes = aes || "none";
 			return Support.sha256_hash(Base64.encode(Utf.toBytes(aes + "!" + block)));
 		},
 		
-		cryptoHash16: function(aes, block) {
-			return Base16.encode(Base64.decode(this.cryptoHash64(aes,block)));
+		cryptoHash16: function(block) {
+			return Base16.encode(Base64.decode(this.cryptoHash64(block)));
 		},
 		
 /*		

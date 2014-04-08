@@ -73,16 +73,138 @@ pgp_encrypt: function(privateKey, publicKey, bytes64)
 pgp_info: function(keyS)
 {
 	var key = window.openpgp.key.readArmored(keyS).keys[0];
-	return key.users[0].userId.userid;
+	return { user:key.users[0].userId.userid, keyId:key.keyId.toHex() };
 },
 
-pgp_verify: function(keyS, data)
+pgp_signature_info: function(signatureS)
 {
-	var key = window.openpgp.key.readArmored(keyS).keys[0];
-	var message = new window.openpgp.cleartext.readArmored(data);
-//	var message = window.openpgp.message.fromText(data);
-	var result = window.openpgp.verifyClearSignedMessage([key],message);
-	return result.signatures.length > 0 && result.signatures[0].valid;
+	var armoredText = "-----BEGIN PGP SIGNED MESSAGE-----\n\n" + signatureS;
+	var input = window.openpgp.armor.decode(armoredText);
+	var packetlist = new window.openpgp.packet.List();
+	packetlist.read(input.data);
+	
+	var c = packetlist.filterByTag(window.openpgp.enums.packet.signature);
+	if (!c || c.length == 0)
+	{
+		// @TODO check javascript throw syntax
+		throw "no key signers in signature";
+	}
+	
+	var keyIds = [];
+	for (var i=0; i<c.length; ++i)
+	{
+		var hex = c[i].issuerKeyId.toHex()
+		// EC511F51F2B01195
+		// 1234567812345678
+		if (hex.length == 16)
+			hex = hex.substr(8);
+		
+		keyIds.push(hex.toLowerCase());
+	}
+	
+	return { keyIds:keyIds };
+},
+
+pgp_verify: function(armoredKeys, data)
+{
+	// it is a signed message signature block
+	
+	var valid = false;
+
+	var keys = _.map(armoredKeys, function(k) {
+		return window.openpgp.key.readArmored(k).keys[0];
+	});
+	
+	if (typeof data == 'string')
+	{
+		var message = window.openpgp.cleartext.readArmored(data);
+		var result = window.openpgp.verifyClearSignedMessage(keys,message);
+		valid = result.signatures.length >= keys.length && result.signatures[0].valid;
+	}
+	else
+	{
+		// i'm having problems getting the signature with openpgpjs, so I make a fake message and 
+		// then get the signature from that
+
+		var armoredText = "-----BEGIN PGP SIGNED MESSAGE-----\n\n" + data[1];
+		var input = window.openpgp.armor.decode(armoredText);
+		var packetlist = new window.openpgp.packet.List();
+		packetlist.read(input.data);
+		
+		var test = function (binary) {
+
+			var message = new window.openpgp.cleartext.CleartextMessage(data[0], packetlist);
+			// the message kills text on the end of lines, which kills the signatures
+			// so I need to reinitialize the text to what it should be
+			if (binary)
+				message.text = data[0];
+			
+			// this does not work, because openpgpjs is normalizing line endings
+			//var result = message.verify([key]);
+			
+			// set up a binary version of verify
+			var verify = function(a) {
+				var i = window.openpgp.enums;
+				var h = window.openpgp.packet;
+				var u = window.openpgp.util;
+	
+	            var b = [], c = this.packets.filterByTag(i.packet.signature), d = new h.Literal;
+	            
+	            if (binary)
+	            {
+	            	// the set text is also killing \r
+		            d.setText = function(a) {
+		//            	this.data = "utf8" == this.format ? u.encode_utf8(a) : a
+			        	this.data = a;
+		            };
+		            
+		            // getText doesn't seem to be used, but also kills \r
+		            d.getText = function() {
+		            	return this.data;
+		            }
+	            }
+	            
+	            return d.setText(this.text), a.forEach(function(a) {
+	                for (var e = 0; e < c.length; e++) {
+	                    var f = a.getPublicKeyPacket([c[e].issuerKeyId]);
+	                    if (f) {
+	                        var g = {};
+	                        g.keyid = c[e].issuerKeyId, g.valid = c[e].verify(f, d), b.push(g);
+	                        break;
+	                    }
+	                }
+	            }), b
+	        }
+			
+			// @TODO I should check all of the signatures
+			var result = verify.apply(message, [keys]);
+			valid = result.length > 0 && result[0].valid;
+			
+			return valid;
+		}
+		
+		// I think I will eventually use the signatureType to determine what to do
+		// but for now just test both.
+		valid = test(false) || test(true);
+		
+		// some of the tests are coming in with just \n but their signature
+		// needs \r\n, not sure if this is a problem somewhere else in the pipe line or not
+		// but for now - readd the \r\n and test again
+		if (!valid)
+		{
+			data[0] = data[0].replace(/\n/gm,"\r\n");
+			valid = test(false) || test(true);
+		}
+
+		if (!valid)
+		{
+			console.log(data[0]);
+			console.log(data[1]);
+			console.log("not-valid");
+		}
+	}
+
+	return valid;
 },
 
 pgp_sign: function(privateKeyS, data)
@@ -122,7 +244,13 @@ pgp_decrypt_serialized_key: function(keyS, bytes64)
 	key.decrypt();
 	
 	var message = window.openpgp.message.readArmored(bytes64);
-	return window.openpgp.decryptMessage(key,message);
+	var d = message.decrypt(key);
+	return d.getLiteralData();
+//	return Utf.toString(Utf.fromBinString(d.getLiteralData()));
+	
+	// this decrpytMessage is getting rid of the CR from CRLF, but sometimes the CR is necessary during
+	// testing a signature,  not sure of implications
+//	return window.openpgp.decryptMessage(key,message);
 },
 
 rsa_encrypt: function(key, bytes64)
@@ -212,9 +340,10 @@ aes_generate: function()
 	return Support.generate_random(256/8);
 },
 
-aes_encrypt: function(key64, iv64, block)
+aes_encrypt: function(key64, iv64, block, encoder)
 {
-	var result = Support.aes_encrypt_CryptoJS(key64, iv64, Base64.encode(Utf.toBytes(block)));
+	encoder = encoder || Base64;
+	var result = Support.aes_encrypt_CryptoJS(key64, iv64, encoder.encode(Utf.toBytes(block)));
 	
 	if (this.aes_decrypt(key64, iv64, result) !== block)
 	{
@@ -249,9 +378,10 @@ aes_encrypt_SJCL: function(key64, iv64, bytes64)
 	return result;
 },
 
-aes_decrypt: function(key64, iv64, bytes64)
+aes_decrypt: function(key64, iv64, bytes64, decoder)
 {
-	return Utf.toString(Base64.decode(Support.aes_decrypt_CryptoJS(key64, iv64, bytes64)));
+	decoder = decoder || Base64;
+	return Utf.toString(decoder.decode(Support.aes_decrypt_CryptoJS(key64, iv64, bytes64)));
 },
 
 aes_decrypt_CryptoJS: function(key64, iv64, bytes64)
@@ -301,13 +431,33 @@ aes_encrypt_embedIV: function(key64, block)
 {
 	var iv64 = Support.aes_generate_iv();
 	var encrypted = Support.aes_encrypt(key64, iv64, block);
-	return JSON.stringify({ iv: iv64, block: encrypted});
+	return JSON.stringify({ iv: iv64, block: encrypted, version:"beta3" });
 },
 
 aes_decrypt_embedIV: function(key64, block)
 {
 	var encrypted = JSON.parse(block);
-	return Support.aes_decrypt(key64, encrypted.iv, encrypted.block);
+	var version = encrypted.version || "beta1";
+
+	var encoder = Base64;
+	if (version == "beta1")
+		encoder = Base64Dead;
+	if (version == "beta2")
+		encoder = {
+			decode: function(x) {
+				var y = Base64.decode(x);
+				var x = [];
+				for (var i=0; i<y.length; ++i)
+				{
+					if (y[i]!=0)
+						x.push(y[i]);
+				}
+				
+				return x;
+			}
+		}
+	
+	return Support.aes_decrypt(key64, encrypted.iv, encrypted.block, encoder);
 },
 
 aes_encrypt_multi: function (key64, blocks)

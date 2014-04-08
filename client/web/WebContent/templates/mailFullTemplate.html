@@ -38,11 +38,15 @@
 <div class="conversation-mail-body">
 	<% _.each(model.get('content'), function(c) { %>
 	<% var s = c.tags.signatureVerified; %>
+	<% var f = c.tags.signatureFailed; %>
 	<% var d = c.tags.decrypted; %>
 	<div class="body-part">
 		<span class="body-part-tags">
 		<% if (s) { %>
 			<span class="glyphicon glyphicon-certificate signed" data-toggle="tooltip" title="Signature verified"></span>
+		<% } %>
+		<% if (f) { %>
+			<span class="glyphicon glyphicon-certificate signed-failure" data-toggle="tooltip" title="Signature failed"></span>
 		<% } %>
 		<% if (d) { %>
 			<span class="glyphicon glyphicon-lock decrypted" data-toggle="tooltip" title="Decrypted"></span>

@@ -124,7 +124,14 @@ single conversation
 	line-height: normal;
 	word-wrap: soft; 
 	white-space: pre-wrap;
+	
+    -moz-tab-size: 4;
+    -o-tab-size:   4;
+    tab-size:      4;
+    
+    font-family: inherit;
 }
+
 
 .top-right {
 	position: absolute;
@@ -138,6 +145,10 @@ single conversation
 	top: 0;
 	right: 0;
 	color: green;
+}
+
+.conversation-mail-body .body-part-tags .signed-failure {
+	color: red;
 }
 
 #main-mail-list .click-to-reply .text {

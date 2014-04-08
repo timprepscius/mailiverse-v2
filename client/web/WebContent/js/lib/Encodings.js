@@ -12,10 +12,10 @@ define([], function() {
 				var re0 = /=\?([\S]*?)\?([\S]*?)\?([\S]*?)\?=/gm;
 				var decoded = str.replace(re0, function(m0, charset, encoder, block) {
 					if (encoder == 'Q')
-						return EncoderQp.decode(block);
+						return EncoderQp.decode(block, charset);
 					else
 					if (encoder == 'B')
-						return EncoderB64.decode(block);
+						return EncoderB64.decode(block, charset);
 					
 					return m0;
 				});
@@ -29,16 +29,17 @@ define([], function() {
 		};
 	
 	Encoders = {
-		decode: function(str, contentEncoding) {
+		decode: function(str, contentEncoding, charset) {
 			if (contentEncoding.toLowerCase().startsWith('quoted-printable'))
-				return EncoderQp.decode(str);
+				return EncoderQp.decode(str, charset);
 
 			if (contentEncoding.toLowerCase().startsWith('base64'))
-				return EncoderB64.decode(str);
+				return EncoderB64.decode(str, charset);
 			
-			return str;
+			return Charset.toString(Utf.fromBinString(str), charset);
 		},
-		encode: function(str, contentEncoding) {
+		
+		encode: function(str, contentEncoding, charset) {
 			if (!contentEncoding)
 			{
 				var numCharsNeedingEncoding = 0;
@@ -66,10 +67,10 @@ define([], function() {
 			results.encoding = contentEncoding;
 			
 			if (contentEncoding.toLowerCase().startsWith('quoted-printable'))
-				results.block = EncoderQp.encode(str);
+				results.block = EncoderQp.encode(str, charset);
 			else
 			if (contentEncoding.toLowerCase().startsWith('base64'))
-				results.block = EncoderB64.encode(str);
+				results.block = EncoderB64.encode(str, charset);
 			else
 			if (contentEncoding.toLowerCase().startsWith('7bit'))
 				results.block = str;
@@ -82,15 +83,44 @@ define([], function() {
 		},
 	};
 	
-	EncoderB64 = {
-		decode: function(str)
+	Charset = {
+		
+		toBytes: function(str, charset)
 		{
-			return Utf.toString(Base64.decode(str));
+			charset = charset || "utf-8";
+			return TextDecoder(charset).encode(str);
 		},
 		
-		encode: function(str)
+		toString: function(bytes, charset)
 		{
-			return Base64.encode(Utf.toBytes(str));
+			charset = charset || "utf-8";
+			return TextDecoder(charset).decode(new Uint8Array(bytes));
+
+			/*
+			 
+			doesn't work
+			var b = new Blob([new Uint8Array(bytes)], {type: 'text/plain; charset=' + charset.toUpperCase()});
+			var url = URL.createObjectURL(b);
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', url, false);	
+			xhr.send(null);
+			var output = xhr.responseText;
+			URL.revokeObjectURL(url);	
+			
+			return output;
+			*/
+		},
+	},
+	
+	EncoderB64 = {
+		decode: function(str, charset)
+		{
+			return Charset.toString(Base64.decode(str), charset);
+		},
+		
+		encode: function(str, charset)
+		{
+			return Base64.encode(Charset.toBytes(str, charset));
 		},
 	};
 	
@@ -98,7 +128,7 @@ define([], function() {
 		is : function (str) {
 			return str && str.indexOf('=?') >= 0;
 		},
-		decode : function(str) {
+		decode : function(str, charset) {
 		  str = str.replace(/\r/gm, '');
 			
 		  var bytes = [];
@@ -120,9 +150,9 @@ define([], function() {
 			  }
 		  }
 		  
-		  return Utf.toString(bytes);
+		  return Charset.toString(bytes, charset);
 		},
-		encode : function(str) {
+		encode : function(str, charset) {
 		  //  discuss at: http://phpjs.org/functions/quoted_printable_encode/
 		  // original by: Theriault
 		  // improved by: Brett Zamir (http://brett-zamir.me)

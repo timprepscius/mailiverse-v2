@@ -17,6 +17,7 @@ Async =
 	pgp_verify: function(callbacks) { Dispatch.dispatch('pgp_verify', arguments); },
 	pgp_sign: function(callbacks) { Dispatch.dispatch('pgp_sign', arguments); },
 	pgp_info: function(callbacks) { Dispatch.dispatch('pgp_info', arguments); },
+	pgp_signature_info: function(callbacks) { Dispatch.dispatch('pgp_signature_info', arguments); },
 	
 	pbe_genKey: function(callback) { Dispatch.dispatch('pbe_genKey', arguments); },
 

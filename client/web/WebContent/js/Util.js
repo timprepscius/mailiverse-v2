@@ -45,6 +45,23 @@ define([
 			return this.trimChars(str, "'\"");
 		},
 		
+		trimOneNewLine: function(str)
+		{
+			if (str.startsWith('\r\n'))
+				str = str.substr(2);
+			else
+			if (str.startsWith('\n'))
+				str = str.substr(1);
+			
+			if (str.endsWith('\r\n'))
+				str = str.substr(0, str.length-2);
+			else
+			if (str.endsWith('\n'))
+				str = str.substr(0, str.length-1);
+			
+			return str;
+		},
+		
 		getNameFromEmail: function(email)
 		{
 			email = email || "";
@@ -188,6 +205,7 @@ define([
 				var c = s.lastIndexOf(',');
 				var f = (c >= 0) ? (s.substr(0, c+1) + " " + value) : value;
 				z.input.$input.val(f);
+				z.input.$input.trigger('input');
 			};
 	
 			z.input.setHintValue = function(value_) {
@@ -203,6 +221,7 @@ define([
 			};
 			
 			z.input.resetInputValue = function () {
+				z.input.trigger('input');
 //				z.input.setInputValue(z.input.query);
 			}
 		},

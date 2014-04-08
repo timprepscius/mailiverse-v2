@@ -10,121 +10,46 @@
  * https://developer.mozilla.org/en/JavaScript_typed_arrays/Uint8Array
  */
 
-var Base64 = {
-	_key : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-	_encode : null,
-	_decode : null,
+/** @namespace Arrays of bytes */
+SJCLBytes = {
+  /** Convert from a bitArray to an array of bytes. */
+  fromBits: function (arr) {
+    var out = [], bl = sjcl.bitArray.bitLength(arr), i, tmp;
+    for (i=0; i<bl/8; i++) {
+      if ((i&3) === 0) {
+        tmp = arr[i/4];
+      }
+      out.push(tmp >>> 24);
+      tmp <<= 8;
+    }
+    return out;
+  },
+  /** Convert from an array of bytes to a bitArray. */
+  toBits: function (bytes) {
+    var out = [], i, tmp=0;
+    for (i=0; i<bytes.length; i++) {
+      tmp = tmp << 8 | bytes[i];
+      if ((i&3) === 3) {
+        out.push(tmp);
+        tmp = 0;
+      }
+    }
+    if (i&3) {
+      out.push(sjcl.bitArray.partial(8*(i&3), tmp));
+    }
+    return out;
+  }
+};
 
-	initialize: function()
-	{
-		if (this._decode != null)
-			return;
-		
-		this._decode = new Uint8Array(0xFF);
-		for (var i=0; i<this._key.length; ++i)
-			this._decode[this._key.charCodeAt(i)] = i;
-		
-		this._encode = new Uint8Array(this._key.length);
-		for (var i=0; i<this._key.length; ++i)
-			this._encode[i] = this._key.charCodeAt(i) & 0xFF;
-	},
-	
+var Base64 = {
 	decode: function(input) 
 	{
-		var bytes = new Uint8Array(input.length);
-		
-		var i;
-		for (i=0; i<input.length; ++i)
-			bytes[i] = input.charCodeAt(i) & 0xFF;
-		
-		return Base64.decodeBytes(bytes);
+		return SJCLBytes.fromBits(window.sjcl.codec.base64.toBits(input));
 	},
 	
-	decodeBytes: function(input)
+	encode : function(input)
 	{
-		this.initialize();
-		
-		//get last chars to see if are valid
-		var lkey1 = this._decode[input[input.length-1]];		 
-		var lkey2 = this._decode[input[input.length-2]];		 
-	
-		var bytes = (input.length/4) * 3;
-		if (lkey1 == 64) bytes--; //padding chars, so skip
-		if (lkey2 == 64) bytes--; //padding chars, so skip
-		
-		var out = [];
-		var chr1, chr2, chr3;
-		var enc1, enc2, enc3, enc4;
-		var i = 0;
-		var j = 0;
-		
-		while (j < input.length) 
-		{	
-			enc1 = this._decode[input[j++]];
-			enc2 = this._decode[input[j++]];
-			enc3 = this._decode[input[j++]];
-			enc4 = this._decode[input[j++]];
-	
-			chr1 = (enc1 << 2) | (enc2 >> 4);
-			chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-			chr3 = ((enc3 & 3) << 6) | enc4;
-	
-			out[i++] = chr1 & 0xFF;			
-			if (enc3 != 64) out[i++] = chr2 & 0xFF;
-			if (enc4 != 64) out[i++] = chr3 & 0xFF;
-		}
-	
-		return out;	
-	},
-
-	encodeBytes : function(input)
-	{
-		this.initialize();
-
-		var length = input.length;
-		var bytes = ((length+2)/3)*4;
-	    var output = [];
-	    
-	    var i = 0;
-	    var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-	    
-	    var j=0;
-	    while (i < length) 
-	    {
-	    	var count = length - i;
-		    chr1 = input[i++] & 0xFF;
-	        chr2 = (i<length) ? (input[i++]&0xFF) : 0;
-	        chr3 = (i<length) ? (input[i++]&0xFF) : 0;
-
-	        enc1 = chr1 >> 2;
-	        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-	        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-	        enc4 = chr3 & 63;
-
-	        if (count == 1) 
-	            enc3 = enc4 = 64;
-	        else 
-	        if (count == 2) 
-	            enc4 = 64;
-
-	        output[j++] = this._encode[enc1];
-	        output[j++] = this._encode[enc2];
-	        output[j++] = this._encode[enc3];
-	        output[j++] = this._encode[enc4];
-	    }
-	    
-	    return output;
-	},
-	
-	encode: function(input)
-	{
-		var bytes = this.encodeBytes(input);
-		var s = "";
-		
-		for (var i=0; i<bytes.length; ++i)
-			s += String.fromCharCode(bytes[i]);
-		
-		return s;
+		return window.sjcl.codec.base64.fromBits(SJCLBytes.toBits(input));
 	},
 	
 	bytesToBuffer: function (bytes)

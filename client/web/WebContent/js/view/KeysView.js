@@ -110,7 +110,8 @@ define([
         	var that = this;
         	var keyBlock = this.$('.key-input').val();
         	Crypto.infoPGP(keyBlock, {
-        		success: function(user) {
+        		success: function(info) {
+        			var user = info.user;
         			that.$('.key-input').val('Key parsed..');
         			
         			var contact = appSingleton.user.getContacts().ensureContact(user);

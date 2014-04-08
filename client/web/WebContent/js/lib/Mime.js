@@ -44,8 +44,8 @@ define(['jquery'], function(jQuery) {
                     if (partData == '')
                     	continue;
                     
-                    partData = partData.replace(/\r\n/,'\n').split('\n');
-                    if (boundary && partData.length && partData[0]=="--")
+                    partData = partData.split('\n');
+                    if (boundary && partData.length && $.trim(partData[0])=="--")
                     	partData.shift();
                     
                     // if there are lines
@@ -66,7 +66,7 @@ define(['jquery'], function(jQuery) {
                         	{
                         		if (line[0] == ' ' || line[0] == '\t')
                         		{
-                        			currentKeyValue.value += '\r\n' + line;
+                        			currentKeyValue.value += '\n' + line;
                         		}
                         		else
                         		{
@@ -84,7 +84,7 @@ define(['jquery'], function(jQuery) {
                         	{
                         		if (message.data == null)
                         			message.data = '';
-                        		message.data += line + "\r\n";
+                        		message.data += line + "\n";
                         	}
                         }
                         
@@ -103,6 +103,7 @@ define(['jquery'], function(jQuery) {
             }
 
             obj.prototype.processMessage = function(data) {
+            	console.log(data);
                 return processBody(null, data);
             }
         };

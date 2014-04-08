@@ -125,7 +125,7 @@ define([
     	computeIdFromMessageId: function()
     	{
 			var mailId = this.has('message-id') ? this.get('message-id') : Util.guid();
-			this.set('syncId', Crypto.cryptoHash16(appSingleton.login.get('privateKeys').hashKey, mailId));
+			this.set('syncId', Crypto.cryptoHash16(mailId));
     	},
     });
 

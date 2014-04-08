@@ -47,7 +47,7 @@ define([
         getKeyRing: function()
         {
         	if (!this.keyring) {
-        		this.keyring = new Keys([], { user: this });
+        		this.keyring = new KeyRing([], { user: this });
         	};
         	return this.keyring;
         },
@@ -63,8 +63,8 @@ define([
         
         getNewMail: function()
         {
-//        	var originals = new Originals([], { after: null });
-        	var originals = new Originals([], { after: this.get('lastMailProcessed')});
+        	var originals = new Originals([], { after: null });
+//        	var originals = new Originals([], { after: this.get('lastMailProcessed')});
         	originals.fetch();
         	
         	return originals;

@@ -105,6 +105,8 @@ define([
 		onAddressChange: function (input)
 		{
 			var that = this;
+			console.log("onAddressChange");
+			
 			Util.keyTimeout('composeview-' + input.name, 1000, function() { that.onAddressChangeAfterDelay(input); });
 		},
 		
@@ -124,15 +126,15 @@ define([
 				that.updateSendLock();
 			};
 			
-			function computeState(addressesToKeys) {
-				return _.every(_.values(addressesToKeys), function(key) {
+			function computeState(addressesToKeyInfos) {
+				return _.every(_.values(addressesToKeyInfos), function(key) {
 					return key.get('verified')=='success';
 				}) ? 'verified' : 'keys';
 			};
 
-			appSingleton.user.getKeyRing().getKeysForAllAddressesCachedFirst(addresses, {
-				success: function(addressesToKeys) { 
-					callback(computeState(addressesToKeys)); 
+			appSingleton.user.getKeyRing().getKeyInfoForAddresses(addresses, {
+				success: function(addressesToKeyInfos) { 
+					callback(computeState(addressesToKeyInfos)); 
 				},
 				failure: function() { callback('failure'); },
 			});

@@ -72,6 +72,28 @@ define([
     		return defaultValue;
     	},
     	
+    	getHeaderSubValue: function(value, subKey)
+    	{
+    		var re = new RegExp(subKey + "=([\\S]*)", "gm");
+    		var matches = re.exec(value);
+    		if (matches)
+    			return Util.trimChars(matches[1], '\'";')
+    		
+    		return null;
+    	},
+    	
+    	getHeaderSubValueInPart: function(part, key, subKey)
+    	{
+    		for (var i in part.headers)
+			{
+    			var kv = part.headers[i];
+    			if (kv.key.toLowerCase() == key.toLowerCase())
+    				return this.getHeaderSubValue(kv.value, subKey);
+			}
+    		
+    		return null;
+    	},
+    	
     	replaceHeaderValueInPart: function(part, key, value)
     	{
     		for (var i in part.headers)
@@ -120,9 +142,10 @@ define([
     	getDecodedPart: function(part)
     	{
     		var encoding = this.getHeaderValueInPartBeforeSemicolon(part, "Content-Transfer-Encoding");
+			var charset = this.getHeaderSubValueInPart(part, "content-type", "charset");
     		if (encoding)
     		{
-    			return Encoders.decode(part.data, encoding);
+    			return Encoders.decode(part.data, encoding, charset);
     		}
     		
     		return part.data;
@@ -167,10 +190,12 @@ define([
 			_.each(parts, function (part) {
 				// propagate the tags 
 				var tags = _.clone(parentTags);
-				if (part.signatureVerified)
-					tags.signatureVerified = true;
-				if (part.decrypted)
-					tags.decrypted = true;
+				var tagsToCheck = ['signatureVerified', 'decrypted', 'signatureFailed'];
+				_.each(tagsToCheck, function(tag) {
+					if (_.has(part, tag))
+						if (part[tag])
+							tags[tag] = part[tag];
+				});
 
 				var subresults = [];
 
