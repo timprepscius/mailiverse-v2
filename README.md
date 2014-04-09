@@ -33,7 +33,7 @@ retreived from a pgp key server.  Not sure, will think more.
 was a lot of work as well.
 
 Things to work on next:
- * I'm still ot detecting when a pgp encrypted with embedded signature is signed.  I should.  OpenPGP is telling me, I just
+ * I'm still not detecting when a pgp encrypted with embedded signature is signed.  I should.  OpenPGP is telling me, I just
 need to record it.
  * The sorting of conversations doesn't update correctly.  (immediately after I reply to in a conversation)
  * Need to fix the Key adding, and revisit the key discovery once more, (I need to record the meta data for a key when I discover it, 
