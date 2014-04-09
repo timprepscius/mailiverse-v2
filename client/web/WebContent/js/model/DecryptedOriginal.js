@@ -194,11 +194,11 @@ define([
     	
     	getPGPSignedBlockIfAny: function(text)
     	{
-			var re = /(-+BEGIN PGP SIGNED MESSAGE-+[\s\S]*?-+BEGIN PGP SIGNATURE-+([\s\S]*?)-+END PGP SIGNATURE-+)/gm;
+			var re = /(-+BEGIN PGP SIGNED MESSAGE-+[\s\S]*?(-+BEGIN PGP SIGNATURE-+[\s\S]*?-+END PGP SIGNATURE-+))/gm;
 			var matches = re.exec(text);
 		
 			if (matches)
-				return matches[1];
+				return [ matches[1], matches[2] ];
     		
     		return null;
     	},
@@ -253,7 +253,7 @@ define([
     				var signed =  multipart.data[multipart.data.length-2].original || "ERROR";
     				var signature = multipart.data[multipart.data.length-1].data || "ERROR";
     				// @TODO this probably isn't right, but seems to be working
-    				var block = [ Util.trimOneNewLine(signed), signature ];
+    				var block = { clearText: Util.trimOneNewLine(signed), signature: signature };
 /*
      					"-----BEGIN PGP SIGNED MESSAGE-----" + "\n" + 
 						"Hash: " + this.getSignatureHashType(multipart) + "\n" + 
@@ -268,14 +268,22 @@ define([
     		_.each(textParts, function(textPart) {
     			var pgpBlock = that.getPGPSignedBlockIfAny(this.getDecodedPart(textPart));
     			if (pgpBlock)
-    				partsToCheck.push({ part: textPart, block: pgpBlock, isInline: true });
+    				partsToCheck.push({ 
+    					part: textPart, 
+    					block: { armoredText: pgpBlock[0], signature: pgpBlock[1] }, 
+    					isInline: true 
+    				});
     		}, this);
 	
     		var htmlParts = this.collectPartsWithContentType(parts, "text/html");
     		_.each(htmlParts, function(htmlPart) {
     			var pgpBlock = this.getPGPSignedBlockIfAny(Util.toText(this.getDecodedPart(htmlPart)));
     			if (pgpBlock)
-    				partsToDecrypt.push({ part: htmlPart, block: pgpBlock, isInline:true });
+    				partsToDecrypt.push({ 
+    					part: textPart, 
+    					block: { armoredText: pgpBlock[0], signature: pgpBlock[1] }, 
+    					isInline: true 
+					});
     		}, this);
     		
 			return partsToCheck;

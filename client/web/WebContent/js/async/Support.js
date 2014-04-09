@@ -115,29 +115,36 @@ pgp_verify: function(armoredKeys, data)
 		return window.openpgp.key.readArmored(k).keys[0];
 	});
 	
-	if (typeof data == 'string')
+	if (data.armoredText)
 	{
-		var message = window.openpgp.cleartext.readArmored(data);
+		var message = window.openpgp.cleartext.readArmored(data.armoredText);
 		var result = window.openpgp.verifyClearSignedMessage(keys,message);
 		valid = result.signatures.length >= keys.length && result.signatures[0].valid;
+		
+		if (!valid)
+		{
+			console.log(data.armoredText);
+			console.log(data.signature);
+			console.log("not-valid");
+		}
 	}
 	else
 	{
 		// i'm having problems getting the signature with openpgpjs, so I make a fake message and 
 		// then get the signature from that
 
-		var armoredText = "-----BEGIN PGP SIGNED MESSAGE-----\n\n" + data[1];
+		var armoredText = "-----BEGIN PGP SIGNED MESSAGE-----\n\n" + data.signature;
 		var input = window.openpgp.armor.decode(armoredText);
 		var packetlist = new window.openpgp.packet.List();
 		packetlist.read(input.data);
 		
 		var test = function (binary) {
 
-			var message = new window.openpgp.cleartext.CleartextMessage(data[0], packetlist);
+			var message = new window.openpgp.cleartext.CleartextMessage(data.clearText, packetlist);
 			// the message kills text on the end of lines, which kills the signatures
 			// so I need to reinitialize the text to what it should be
 			if (binary)
-				message.text = data[0];
+				message.text = data.clearText;
 			
 			// this does not work, because openpgpjs is normalizing line endings
 			//var result = message.verify([key]);
@@ -192,14 +199,14 @@ pgp_verify: function(armoredKeys, data)
 		// but for now - readd the \r\n and test again
 		if (!valid)
 		{
-			data[0] = data[0].replace(/\n/gm,"\r\n");
+			data.clearText = data.clearText.replace(/\n/gm,"\r\n");
 			valid = test(false) || test(true);
 		}
 
 		if (!valid)
 		{
-			console.log(data[0]);
-			console.log(data[1]);
+			console.log(data.clearText);
+			console.log(data.signature);
 			console.log("not-valid");
 		}
 	}

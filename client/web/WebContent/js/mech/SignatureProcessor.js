@@ -5,28 +5,32 @@ define([
 
 	SignatureProcessor = {
 
-		checkSignature: function(originalId, author, dataSigPair, callbacks)
+		checkSignature: function(originalId, author, data, callbacks)
 		{
 			var that = this;
-			Crypto.signatureInfoPGP(dataSigPair[1], {
+			Crypto.signatureInfoPGP(data.signature, {
 				success: function (info) {
 					
 					appSingleton.user.getKeyRing().getKeyCryptosForKeyIds(info.keyIds, {
 						success: function(keyIdsToCrypto) {
-							that.check(originalId, dataSigPair, _.values(keyIdsToCrypto), callbacks);
+							that.check(originalId, data, _.values(keyIdsToCrypto), callbacks);
 						},
 						
-						failure: callbacks.failure
+						failure: function () {
+							// @TODO remove logging
+							console.log("failed to get signature keys");
+							callbacks.failure();
+						}
 					});
 				},
 				failure: callbacks.failure
 			});
 		},
 				
-		check: function (originalId, dataSigPair, keys, callbacks)
+		check: function (originalId, data, keys, callbacks)
 		{
 			var that = this;
-			Crypto.verifyPGP (_.map(keys, function(key) { return key.get('publicKey'); }), dataSigPair, {
+			Crypto.verifyPGP (_.map(keys, function(key) { return key.get('publicKey'); }), data, {
 				success: function (result) {
 					if (result)
 					{
