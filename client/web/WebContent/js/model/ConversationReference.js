@@ -103,15 +103,17 @@ define([
     		folder.getConversations().addReference(reference);
     	},
     	
+    	adjustByDateInFolder: function(folder)
+    	{
+    		folder.getConversations().sort();
+    	},
+    	
     	markDate: function(date)
     	{
-    		var that = this;
-    		this.syncedOnce(function() {
-    			_.each(that.models, function(model) {
-    				model.set('date', date);
-    				model.save();
-    			});
-    		});
+			_.each(this.models, function(model) {
+				model.set('date', date);
+				model.save();
+			});
     	}
     });
     
@@ -144,7 +146,16 @@ define([
         	if (_.has(this.pages, index))
         		return this.pages[index];
 
-        	var page = new ConversationReferences([], { field: this.field, id: this.id, folder:this.folder, pageSize:this.pageSize, page:index });
+        	var page = new ConversationReferences(
+        		[], 
+        		{ 
+        			field: this.field, 
+        			id: this.id, 
+        			folder:this.folder, 
+        			pageSize:this.pageSize, 
+        			page:index,
+        			comparator: function(m) { return -m.get('date'); }
+        		});
         	page.fetch();
         	
         	this.pages[index] = page;
@@ -164,6 +175,11 @@ define([
     		//@TODO check each page
     		this.getPage(0).remove(referenceId);
     		this.set('count', this.get('count') -1);
+    	},
+    	
+    	sort: function()
+    	{
+    		this.getPage(0).sort();
     	}
     });
 });

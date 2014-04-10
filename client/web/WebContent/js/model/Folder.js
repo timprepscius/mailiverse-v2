@@ -64,7 +64,7 @@ define([
         	model.getConversations().getPage(0);
         },
         
-        recomputeConversationMemberships: function(conversation)
+        markDateAndRecomputeConversationMemberships: function(conversation)
         {
         	var that = this;
 			// go through and add to relevant folders
@@ -72,12 +72,19 @@ define([
 			var references = conversation.getReferences();
 			
 			references.syncedOnce(function() { 
+				references.markDate(conversation.get('date'));
+				
 				_.each(that.models, function(folder) {
+					
 					if (references.alreadyIn(folder))
 					{
 						if (!folder.shouldInclude(conversation) || folder.shouldExclude(conversation))
 						{
 							references.removeFromFolder(folder);
+						}
+						else
+						{
+							references.adjustByDateInFolder(folder);
 						}
 					}
 					else

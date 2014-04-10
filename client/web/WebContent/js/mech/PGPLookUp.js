@@ -62,7 +62,7 @@ define([
 	    		if (line.startsWith("pub:"))
 	    		{
 	    			var parts = line.split(":");
-	    			if (key != null && key.userId.contains(address))
+	    			if (key != null && key.userId)
 	    				keys.push(key);
 	    			
 	    			key = {};
@@ -84,7 +84,7 @@ define([
 	    		}
 	    	}
 	    	
-			if (key != null && key.userId.contains(address))
+			if (key != null && key.userId)
 				keys.push(key);
 
 			if (keys.length)

@@ -120,8 +120,7 @@ define([
 	    		that.trigger('recompute');
 	    		that.save();
 	    		
-	    		appSingleton.user.getFolders().recomputeConversationMemberships(that);
-	    		that.getReferences().markDate(date);
+	    		appSingleton.user.getFolders().markDateAndRecomputeConversationMemberships(that);
         	});
         },
     });

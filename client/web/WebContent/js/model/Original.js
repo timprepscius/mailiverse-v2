@@ -66,7 +66,7 @@ define([
 			{
     			var kv = part.headers[i];
     			if (kv.key.toLowerCase() == key.toLowerCase())
-    				return kv.value;
+    				return kv.value.replace('\r','');
 			}
     		
     		return defaultValue;
