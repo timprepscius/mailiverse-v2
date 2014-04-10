@@ -28,16 +28,17 @@ Progress:
  * Checking signatures works with all examples I have at this point.  Yay!   Wow that was a lot of work.
  * Decryption is continuing to work with the examples I have, but do not have enough examples.
  * Changed key scheme again, I think I need to make a KeyChain object which signifies when a key chain has been completely
-retreived from a pgp key server.  Not sure, will think more.
+retreived from a pgp key server.  Not sure, will think more.  This is now done.
+ * KeyChain is really now just a mirror of the pgp keyserver information.  If things work correctly every so
+often (currently every day), the pgp server will be re-visited when you receive or send mail to a known contact. 
  * Encoding uses the mozilla charset encoding source, so now the "us-ascii", "jp-blahblah" and so on decode correctly.  Wow that
 was a lot of work as well.
+ * Sorting of conversations does appear to be working now, needs more testing
+ * Key adding has been revisited, as well as KeyChain.  I think they are close to a "good" version.
 
 Things to work on next:
  * I'm still not detecting when a pgp encrypted with embedded signature is signed.  I should.  OpenPGP is telling me, I just
 need to record it.
- * The sorting of conversations doesn't update correctly.  (immediately after I reply to in a conversation)
- * Need to fix the Key adding, and revisit the key discovery once more, (I need to record the meta data for a key when I discover it, 
-although this will require me to make the KeyChain object - or something)
 
 03/30/2014 - Work on sending encrypted/signed/text only
  * Signing mail is optional
