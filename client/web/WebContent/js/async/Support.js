@@ -73,7 +73,14 @@ pgp_encrypt: function(privateKey, publicKey, bytes64)
 pgp_info: function(keyS)
 {
 	var key = window.openpgp.key.readArmored(keyS).keys[0];
-	return { user:key.users[0].userId.userid, keyId:key.keyId.toHex() };
+	return { 
+		userId:key.getPrimaryUser().user.userId.userid, 
+		keyId:Util.eightCharsFromKeyId(key.primaryKey.keyid.toHex()), 
+		keySize: key.primaryKey.getBitSize(),
+		revoked: key.revocationSignature ? true : false, 
+		timeStamp: Util.toDateSerializable(key.primaryKey.created),
+		address: Util.getAddressFromEmail(key.getPrimaryUser().user.userId.userid)
+	};
 },
 
 pgp_signature_info: function(signatureS)
@@ -92,15 +99,7 @@ pgp_signature_info: function(signatureS)
 	
 	var keyIds = [];
 	for (var i=0; i<c.length; ++i)
-	{
-		var hex = c[i].issuerKeyId.toHex()
-		// EC511F51F2B01195
-		// 1234567812345678
-		if (hex.length == 16)
-			hex = hex.substr(8);
-		
-		keyIds.push(hex.toLowerCase());
-	}
+		keyIds.push(Util.eightCharsFromKeyId(c[i].issuerKeyId.toHex()));
 	
 	return { keyIds:keyIds };
 },

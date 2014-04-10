@@ -11,7 +11,7 @@ define([
 			Crypto.signatureInfoPGP(data.signature, {
 				success: function (info) {
 					
-					appSingleton.user.getKeyRing().getKeyCryptosForKeyIds(info.keyIds, {
+					appSingleton.user.getKeyRing().getKeysForKeyIds(info.keyIds, {
 						success: function(keyIdsToCrypto) {
 							that.check(originalId, data, _.values(keyIdsToCrypto), callbacks);
 						},

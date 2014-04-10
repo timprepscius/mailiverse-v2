@@ -107,31 +107,33 @@ define([
         
         onAdd: function()
         {
+        	var onFailure = function(error) {
+    			that.$('.key-input').val('Unabled to parse key ' + error);
+        	};
+        	
         	var that = this;
         	var keyBlock = this.$('.key-input').val();
+        	
+        	// check it with the info
         	Crypto.infoPGP(keyBlock, {
         		success: function(info) {
-        			var user = info.user;
         			that.$('.key-input').val('Key parsed..');
         			
-        			var contact = appSingleton.user.getContacts().ensureContact(user);
-        			var key = appSingleton.user.getKeyRing().createKey(contact.getAddress());
-        			var crypto = appSingleton.user.getKeyRing().createKeyCrypto(contact.getAddress());
-        			
-					key.set('publicKeyChanged', Util.toDateSerializable());
-					key.set('publicKeySource', 'user');
-					key.save();
+        			appSingleton.user.getContacts().ensureContact(info.userId);        			
+        			var crypto = appSingleton.user.getKeyRing().createKey(keyBlock, info);
+					
+					crypto.generateInfo('user', {
+						success: function () {
+							crypto.save();
+							that.$('.key-input').val('Key saved..\n' + JSON.stringify(info));
+						},
+						failure: onFailure
+					});
 
-					crypto.set('publicKey', keyBlock);
-					crypto.save();
-
-					that.$('.key-input').val('Key saved..');
 					
 					crypto.once('sync', that.keysListView.fetch);
         		},
-        		failure: function(error) {
-        			that.$('.key-input').val('Unabled to parse key ' + error);
-        		},
+        		failure: onFailure,
         	});
         },
 

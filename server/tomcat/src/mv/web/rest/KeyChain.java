@@ -6,14 +6,15 @@ import javax.servlet.http.HttpServlet;
 /**
  * Servlet implementation class Rest
  */
-@WebServlet("/rest/Keys")
-public class Keys extends RestCollection {
+@WebServlet("/rest/KeyChain/*")
+public class KeyChain extends Rest {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Keys() {
-        super("Key");
+    public KeyChain() {
+        super("KeyChain");
+        // TODO Auto-generated constructor stub
     }
 }

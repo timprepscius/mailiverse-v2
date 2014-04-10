@@ -4,20 +4,38 @@ define([
 	'backbone',
 ], function ($,_,Backbone) {
 
-	KeyCryptoExposedFields = [ 'syncId', 'syncOwner', 'syncVersion' ];
+	KeyExposedFields = [ 'syncId', 'syncOwner', 'syncVersion' ];
 	
-	// KeyCrypto is the actual key block
+	// Key is the actual key block
 	
-    KeyCrypto = Backbone.Model.extend({
+    Key = Backbone.Model.extend({
     	idAttribute: "syncId",
-    	urlRoot: Constants.REST + 'KeyCrypto',
-    	exposedFields: KeyCryptoExposedFields,
+    	urlRoot: Constants.REST + 'Key',
+    	exposedFields: KeyExposedFields,
     	
         // 	attributes:
     	// 	{
     	//      syncId: crypto hash of pgp.keyId
     	//		publicKey: string
     	// 	}
+    	
+    	generateInfo: function (server, callbacks)
+    	{
+    		var that = this;
+			Crypto.infoPGP(this.get('publicKey'), {
+				success: function (info) {
+					info.source = server;
+					
+					var keyChain = appSingleton.user.getKeyRing().getKeyChain(info.address);
+					keyChain.fetchOrCreate();
+					keyChain.syncedOnce(function() {
+						keyChain.updateKeys([info], server, false);
+						callbacks.success(info);
+					});
+				},
+				failure: callbacks.failure
+			});
+    	},
     	
     	// fetch the crypto from cache or from the pgp lookup
     	// this may need to be refactored in the near future
@@ -26,10 +44,15 @@ define([
     		if (!options.noPGPLookUp)
     		{
 	    		var that = this;
-	    		var errorSave = options.error;
+	    		var errorSave = options.error || function() {};
 	    		options.error = function () {
 	    			PGPLookUp.lookupId(that.get('keyId'), that, {
-	    				success: options.success,
+	    				success: function (server) {
+	    					that.generateInfo(server, {
+	    						success: options.success || function() {},
+	    						failure: errorSave
+	    					});
+	    				},
 	    				failure: errorSave
 	    			});
 	    		};
@@ -38,15 +61,8 @@ define([
     	},
     });
 
-	KeyInfoExposedFields = [ 'syncId', 'syncOwner', 'syncVersion', 'addressHash' ];
-
 	// KeyInfo is all the meta data about the key
-	
 	KeyInfo = Backbone.Model.extend({
-    	idAttribute: "syncId",
-    	urlRoot: Constants.REST + 'Key',
-    	exposedFields: KeyInfoExposedFields,
-    	
     	// 	attributes:
     	// 	{
     	//      syncId: crypto hash of pgp.keyId
@@ -58,99 +74,105 @@ define([
     	//		lastVerifiedMail: id
     	//      keyId: id,
     	// 	}
+		
+		initialize: function(attrs, options)
+		{
+			this.parentKeyChain = options.parentKeyChain;
+		},
+		
+		save: function()
+		{
+			this.parentKeyChain.onKeyModification(this);
+		},
     });
     
 	// KeyChain is a set of keys for a single user id
 	
-	KeyChain = Backbone.Collection.extend({
-        model: KeyInfo,
-    	url: function () { return Constants.REST + 'Keys?field=' +this.field + "&id="+ this.id; },
-    	exposedFields: KeyInfoExposedFields,
+	KeyChainExposedFields = [ 'syncId', 'syncOwner', 'syncVersion' ];
+	KeyChain = Backbone.Model.extend({
+    	idAttribute: "syncId",
+    	urlRoot: Constants.REST + 'KeyChain',
+    	exposedFields: KeyChainExposedFields,
     	
-        initialize:function(objects, options)
-        {
-        	this.address = options.address;
-
-        	if (this.address)
-        	{
-            	this.field = "addressHash";
-        		this.id = Crypto.cryptoHash16(this.address);
-        	}
-        	
-        	this.user = options.user;
-        },
-        
         // gets current list of keyids and attributes from key server
-        updateKeys: function(keys, server)
+        updateKeys: function(keys_, server, all)
         {
-        	_.each(keys, function(key) {
-        		var k = this.findWhere({ keyId: key.keyId });
-        		if (!k)
-        		{
-        			k = new KeyInfo({syncId: Crypto.cryptoHash16(key.keyId), keyId:key.keyId, addressHash:Crypto.cryptoHash16(key.address) });
-        			k.onCreate();
-        			this.add(k);
-        		}
-        		
-        		k.set(key);
-        		k.set('source', server);
-        		k.save();
-        		
-        	}, this);
-        },
-        
-        createKey: function(attributes)
-        {
-        	var keyIdHash = Crypto.cryptoHash16(attributes.keyId);
+        	var keys = this.get('keys') || {};
         	
-        	var model = this.get(keyIdHash);
-        	if (!model)
+        	_.each(keys_, function(key) {
+				var k = keys[key.keyId] || {};
+        		$.extend(k, key);
+				keys[key.keyId] = k;
+        	});
+        	
+        	this.set('keys', keys);
+        	if (all)
         	{
-        		model = new this.model({ syncId: keyIdHash }); 
-        		model.onCreate();
-        		this.add(model);
+        		this.set('updateTimeStamp', Util.toDateSerializable());
+        		this.set('updateSource', server);
         	}
-    		model.set(attributes);
-    		
-    		return model;
+        	
+        	this.save();
         },
         
         getKey: function(keyId)
         {
-        	return this.findWhere({ keyId: keyId });
+        	return new KeyInfo(this.get('keys')[keyId], { parentKeyChain: this });
         },
 
         getCrypto: function(keyId)
         {
-        	return new KeyCrypto({ syncId: Crypto.cryptoHash16(keyId), keyId: keyId });
+        	return new Key({ syncId: Crypto.cryptoHash16(keyId), keyId: keyId });
         },
     	
-    	getPrimaryKeyId: function() {
+    	getPrimaryKeyId: function() 
+    	{
     		// just pick first for right now.
     		// I should probably pick latest, or greatest or something
-    		if (this.length > 0)
-    			return this.models[0].get('keyId');
-    		
+    		var keys = this.get('keys');
+    		for (var k in keys)
+    			return k;
+
     		return null;
+    	},
+    	
+    	onKeyModification: function(key)
+    	{
+    		var json = key.toJSON();
+    		this.updateKeys([json], null, false);
+    	},
+    	
+    	needsToBeUpdated: function ()
+    	{
+    		if (this.has('updateTimeStamp'))
+    		{
+    			var then = Util.fromDateSerializable(this.get('updateTimeStamp'));
+    			var now = new Date();
+    			if ((now.getTime() - then.getTime()) / 1000 > 60 * 60 * 24)
+    				return true;
+    			
+    			return false;
+    		}
+    		return true;
     	},
     	
     	fetch: function(options)
     	{
-    		if (!options.noPGPLookUp && this.address)
+    		if (!options.noPGPLookUp)
     		{
         		var that = this;
-	    		var errorSave = options.error;
-	    		var successSave = options.success;
+	    		var errorSave = options.error || function() {};
+	    		var successSave = options.success || function() {};
 
 	    		options.error = function () {
-	    			PGPLookUp.lookupAddress(that.address, that, {
+	    			PGPLookUp.lookupAddress(that.get('address'), that, {
 	    				success: successSave,
 	    				failure: errorSave
 	    			});
 	    		};
 	    		
 	    		options.success = function() {
-	    			if (that.length==0)
+	    			if (that.needsToBeUpdated())
 	    				options.error();
 	    			else
 	    				successSave();
@@ -167,10 +189,11 @@ define([
     });
 	
 	KeyRing = Backbone.Collection.extend({
-    	url: function () { return Constants.REST + 'Keys'; },
+    	url: function () { return Constants.REST + 'KeyChains'; },
     	
-        exposedFields: KeyInfoExposedFields,
+        exposedFields: KeyChainExposedFields,
         user: null,
+        model: KeyChain,
         
         initialize:function(objects, options)
         {
@@ -179,10 +202,15 @@ define([
         
         getKeyChain: function(address)
         {
-        	return new KeyChain([], { address: address }); 
+        	return new KeyChain({ syncId: Crypto.cryptoHash16(address), address: address }); 
         },
         
-        getKeyCryptosForKeyIds: function(ids, callbacks)
+        createKey: function(publicKey, info)
+        {
+        	return new Key({ syncId: Crypto.cryptoHash16(info.keyId), keyId: info.keyId, publicKey: publicKey });
+        },
+        
+        getKeysForKeyIds: function(ids, callbacks)
         {
         	var keyIdsToCryptos = {};
         	
@@ -198,7 +226,7 @@ define([
 			_.each (ids, function(id) {
         		var idHash = Crypto.cryptoHash16(id);
 
-        		var crypto = new KeyCrypto({ syncId: idHash, keyId:id });
+        		var crypto = new Key({ syncId: idHash, keyId:id });
         		crypto.fetch({
         			success: function() {
         				keyIdsToCryptos[id] = crypto;
@@ -214,7 +242,7 @@ define([
 			afterAllKeys();
         },
         
-        getKeyCryptosForAddresses: function(addresses, callbacks)
+        getKeysForAddresses: function(addresses, callbacks)
         {
         	var that = this;
         	var addressesToCryptos = {};

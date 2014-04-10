@@ -63,8 +63,9 @@ define([
         
         getNewMail: function()
         {
-//        	var originals = new Originals([], { after: null });
-        	var originals = new Originals([], { after: this.get('lastMailProcessed')});
+    		var originals = new Originals([], { after: this.get('lastMailProcessed')});
+        	if (DEBUG)
+            	originals = new Originals([], { after: null });
         	originals.fetch();
         	
         	return originals;

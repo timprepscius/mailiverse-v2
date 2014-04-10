@@ -11,6 +11,14 @@ define([
 			return JSON.parse(JSON.stringify(json));
 		},
 			
+		eightCharsFromKeyId: function(s)
+		{
+			if (s.length == 16)
+				return s.substr(8);
+			
+			return s.toLowerCase();
+		},
+		
 		guid : function () {
 			function s4() {
 				  return Math.floor((1 + Math.random()) * 0x10000)
@@ -79,11 +87,26 @@ define([
 		getAddressFromEmail: function(email)
 		{
 			email = email || "";
-			var re = /.*\<(.*?)\>/;
-			var r = re.exec(email);
-			if (r != null && r.length ==2)
-				return r[1];
+			email = email.trim();
+
+			{
+				var re = /.*\<(.*?)\>/;
+				var r = re.exec(email);
+				if (r != null && r.length ==2)
+					return r[1];
+			}
 			
+			{
+				if (email.contains("<") && !email.contains(">"))
+					return null;
+				
+				if (email.contains(">") && !email.contains("<"))
+					return null;
+				
+				if (email.contains(" "))
+					return null;
+			}
+
 			return email;
 		},
 		

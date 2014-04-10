@@ -7,7 +7,7 @@ define([
 
 		lookupId: function(id, model, callbacks)
 		{
-			model = model || new KeyCrypto({ syncId: Crypto.cryptoHash16(id), keyId:id});
+			model = model || new Key({ syncId: Crypto.cryptoHash16(id), keyId:id});
 			var server = Constants.PGP_SERVERS[0];
 			
 			$.ajax(server + "?op=get&options=mr&search=0x" + id)
@@ -15,20 +15,19 @@ define([
 					model.set('publicKey', response);
 					model.save();
 					
-					callbacks.success();
+					callbacks.success(server);
 				})
-				
 				.fail(callbacks.failure);
 		},
 			
 		lookupAddress: function(address, model, callbacks)
 		{
-			if (!address.match(/.+@.+/))
+			if (!address || !address.match(/.+@.+/))
 				return callbacks.failure();
 			
 			this.doLookup(address, {
 				success: function (keys, server) {
-					model.updateKeys(keys, server);
+					model.updateKeys(keys, server, true);
 					callbacks.success(model);
 				},
 				failure: callbacks.failure

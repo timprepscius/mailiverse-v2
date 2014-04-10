@@ -116,7 +116,7 @@ define([
 			var addresses = _.map($(input).val().split(','), function(email) { 
 				return Util.getAddressFromEmail(email.trim()); 
 			});
-			addresses = _.without(addresses, '');
+			addresses = _.without(addresses, '', null);
 			
 			function callback(state) {
 				var div = $(input).parents('.input-group');
