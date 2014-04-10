@@ -29,8 +29,20 @@ define([
         getFolders: function() 
         {
         	if (!this.folders) {
+        		var that = this;
         		this.folders = new Folders([], { user:this });
-        		this.folders.fetch();
+        		this.folders.fetch({
+        			
+        			// @TODO, this is just a hack because I deleted something, all of the folders
+        			// and I haven't put in the functionality to reset yet, so quick hack
+        			success: function() {
+        				
+        				if (that.folders.length == 0)
+        				{
+        					that.createStandardFolders(that.folders);
+        				}
+        			}
+        		});
         	}
         	return this.folders;
         },
@@ -72,6 +84,54 @@ define([
     	},
     	
     	// @TODO move this somewhere else
+    	createStandardFolders : function(folders) {
+    		folders.onCreate();
+    		
+    		folders.create({ 
+    			name: 'Inbox', 
+    			ordering: 0, 
+    			inclusion_criteria : { received: true }, 
+    			exclusion_criteria : { spam: true, trash: true },
+    			syncId: Util.guid()
+    		});
+    		folders.create({ 
+    			name: 'Sent', ordering: 1, 
+    			inclusion_criteria : { sending: true, sent: true }, 
+    			exclusion_criteria : { trash: true },
+    			syncId: Util.guid()
+    		});
+    		folders.create({ 
+    			name: 'Drafts', 
+    			ordering: 2, 
+    			inclusion_criteria : { draft: true }, 
+    			exclusion_criteria : { trash: true },
+    			syncId: Util.guid()
+    		});
+    		folders.create({ 
+    			name: 'All', 
+    			ordering: 3, 
+    			inclusion_criteria : { all: true }, 
+    			exclusion_criteria : { spam: true, trash: true },
+    			syncId: Util.guid()
+    		});
+    		folders.create({ 
+    			name: 'Spam', 
+    			ordering: 4, 
+    			inclusion_criteria : { spam: true }, 
+    			exclusion_criteria : { trash: true },
+    			syncId: Util.guid()
+    		});
+    		folders.create({ 
+    			name: 'Trash', 
+    			ordering: 5, 
+    			inclusion_criteria : { trash: true }, 
+    			syncId: Util.guid()
+    		});
+
+    		return folders;
+    	},
+    	
+    	// @TODO move this somewhere else
         checkForUpdates: function()
         {
         	// if this is a first runs
@@ -79,51 +139,7 @@ define([
 
         	if (!_.contains(updates, 'createdFolders'))
         	{
-        		var folders = new Folders([], { user:this });
-        		folders.onCreate();
-        		
-        		folders.create({ 
-        			name: 'Inbox', 
-        			ordering: 0, 
-        			inclusion_criteria : { received: true }, 
-        			exclusion_criteria : { spam: true, trash: true },
-        			syncId: Util.guid()
-        		});
-        		folders.create({ 
-        			name: 'Sent', ordering: 1, 
-        			inclusion_criteria : { sending: true, sent: true }, 
-        			exclusion_criteria : { trash: true },
-        			syncId: Util.guid()
-        		});
-        		folders.create({ 
-        			name: 'Drafts', 
-        			ordering: 2, 
-        			inclusion_criteria : { draft: true }, 
-        			exclusion_criteria : { trash: true },
-        			syncId: Util.guid()
-        		});
-        		folders.create({ 
-        			name: 'All', 
-        			ordering: 3, 
-        			inclusion_criteria : { all: true }, 
-        			exclusion_criteria : { spam: true, trash: true },
-        			syncId: Util.guid()
-        		});
-        		folders.create({ 
-        			name: 'Spam', 
-        			ordering: 4, 
-        			inclusion_criteria : { spam: true }, 
-        			exclusion_criteria : { trash: true },
-        			syncId: Util.guid()
-        		});
-        		folders.create({ 
-        			name: 'Trash', 
-        			ordering: 5, 
-        			inclusion_criteria : { trash: true }, 
-        			syncId: Util.guid()
-        		});
-        		
-        		this.folders = folders;
+        		this.folders = this.createStandardFolders(new Folders([], { user:this }));
         		updates.push('createdFolders');
         		this.set('updates', updates);
         		this.save();

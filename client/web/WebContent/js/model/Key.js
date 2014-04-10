@@ -30,7 +30,7 @@ define([
 					keyChain.fetchOrCreate();
 					keyChain.syncedOnce(function() {
 						keyChain.updateKeys([info], server, false);
-						callbacks.success(info);
+						callbacks.success(keyChain);
 					});
 				},
 				failure: callbacks.failure
@@ -107,10 +107,7 @@ define([
         	
         	this.set('keys', keys);
         	if (all)
-        	{
-        		this.set('updateTimeStamp', Util.toDateSerializable());
-        		this.set('updateSource', server);
-        	}
+        		this.markTimeStamp(server);
         	
         	this.save();
         },
@@ -156,6 +153,30 @@ define([
     		return true;
     	},
     	
+    	includesUserSource: function()
+    	{
+        	var keys = this.get('keys') || {};
+        	var user = false;
+        	_.each(keys, function(key) {
+        		if (key.source == 'user')
+        			user = true;
+        	});
+    		
+        	return user;
+    	},
+    	
+    	includesAKey: function()
+    	{
+        	var keys = this.get('keys') || {};
+    		return keys.length > 0;
+    	},
+    	
+    	markTimeStamp: function(server)
+    	{
+    		this.set('updateTimeStamp', Util.toDateSerializable());
+    		this.set('updateSource', server);
+    	},
+    	
     	fetch: function(options)
     	{
     		if (!options.noPGPLookUp)
@@ -167,7 +188,30 @@ define([
 	    		options.error = function () {
 	    			PGPLookUp.lookupAddress(that.get('address'), that, {
 	    				success: successSave,
-	    				failure: errorSave
+	    				failure: function () {
+	    					
+	    					// if the PGPLookUp fails
+	    					if (that.includesUserSource())
+	    					{
+	    						that.markTimeStamp('user', new Date());
+	    						that.save();
+	    						
+	    						successSave();
+	    					}
+	    					else
+	    					// the PGPLookup failed, but the server might be down
+	    					// so let's try to do it anyways??
+	    					// @TODO clarify what to do if PGPServer is down
+	    					if (that.includesAKey())
+	    					{
+	    						successSave();
+	    					}
+	    					// PGPLookUpFailed and there is *NO* key.
+	    					else
+	    					{
+	    						errorSave();
+	    					}
+	    				}
 	    			});
 	    		};
 	    		
