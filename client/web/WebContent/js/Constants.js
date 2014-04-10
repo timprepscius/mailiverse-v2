@@ -15,6 +15,7 @@ define([
 		URL: BASE + '/mv/',
 		REST: BASE + '/mv/rest/',
 		
+		// @TODO, these need to change to something spit out by /dev/random
 		ENCRYPTION_SALT64: 'MTIzNDU2NzgK',
 		VERIFICATION_SALT64: 'ODc2NTQzMjEK',
 		
