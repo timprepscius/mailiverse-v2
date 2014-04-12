@@ -284,18 +284,45 @@ public class RecordDbMongo extends RecordDb
 		return result;
 	}
 	
+	public String getVerificationVersion (String verification)
+	{
+		int notIndex = verification.indexOf('!');
+		if (notIndex == -1)
+			notIndex = 0;
+		
+		String version = verification.substring(0, notIndex);
+		String[] validVersions = new String[] { "beta3" };
+		for (String v : validVersions)
+			if (v.equals(version))
+				return v;
+		
+		return "beta1";
+	}
+	
 	@Override
 	public Pair<String, String> getLogin(String user, String verification) 
 	{
-		DBObject q = Mongos.toDBObject("address", user, "verification", verification);
+		DBObject q = Mongos.toDBObject("address", user);
 		DBCursor c = db.getCollection("Login").find(q).limit(1);
 		if (c.count()>0)
 		{
 			BasicDBObject d = (BasicDBObject) c.next();
 			d.removeField(S._id);
 			
-			d.put("session", createSession((String)d.get(S.syncId)));
-			return new Pair<String,String>((String)d.get(S.syncId), JSON.serialize(d));
+			String correctVerification = d.getString("verification");
+			if (correctVerification.equals(verification))
+			{
+				d.put("session", createSession((String)d.get(S.syncId)));
+				return new Pair<String,String>((String)d.get(S.syncId), JSON.serialize(d));
+			}
+			else
+			{
+				String correctVerificationVersion = getVerificationVersion(correctVerification);
+				String verificationVersion = getVerificationVersion(verification);
+				
+				if (!correctVerificationVersion.equals(verificationVersion))
+					throw new DbException("There has been a security upgrade.\n\nPlease update your login generation from: " + correctVerificationVersion + ".");
+			}
 		}
 		
 		throw new DbException("Unknown user " + user);
@@ -318,6 +345,23 @@ public class RecordDbMongo extends RecordDb
 		return getLogin(user, verification);
 	}
 	
+	@Override
+	public Pair<String, String> updateLogin(String user, String verification, String json) 
+	{
+		BasicDBObject u = (BasicDBObject) JSON.parse(json);
+		
+		if (user.indexOf('@')<1)
+			throw new RuntimeException("invalid user");
+		
+		u.put("address", user);
+		u.put(S.syncId, "syncId_" + user);
+		u.put("verification", verification);
+		u.remove("session");
+		putObjectWithClazz(u.getString(S.syncId), "Login", u);
+		
+		return getLogin(user, verification);
+	}
+
 	@Override
 	public int getAndIncrementAtomicCounter(String key) 
 	{

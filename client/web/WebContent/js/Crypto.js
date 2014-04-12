@@ -57,28 +57,28 @@ define([
 			Async.pgp_signature_info(callbacks, pgp);
 		},
 		
-		generatePBEs: function(password, callbacks) {
-			var verificationSalt64 = Constants.VERIFICATION_SALT64;
-			var encryptionSalt64 = Constants.ENCRYPTION_SALT64;
-			var iterationCount = 32764;
-			var keyLength = 256;
+		generatePBEs: function(password, callbacks, params) {
+			params = params || Constants.PBE_PARAMS[Constants.PBE_PARAMS_LATEST];
 			
 			Async.pbe_genKey(
 				{
 					success: function(verificationKey) {
+
 						Async.pbe_genKey(
 							{
 								success: function(aes) {
-									callbacks.success({ aes: aes, verification: verificationKey });
+									var verificationKeyPrefix = params.version == "beta1" ? '' : (params.version + "!");
+									callbacks.success({ aes: aes, verification: verificationKeyPrefix+verificationKey });
 								},
 								failure: callbacks.failure
 							},
-							password, verificationSalt64, iterationCount, keyLength
+							
+							password, params.version, params.verificationSalt64, params.iterationCount, params.keyLength
 						);
 					},
 					fail: callbacks.failure
 				},
-				password, encryptionSalt64, iterationCount, keyLength
+				password, params.version, params.encryptionSalt64, params.iterationCount, params.keyLength
 			);
 		},
 		

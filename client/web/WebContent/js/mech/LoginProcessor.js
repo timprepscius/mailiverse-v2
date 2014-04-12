@@ -18,7 +18,11 @@ define([
 	       		{
 	       			success: function(keys) {
 						var now = new Date();
-			    		$.ajax({ url: Constants.URL + "user/Login?user=" + encodeURIComponent(address) + "&verification=" + encodeURIComponent(keys.verification) + "&nocache=" + now.valueOf() })
+			    		$.ajax({ url: 
+			    			Constants.URL + 
+			    			"user/Login?user=" + encodeURIComponent(address) + 
+			    			"&verification=" + encodeURIComponent(keys.verification) + 
+			    			"&nocache=" + now.valueOf() })
 							.success(function ( json ) {
 								Backbone.decryptJson(
 									keys.aes,

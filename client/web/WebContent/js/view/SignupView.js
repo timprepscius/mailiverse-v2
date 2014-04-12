@@ -66,6 +66,7 @@ define([
         {
         	this.$('.activity').hide();
         	this.$('.form').show();
+        	this.appView.onError(error.responseText);
         },
         
         onStep: function(step)
@@ -81,6 +82,7 @@ define([
         
         onFailure: function(error)
         {
+        	this.appView.onError(error.responseText);
         	this.onEnd();
         },
         

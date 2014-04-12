@@ -24,6 +24,7 @@ public abstract class RecordDb implements DbClosable
 	
 	abstract public Pair<String, String> getLogin(String user, String password);
 	abstract public Pair<String, String> createLogin(String user, String password, String json);
+	abstract public Pair<String, String> updateLogin(String user, String verification, String json);
 
 	abstract public String getLoginProperty(String toAddress, String property);
 
@@ -35,5 +36,6 @@ public abstract class RecordDb implements DbClosable
 
 	abstract public String createSession(String userId);
 	abstract public String getSessionUserId(String session);
+
 
 }

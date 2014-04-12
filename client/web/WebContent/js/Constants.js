@@ -15,9 +15,25 @@ define([
 		URL: BASE + '/mv/',
 		REST: BASE + '/mv/rest/',
 		
-		// @TODO, these need to change to something spit out by /dev/random
-		ENCRYPTION_SALT64: 'MTIzNDU2NzgK',
-		VERIFICATION_SALT64: 'ODc2NTQzMjEK',
+		PBE_PARAMS : {
+			beta3: {
+				version: "beta3",
+				verificationSalt64: 'sEKAD85s2KM=',
+				encryptionSalt64: 'AWZ82m0AIXc=',
+				iterationCount: 32764,
+				keyLength: 256,
+			},
+			beta1: {
+				version: "beta1",
+				verificationSalt64: 'ODc2NTQzMjEK',
+				encryptionSalt64: 'MTIzNDU2NzgK',
+				iterationCount: 32764,
+				keyLength: 256,
+			},
+		},
+		
+		PBE_PARAMS_LATEST : "beta3",
+		
 		
 		PGP_SERVERS : [
 		   BASE + '/mv/util/PGPProxy'        

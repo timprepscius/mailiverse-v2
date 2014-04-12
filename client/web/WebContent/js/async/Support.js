@@ -500,7 +500,7 @@ aes_decrypt_multi: function (key64, blocks)
 	return results;
 },
 
-pbe_genKey: function(password, salt64, iterationCount, keyLength)
+pbe_genKey: function(password, version, salt64, iterationCount, keyLength)
 {
 	return Support.pbe_genKey_SJCL(password, salt64, iterationCount, keyLength);
 },

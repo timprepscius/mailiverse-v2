@@ -2,66 +2,63 @@ define([
 	'jquery',
 	'underscore',
 	'backbone',
-	'text!templates/loginTemplate.html',
+	'text!templates/updateLoginTemplate.html',
 
 	'modelBinder',
 ], function ($,_,Backbone,template) {
 	
-	LoginView =  Backbone.View.extend({
+	UpdateLoginView =  Backbone.View.extend({
 		
         events: {
             'click .submit' : 'onSubmit',
-            'click .signup' : 'onSignup',
-            'click .update' : 'onUpdate',
+            'click .login' : 'onLogin',
         },
         
         initialize: function(options) 
         {
         	this.modelBinders = [];
         	this.appView = options.appView;
+        	_.bindAll(this, 'onCryptoSeeded', 'onStep', 'onSuccess', 'onFailure');
+        	
+        	Crypto.seedRandom ( { success: this.onCryptoSeeded, failure: this.onPGPFailure });
+        },
+        
+        onCryptoSeeded: function()
+        {
+        	this.onStep('Crypto seeded');
         },
         
         onSubmit: function(event)
         {
-        	var that = this;
         	event.preventDefault();
         	this.onStart();
         	
         	var name = this.$('.name').val();
-        	var password = this.$('.password').val();
+        	var passwordOld = this.$('.old-password').val();
+        	var passwordNew = this.$('.new-password').val();
+        	var version = this.$('.version').val();
         	this.clear();
         	
-        	LoginProcessor.process(name, password, {
-        		step: function (step) {
-        			that.onStep (step);
-        		},
-        		success: function (user) {
-        			that.onSuccess(user);
-        		},
-        		failure: function (reason) {
-        			that.onFailure(reason);
-        		}
+        	UpdateLoginProcessor.process(name, passwordOld, version, passwordNew, {
+        		step: this.onStep,
+        		success: this.onSuccess,
+        		failure: this.onFailure
         	});
         },
         
         clear: function ()
         {
         	this.$('.name').val('');
-        	this.$('.password').val('');
+        	this.$('.old-password').val('');
+        	this.$('.new-password').val('');
         },
         
-        onSignup: function (event)
+        onLogin: function (event)
         {
         	event.preventDefault();
-        	this.appView.gotoSignup();
+        	this.appView.gotoLogin();
         },
         
-        onUpdate: function (event)
-        {
-        	event.preventDefault();
-        	this.appView.gotoUpdate();
-        },
-
         onStart: function()
         {
         	this.$('.form').hide();
@@ -93,8 +90,6 @@ define([
         },
         
         render: function( model ) {
-        	var that = this;
-        	
         	var rendered = _.template(template, { model: this.model });
             $(this.el).html(rendered);
             return this;

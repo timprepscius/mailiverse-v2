@@ -46,7 +46,11 @@ define([
 															var now = new Date();
 												    		$.ajax({ 
 												    			method: 'POST',
-												    			url: Constants.URL + "user/Signup?user=" + encodeURIComponent(name+Constants.ATHOST) + "&verification=" + encodeURIComponent(keys.verification) + "&nocache=" + now.valueOf(),
+												    			url: 
+												    				Constants.URL + "user/Signup?user=" + 
+												    				encodeURIComponent(address) + 
+												    				"&verification=" + encodeURIComponent(keys.verification) + 
+												    				"&nocache=" + now.valueOf(),
 												    			data: JSON.stringify(encrypted)
 												    		})
 															.success(function ( json ) {
