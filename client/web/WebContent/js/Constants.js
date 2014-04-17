@@ -3,10 +3,15 @@ define([
 ], function ($,_,openpgp) {
 
 	DEBUG = (window.location.hostname == 'localhost');
-	var DEV_BASE = "http://pmx.mooo.com:8080";
+	DEBUG_ALWAYS_DOWNLOAD_ALL_MAIL = DEBUG;
+	
+	var PIRATE = "piratemail.se";
+	var PMX = "pmx.mooo.com";
+	var TESTING = PMX;
+	var DEV_BASE = "http://" + TESTING + ":8080";
 	var BASE = DEBUG ? DEV_BASE : '';
 
-	var DEV_HOSTNAME = "pmx.mooo.com";
+	var DEV_HOSTNAME = TESTING;
 	var HOSTNAME = DEBUG ? DEV_HOSTNAME : window.location.hostname;
 	
 	Constants = {

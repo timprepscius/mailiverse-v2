@@ -76,7 +76,7 @@ define([
         getNewMail: function()
         {
     		var originals = new Originals([], { after: this.get('lastMailProcessed')});
-        	if (DEBUG)
+        	if (DEBUG_ALWAYS_DOWNLOAD_ALL_MAIL)
             	originals = new Originals([], { after: null });
         	originals.fetch();
         	
