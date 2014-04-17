@@ -1,1 +1,1 @@
-openpgp.min.js
+../../../Ext/openpgpjs/dist/openpgp.js
