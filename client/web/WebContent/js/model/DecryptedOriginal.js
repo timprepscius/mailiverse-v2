@@ -53,7 +53,6 @@ define([
     		var postfix = content[2];
     		
 			var contentType = this.getHeaderValueInPart(part, 'content-type');
-			var contentEncoding = this.getHeaderValueInPart(part, 'Content-Transfer-Encoding');
 			
 			this.replaceHeaderValueInPart(part, 'content-type', 'multipart/mixed');
 			this.replaceHeaderValueInPart(part, 'recursive-content-type', contentType);
@@ -61,30 +60,39 @@ define([
 			part.data = [];
 
 			if (prefix)
+			{
+				var encoded = Encoders.encode(prefix);
 				part.data.push({ 
 					headers: [
 					    { key: 'Content-Type', value: contentType },
-					    { key: 'Content-Transfer-Encoding', value: contentEncoding }
+					    { key: 'Content-Transfer-Encoding', value: encoded.encoding }
 					], 
-					data: prefix 
+					data: encoded.block 
 				});
-
-			part.data.push($.extend({ 
-				headers: [
-				    { key: 'Content-Type', value: contentType },
-				    { key: 'Content-Transfer-Encoding', value: contentEncoding }
-				], 
-				data: body
-			}, tags));
+			}
+			
+			{
+				var encoded = Encoders.encode(body);
+				part.data.push($.extend({ 
+					headers: [
+					    { key: 'Content-Type', value: contentType },
+					    { key: 'Content-Transfer-Encoding', value: encoded.encoding }
+					], 
+					data: encoded.block
+				}, tags));
+			}
 			
 			if (postfix)
+			{
+				var encoded = Encoders.encode(postfix);
 				part.data.push({ 
 					headers: [
 					    { key: 'Content-Type', value: contentType },
-					    { key: 'Content-Transfer-Encoding', value: contentEncoding }
+					    { key: 'Content-Transfer-Encoding', value: encoded.encoding }
 					], 
-					data: postfix 
+					data: encoded.block 
 				});
+			}
     	},
 
     	
@@ -150,9 +158,7 @@ define([
     				{
     					if (partToDecrypt.isInline)
     					{
-    						// do *not* do the content decoding, because each part should do its own
-    						// (i think)
-    						var contentTriple = this.getPGPEncryptedContent(part.data);
+    						var contentTriple = this.getPGPEncryptedContent(this.getDecodedPart(part));
     						contentTriple[1] = part.decryptedBlock;
 
     						this.replacePartDataWithContentTriple(
@@ -194,7 +200,7 @@ define([
     	
     	getPGPSignedBlockIfAny: function(text)
     	{
-			var re = /(-+BEGIN PGP SIGNED MESSAGE-+[\s\S]*?(-+BEGIN PGP SIGNATURE-+[\s\S]*?-+END PGP SIGNATURE-+))/gm;
+			var re = /[\s\S]*?(-+BEGIN PGP SIGNED MESSAGE-+[\s\S]*?(-+BEGIN PGP SIGNATURE-+[\s\S]*?-+END PGP SIGNATURE-+))/gm;
 			var matches = re.exec(text);
 		
 			if (matches)
@@ -205,7 +211,7 @@ define([
     	
     	getPGPSignedContent: function(text)
     	{
-			var re = /([\s\S]*)^-+BEGIN PGP SIGNED MESSAGE-+([\s\S]*?)-+BEGIN PGP SIGNATURE-+[\s\S]*?-+END PGP SIGNATURE-+([\s\S]*)/gm;
+			var re = /([\s\S]*?)-+BEGIN PGP SIGNED MESSAGE-+([\s\S]*?)-+BEGIN PGP SIGNATURE-+[\s\S]*?-+END PGP SIGNATURE-+([\s\S]*)/gm;
 			var matches = re.exec(text);
 		
 			if (matches)
@@ -252,14 +258,7 @@ define([
     			{
     				var signed =  multipart.data[multipart.data.length-2].original || "ERROR";
     				var signature = multipart.data[multipart.data.length-1].data || "ERROR";
-    				// @TODO this probably isn't right, but seems to be working
     				var block = { clearText: Util.trimOneNewLine(signed), signature: signature };
-/*
-     					"-----BEGIN PGP SIGNED MESSAGE-----" + "\n" + 
-						"Hash: " + this.getSignatureHashType(multipart) + "\n" + 
-						signed +
-						$.trim(signature) + "\n";
-*/    				
     				partsToCheck.push({ part: multipart, block: block, shouldReplace: false });
     			}
     		}, this);
@@ -312,9 +311,10 @@ define([
     					// the signatureVerified icon will appear
     					if (partToCheck.isInline)
     					{
+    						var contentTriple = this.getPGPSignedContent(this.getDecodedPart(part));
     						this.replacePartDataWithContentTriple(
     							part, 
-    							this.getPGPSignedContent(part.data), 
+    							contentTriple, 
     							{ signatureVerified:part.signatureVerified, signatureFailed:part.signatureFailed }
     						);
 
