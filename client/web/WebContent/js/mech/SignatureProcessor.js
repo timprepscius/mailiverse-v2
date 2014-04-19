@@ -19,7 +19,7 @@ define([
 						failure: function () {
 							// @TODO remove logging
 							console.log("failed to get signature keys");
-							callbacks.failure();
+							callbacks.failure("Keys could not be found to check signature.");
 						}
 					});
 				},
@@ -31,21 +31,13 @@ define([
 		{
 			var that = this;
 			Crypto.verifyPGP (_.map(keys, function(key) { return key.get('publicKey'); }), data, {
-				success: function (result) {
-					if (result)
-					{
-						that.onVerifySuccess(originalId, keys);
-						callbacks.success();
-					}
-					else
-					{
-						that.onVerifyFailure(originalId, keys);
-						callbacks.failure();
-					}
+				success: function () {
+					that.onVerifySuccess(originalId, keys);
+					callbacks.success();
 				},
-				failure: function () {
+				failure: function (message) {
 					that.onVerifyFailure(originalId, keys);
-					callbacks.failure();
+					callbacks.failure(message);
 				},
 			});
 		},

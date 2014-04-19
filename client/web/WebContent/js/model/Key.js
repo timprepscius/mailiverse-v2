@@ -124,13 +124,22 @@ define([
     	
     	getPrimaryKeyId: function() 
     	{
-    		// just pick first for right now.
-    		// I should probably pick latest, or greatest or something
+    		// pick the latest non revoked key.
+    		// i think what will eventually happen, is the keyId of the email last received by the 
+    		// recipient should be given preference.
+    		// @TODO, use some better algorithm to pick best key for user
+    		var bestKey = null;
+    		
     		var keys = this.get('keys');
-    		for (var k in keys)
-    			return k;
+    		_.each(keys, function(key) {
+    			if (!key.revoked)
+    			{
+	    			if (bestKey == null || key.timeStamp > bestKey.timeStamp)
+	    				bestKey = key;
+    			}
+    		});
 
-    		return null;
+    		return bestKey ? bestKey.keyId : null;
     	},
     	
     	onKeyModification: function(key)

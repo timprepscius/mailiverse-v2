@@ -333,8 +333,8 @@ define([
     					partToCheck.part.signatureVerified = true;
     					onAllChecked();
     				},
-    				failure: function() {
-    					partToCheck.part.signatureFailed = true;
+    				failure: function(message) {
+    					partToCheck.part.signatureFailed = message;
     					onAllChecked();
     				},
     			});

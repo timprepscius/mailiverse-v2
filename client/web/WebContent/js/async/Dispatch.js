@@ -98,7 +98,7 @@ Dispatch = {
 				if (cmd != 'ping')
 				{
 					if (callback.failure)
-						callback.failure(exception);
+						callback.failure(exception.toString());
 					else
 						throw exception;
 				}
@@ -126,7 +126,7 @@ Dispatch = {
 					}
 					catch (exception)
 					{
-						response.exception = exception;
+						response.exception = exception.toString();
 					}
 					
 					that.handleResponse(response);

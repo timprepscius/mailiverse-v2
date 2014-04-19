@@ -46,7 +46,7 @@
 			<span class="glyphicon glyphicon-certificate signed" data-toggle="tooltip" title="Signature verified"></span>
 		<% } %>
 		<% if (f) { %>
-			<span class="glyphicon glyphicon-certificate signed-failure" data-toggle="tooltip" title="Signature failed"></span>
+			<span class="glyphicon glyphicon-certificate signed-failure" data-toggle="tooltip" title="<%- f %>"></span>
 		<% } %>
 		<% if (d) { %>
 			<span class="glyphicon glyphicon-lock decrypted" data-toggle="tooltip" title="Decrypted"></span>

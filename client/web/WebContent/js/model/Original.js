@@ -85,7 +85,7 @@ define([
     		var re = new RegExp(subKey + "=([\\S]*)", "gm");
     		var matches = re.exec(value);
     		if (matches)
-    			return Util.trimChars(matches[1], '\'";')
+    			return Util.trimChars(matches[1], '\'";');
     		
     		return null;
     	},
@@ -161,7 +161,10 @@ define([
     	
     	convertToReadable: function(part, tags)
     	{
-			var contentType = this.getHeaderValueInPartBeforeSemicolon(part, 'Content-Type');
+    		// with some e-mails, specifically e-mails from the postfix user list
+    		// sometimes the contents don't have a content-type
+    		// so we make the default type text/plain, hopefully this will not cause problems
+			var contentType = this.getHeaderValueInPartBeforeSemicolon(part, 'Content-Type', 'text/plain');
 			if (part.data)
 			{
 	    		if (contentType == 'text/plain')

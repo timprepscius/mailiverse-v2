@@ -122,9 +122,11 @@ pgp_verify: function(armoredKeys, data)
 		
 		if (!valid)
 		{
-			console.log(data.armoredText);
-			console.log(data.signature);
-			console.log("not-valid");
+			console.log("put breakpoint here");
+
+			var message = window.openpgp.cleartext.readArmored(data.armoredText);
+			var result = window.openpgp.verifyClearSignedMessage(keys,message);
+			valid = result.signatures.length >= keys.length && result.signatures[0].valid;
 		}
 	}
 	else
@@ -204,10 +206,18 @@ pgp_verify: function(armoredKeys, data)
 
 		if (!valid)
 		{
-			console.log(data.clearText);
-			console.log(data.signature);
-			console.log("not-valid");
+			console.log("put breakpoint here");
 		}
+	}
+
+	if (!valid)
+	{
+		console.log(data.clearText);
+		console.log(data.armoredText);
+		console.log(data.signature);
+		console.log("not-valid");
+		
+		throw "Signature did not match content.";
 	}
 
 	return valid;
