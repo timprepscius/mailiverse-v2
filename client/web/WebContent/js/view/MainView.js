@@ -99,6 +99,12 @@ define([
         	keys.render();
         },
         
+        showOriginal: function(id)
+        {
+        	var original = new OriginalView({ el: this.$('#main-modal'), model:new Original({syncId:id}) });
+        	original.render();
+        },
+        
         closeCurrentView: function() {
         	if (this.currentView)
         	{

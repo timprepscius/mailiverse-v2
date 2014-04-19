@@ -29,12 +29,20 @@ define([
 
 	MailFullView = Backbone.View.extend({
 
+		events: {
+			'click .show-original' : 'showOriginal',
+		},
+
 		initialize: function(options) 
 		{
 			this.modelBinders = [];
-			_.bindAll(this, 'render');
+			_.bindAll(this, 'render', 'showOriginal');
 			
 			this.model.on('changed', this.render);
+		},
+		
+		showOriginal: function() {
+			appSingleton.mainView.showOriginal(this.model.get('originalId'));
 		},
 
 		render: function() {

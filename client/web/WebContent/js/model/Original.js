@@ -36,6 +36,14 @@ define([
     		this.processDecryptEnvelope(callbacks);
     	},
     	
+    	decryptWithoutProcessing: function(callbacks)
+    	{
+    		Crypto.decryptPGP ( 
+    			this.get('data'),
+    			callbacks
+    		);
+    	},
+    	
     	processDecryptEnvelope: function (callbacks)
     	{
     		var that = this;
