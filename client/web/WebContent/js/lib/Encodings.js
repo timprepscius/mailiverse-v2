@@ -11,10 +11,10 @@ define([], function() {
 				//              UTF         B         BLOCK
 				var re0 = /=\?([\S]*?)\?([\S]*?)\?([\S]*?)\?=/gm;
 				var decoded = str.replace(re0, function(m0, charset, encoder, block) {
-					if (encoder == 'Q')
+					if (encoder.toUpperCase() == 'Q')
 						return EncoderQp.decode(block, charset);
 					else
-					if (encoder == 'B')
+					if (encoder.toUpperCase() == 'B')
 						return EncoderB64.decode(block, charset);
 					
 					return m0;
