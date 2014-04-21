@@ -253,7 +253,7 @@ define([
 		{
 			if (!s)
 				return [];
-			return _.without(_.each(s.split(d), function(w) { return w.trim(); }), '');
+			return _.without(_.map(s.split(d), function(w) { return w.trim(); }), '');
 		},
 		
 		addOrRemoveClass: function( div, clazz, toggle)

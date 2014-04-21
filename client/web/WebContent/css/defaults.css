@@ -4,6 +4,15 @@ html, body {
     overflow: hidden;
 }
 
+/**********************************************/
+
+.tokenfield.form-control {
+	z-index: inherit;
+}
+
+/**********************************************/
+
+
 #mailiverse-application 
 {
     position: absolute;
@@ -13,6 +22,7 @@ html, body {
     right: 0;
     overflow: auto;
 }
+
 /**********************************************/
 
 .initially-hidden {

@@ -1,0 +1,1 @@
+../../../Ext/sliptree-bootstrap-tokenfield-9e935ef/dist/bootstrap-tokenfield.js

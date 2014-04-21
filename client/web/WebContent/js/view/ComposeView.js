@@ -72,19 +72,21 @@ define([
 						that.onAddressChange(this);
 					});
 					
-					$(input).typeahead(null, {
-					  displayKey: 'email',
-					  source: typeaheadContacts.ttAdapter(),
-					  templates: {
-						    suggestion: function (model) {
-						      return '<p><span class="email">' + Util.toHtml(model.email) + '</span>' + 
-						      ''
-//						      '<span class="glyphicon glyphicon-lock pull-right keystatus-' + model.status + '"></span></p>';
-						    }
-						  }				  
+					$(input).tokenfield({
+					  typeahead: {
+						  displayKey: 'email',
+						  source: typeaheadContacts.ttAdapter(),
+						  templates: {
+							    suggestion: function (model) {
+							      return '<p><span class="email">' + Util.toHtml(model.email) + '</span>' + 
+							      ''
+	//						      '<span class="glyphicon glyphicon-lock pull-right keystatus-' + model.status + '"></span></p>';
+							    }
+							  }				  
+					  },
 					});
 					
-					Util.fixTypeAheadToWorkWithCommas(input);
+//					Util.fixTypeAheadToWorkWithCommas(input);
 					this.onAddressChangeAfterDelay(input);
 					
 				}, that);
