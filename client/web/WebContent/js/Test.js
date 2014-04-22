@@ -7,9 +7,10 @@ define([
 	'dispatch',
 ], function ($,_,Backbone) {
 
-	CKEDITOR.disableAutoInline = true;
-	CKEDITOR.resize_enabled = true;
-	CKEDITOR.startupFocus = false;
+	CKEDITOR.config.disableAutoInline = true;
+	CKEDITOR.config.resize_enabled = true;
+	CKEDITOR.config.startupFocus = false;
+	CKEDITOR.config.enterMode = CKEDITOR.ENTER_BR;
 	
 	Dispatch.startWorker();
 	
@@ -19,5 +20,5 @@ define([
 		appSingleton.render();
 		
 		appSingleton.gotoLogin();
-	}
+	};
 });
