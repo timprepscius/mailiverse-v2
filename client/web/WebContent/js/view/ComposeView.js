@@ -45,51 +45,57 @@ define([
 			});
 			this.$el.html(rendered);
 			
+			
+			var typeaheadContacts = new Bloodhound({
+			  datumTokenizer: function(d) { return Bloodhound.tokenizers.whitespace(d.value); },
+			  queryTokenizer: Bloodhound.tokenizers.whitespace,
+			  local: []
+			});
+			
+			_.each(['to', 'cc', 'bcc'], function(k) {
+				var f = that.model.get(k);
+				var input = that.$('.' + k + ' input').not(':disabled');
+
+				$(input).on('tokenfield:createtoken tokenfield:removetoken tokenfield:edittoken', function() {
+					that.onAddressChange(this);
+				});
+				$(input).bind('input', function() {
+					that.onAddressChange(this);
+				});
+				$(input).bind('keyup', function() {
+					that.onAddressChange(this);
+				});
+				
+				$(input).tokenfield({
+				  allowDuplicates: true,
+				  typeahead: {
+					  displayKey: 'label',
+					  source: typeaheadContacts.ttAdapter(),
+					  templates: {
+						    suggestion: function (model) {
+						      return '<p><span class="email">' + Util.toHtml(model.value) + '</span>';
+						    }
+						  }				  
+				  },
+				});
+				
+				this.onAddressChangeAfterDelay(input);
+				
+				$(input).tokenfield('setTokens', 
+					_.map(Util.splitAndTrim(f, ','), function(email) {
+						return { value: email, label: Util.getNameFromEmail(email) };
+					})
+				);
+			}, that);
+			
 			appSingleton.user.getContacts().syncedOnce( function () {
-				// this really should be done later, but I'm just not sure how to do it
-				// at the moment, sick of reading through typeahead code
-				typeaheadContactsLocal = _.map(appSingleton.user.getContacts().models,
+				var typeaheadContactsLocal = _.map(appSingleton.user.getContacts().models,
 					function (model) {
-//						return { email: model.get('email'), status: model.getKeyStatus() };
-					return { email: model.get('email') };
+						return { value: model.get('email'), label: Util.getNameFromEmail(model.get('email')) };
 					}
 				);
 				
-				var typeaheadContacts = new Bloodhound({
-				  datumTokenizer: function(d) { return Bloodhound.tokenizers.whitespace(d.email); },
-				  queryTokenizer: Bloodhound.tokenizers.whitespace,
-				  local: typeaheadContactsLocal
-				});
-
-				// initialize the bloodhound suggestion engine
-				typeaheadContacts.initialize();
-
-				_.each(that.$('.autocomplete-address'), function(input) {
-					$(input).bind('input', function() {
-						that.onAddressChange(this);
-					});
-					$(input).bind('keyup', function() {
-						that.onAddressChange(this);
-					});
-					
-					$(input).tokenfield({
-					  typeahead: {
-						  displayKey: 'email',
-						  source: typeaheadContacts.ttAdapter(),
-						  templates: {
-							    suggestion: function (model) {
-							      return '<p><span class="email">' + Util.toHtml(model.email) + '</span>' + 
-							      ''
-	//						      '<span class="glyphicon glyphicon-lock pull-right keystatus-' + model.status + '"></span></p>';
-							    }
-							  }				  
-					  },
-					});
-					
-//					Util.fixTypeAheadToWorkWithCommas(input);
-					this.onAddressChangeAfterDelay(input);
-					
-				}, that);
+				typeaheadContacts.add(typeaheadContactsLocal);
 			} );
 
 			this.$('.send-encrypt input').attr('checked', this.model.get('sendEncrypted'));
