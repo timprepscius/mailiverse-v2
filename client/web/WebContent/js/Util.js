@@ -308,6 +308,14 @@ define([
 		{
 			if (toggle != div.hasClass(clazz))
 				div.toggleClass(clazz);
+		},
+		
+		toLowerCase: function(s)
+		{
+			if (s != null)
+				return s.toLowerCase();
+			
+			return null;
 		}
 	} ;
 });

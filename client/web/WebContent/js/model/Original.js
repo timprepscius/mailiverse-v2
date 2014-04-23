@@ -164,7 +164,7 @@ define([
     		// with some e-mails, specifically e-mails from the postfix user list
     		// sometimes the contents don't have a content-type
     		// so we make the default type text/plain, hopefully this will not cause problems
-			var contentType = this.getHeaderValueInPartBeforeSemicolon(part, 'Content-Type', 'text/plain');
+			var contentType = Util.toLowerCase(this.getHeaderValueInPartBeforeSemicolon(part, 'Content-Type', 'text/plain'));
 			if (part.data)
 			{
 	    		if (contentType == 'text/plain')
@@ -210,7 +210,7 @@ define([
 
 				var subresults = [];
 
-				var contentType = this.getHeaderValueInPartBeforeSemicolon(part, 'Content-Type');
+				var contentType = Util.toLowerCase(this.getHeaderValueInPartBeforeSemicolon(part, 'Content-Type'));
 				
 				if (contentType && contentType.startsWith('multipart/alternative'))
 				{
@@ -231,7 +231,7 @@ define([
 				if (mode == 'alternative')
 				{
 					var recursiveContentType = this.getHeaderValueInPartBeforeSemicolon(part, 'recursive-content-type');
-					var alternativeContentType = recursiveContentType || contentType;
+					var alternativeContentType = Util.toLowerCase(recursiveContentType || contentType);
 
 					var ratedContentType = "0 none";
 					
@@ -275,7 +275,7 @@ define([
     		partsWithContentType = partsWithContentType || [];
     		_.each(parts, function(part) {
     			
-				var c = this.getHeaderValueInPartBeforeSemicolon(part, 'Content-Type');
+				var c = Util.toLowerCase(this.getHeaderValueInPartBeforeSemicolon(part, 'Content-Type'));
 				if (c)
 				{
 					if (c.startsWith(contentType))
