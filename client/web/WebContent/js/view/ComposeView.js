@@ -3,11 +3,12 @@ define([
         'underscore',
         'backbone',
         'text!templates/composeTemplate.html',
+        'text!templates/keySelectTemplate.html',
 
         'modelBinder',
         'ckeditor',
         'ckeditor_adapter',
-        ], function ($,_,Backbone,composeTemplate) {
+        ], function ($,_,Backbone,composeTemplate,keySelectTemplate) {
 
 	ComposeView = Backbone.View.extend({
 
@@ -15,6 +16,7 @@ define([
 			'click .send' : 'onSend',
 			'click .save' : 'onSave',
 			'click .discard' : 'onDiscard',
+			'click .key-selector': 'onSelectKey',
 		},
 
 		locks : {
@@ -30,7 +32,8 @@ define([
 		{
 			this.partialView = null;
 			this.fullView = null;
-			_.bindAll(this, 'render', 'onSend', 'onAddressChange');
+			_.bindAll(this, 'render', 'onSend', 'onAddressChange', 'onSelectKey');
+			this.keyChainCache = {};
 			
 			this.model.on('changed', this.render);
 		},
@@ -45,7 +48,6 @@ define([
 			});
 			this.$el.html(rendered);
 			
-			
 			var typeaheadContacts = new Bloodhound({
 			  datumTokenizer: function(d) { return Bloodhound.tokenizers.whitespace(d.value); },
 			  queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -59,6 +61,21 @@ define([
 				$(input).on('tokenfield:createtoken tokenfield:removetoken tokenfield:edittoken', function() {
 					that.onAddressChange(this);
 				});
+
+				$(input).on('tokenfield:createtoken', function(t) {
+					var l = $(t.relatedTarget);
+					var keyId = 'None';
+					
+					var address = Util.getAddressFromEmail(t.token.value);
+					var specificKeyId = Util.getSpecificKeyFromKeyedEmail(t.token.value);
+					if (specificKeyId)
+						keyId = specificKeyId;
+					
+					var keyChain = that.keyChainCache[address];
+					var selector = _.template(keySelectTemplate, { keyId: keyId, keyChain: keyChain });
+					l.children().last().before(selector);
+				});
+				
 				$(input).bind('input', function() {
 					that.onAddressChange(this);
 				});
@@ -72,10 +89,10 @@ define([
 					  displayKey: 'label',
 					  source: typeaheadContacts.ttAdapter(),
 					  templates: {
-						    suggestion: function (model) {
-						      return '<p><span class="email">' + Util.toHtml(model.value) + '</span>';
-						    }
-						  }				  
+					    suggestion: function (model) {
+					      return '<p><span class="email">' + Util.toHtml(model.value) + '</span>';
+					    }
+					  }				  
 				  },
 				});
 				
@@ -91,7 +108,8 @@ define([
 			appSingleton.user.getContacts().syncedOnce( function () {
 				var typeaheadContactsLocal = _.map(appSingleton.user.getContacts().models,
 					function (model) {
-						return { value: model.get('email'), label: Util.getNameFromEmail(model.get('email')) };
+						var email = model.get('email');
+						return { value: email, label: Util.getNameFromEmail(email) };
 					}
 				);
 				
@@ -110,6 +128,21 @@ define([
 			return this;
 		},
 		
+		onSelectKey: function (e)
+		{
+			var a = e.target.parentElement;
+			var keyId = $(a).attr('data');
+			var token = a.parentElement.parentElement.parentElement.parentElement;
+			var email = $(token).attr('data-value');
+			email = Util.setSpecificKeyToKeyedEmail(email, keyId);
+			$(token).attr('data-value', email);
+			
+			var tokenfieldDiv = token.parentElement;
+			var input = $(tokenfieldDiv).children('input')[0];
+			var tokens = $(input).tokenfield('getTokens');
+			$(input).tokenfield('setTokens', tokens);
+		},
+		
 		onAddressChange: function (input)
 		{
 			var that = this;
@@ -126,6 +159,38 @@ define([
 			});
 			addresses = _.without(addresses, '', null);
 			
+			function markKeyIdsInTokens (addressesToKeyInfos) {
+				var oneChanged = false;
+				
+				var tokens = $(input).tokenfield('getTokens');
+				_.each(tokens, function(token) {
+					
+					var data = token.value;
+					var address = Util.getAddressFromEmail(data);
+					
+					var keyChain = addressesToKeyInfos[address];
+					if (keyChain)
+					{
+						var keyId = Util.getSpecificKeyFromKeyedEmail(data);
+						if (keyId == null)
+						{
+							var primaryKey = keyChain.getPrimaryKeyId();
+							token.value = Util.setSpecificKeyToKeyedEmail(data, primaryKey);
+							oneChanged = true;
+						}
+						
+						if (!that.keyChainCache[address])
+						{
+							that.keyChainCache[address] = keyChain;
+							oneChanged = true;
+						}
+					}
+				});
+				
+				if (oneChanged)
+					$(input).tokenfield('setTokens', tokens);
+			};
+			
 			function callback(state) {
 				var div = $(input).parents('.input-group');
 				Util.addOrRemoveClass(div, 'pgp-verified', state=='verified' && addresses.length>0);
@@ -135,16 +200,21 @@ define([
 			};
 			
 			function computeState(addressesToKeyInfos) {
-				return _.every(_.values(addressesToKeyInfos), function(key) {
+				return _.every(_.values(addressesToKeyInfos), function(keyChain) {
+					var key = keyChain.getKey(keyChain.getPrimaryKeyId());
 					return key.get('verified')=='success';
 				}) ? 'verified' : 'keys';
 			};
 
-			appSingleton.user.getKeyRing().getKeyInfoForAddresses(addresses, {
+			appSingleton.user.getKeyRing().getKeyChainsForAddresses(addresses, {
 				success: function(addressesToKeyInfos) { 
+					markKeyIdsInTokens(addressesToKeyInfos);
 					callback(computeState(addressesToKeyInfos)); 
 				},
-				failure: function() { callback('failure'); },
+				failure: function(addressesToKeyInfos) { 
+					markKeyIdsInTokens(addressesToKeyInfos);
+					callback('failure'); 
+				},
 			});
 		},
 		

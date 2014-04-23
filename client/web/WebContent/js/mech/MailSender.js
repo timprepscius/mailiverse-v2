@@ -45,7 +45,7 @@ define([
 			{
 				var that = this;
 				appSingleton.user.getKeyRing().getKeysForAddresses(
-					mail.getRecipientAddresses(), 
+					mail.getRecipientEmailAddresses(), 
 					{
 						success: function (addressesToKeys)
 						{
@@ -121,9 +121,9 @@ define([
 		sendPlainTextDo: function(mail, mailContent, callbacks)
 		{
 		    var data = {
-		    	to: Util.splitAndTrim(mail.get('to'), ','),
-		    	cc: Util.splitAndTrim(mail.get('cc'), ','),
-		    	bcc: Util.splitAndTrim(mail.get('bcc'), ','),
+		    	to: Util.unkeyEmails(Util.splitAndTrim(mail.get('to'), ',')),
+		    	cc: Util.unkeyEmails(Util.splitAndTrim(mail.get('cc'), ',')),
+		    	bcc: Util.unkeyEmails(Util.splitAndTrim(mail.get('bcc'), ',')),
 		    	subject: mail.get('subject'),
 		    	content: mailContent,
 		    	messageId: mail.get('message-id'),
@@ -153,9 +153,9 @@ define([
 		    	
 		    	success: function(encryptedMultiPart) {
 				    var data = {
-				    	to: Util.splitAndTrim(mail.get('to'), ','),
-				    	cc: Util.splitAndTrim(mail.get('cc'), ','),
-				    	bcc: Util.splitAndTrim(mail.get('bcc'), ','),
+				    	to: Util.unkeyEmails(Util.splitAndTrim(mail.get('to'), ',')),
+				    	cc: Util.unkeyEmails(Util.splitAndTrim(mail.get('cc'), ',')),
+				    	bcc: Util.unkeyEmails(Util.splitAndTrim(mail.get('bcc'), ',')),
 				    	subject: mail.get('subject'),
 				    	encryptedContent: encryptedMultiPart,
 				    	version: Constants.VERSION,
@@ -173,6 +173,8 @@ define([
 		
 		doSend: function(mail, data, callbacks)
 		{
+			return false;
+			
 		    $.ajax({ 
 		    	method: 'PUT',
 		    	url: Constants.URL + 'util/Send', 

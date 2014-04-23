@@ -90,7 +90,7 @@ define([
 			email = email.trim();
 
 			{
-				var re = /.*\<(.*?)\>/;
+				var re = /.*\<(.*?)\>.*/;
 				var r = re.exec(email);
 				if (r != null && r.length ==2)
 					return r[1];
@@ -108,6 +108,54 @@ define([
 			}
 
 			return email;
+		},
+		
+		getSpecificKeyFromKeyedEmail: function(email)
+		{
+			email = email || "";
+			email = email.trim();
+
+			{
+				var re = /.*\<.*?\>.*?\[(.*)\]/;
+				var r = re.exec(email);
+				if (r != null && r.length == 2)
+					return r[1];
+			}
+			
+			return null;
+		},
+		
+		unKeyEmail: function(email)
+		{
+			email = email || "";
+			email = email.trim();
+
+			{
+				var re = /(.*\<.*?\>).*?\[.*\]/;
+				var r = re.exec(email);
+				if (r != null && r.length == 2)
+					return r[1];
+			}
+			
+			return email;
+		},
+		
+		unkeyEmails : function(a)
+		{
+			return _.map(a, function(o) {
+				return this.unKeyEmail(o);
+			}, this);
+		},
+		
+		setSpecificKeyToKeyedEmail: function (email, keyId)
+		{
+			var existingKey = this.getSpecificKeyFromKeyedEmail(email);
+			if (existingKey)
+			{
+				return email.replace(existingKey, keyId);
+			}
+			
+			return email + " [" + keyId + "]";
 		},
 		
 		getSignatureHashTypeFromSignedContent: function(content_)

@@ -315,29 +315,43 @@ define([
         	
 			_.each (addresses, function(address) {
 				
-				var keyChain = that.getKeyChain(address);
+				function getCrypto(keyId)
+				{
+					var crypto = new Key({ syncId: Crypto.cryptoHash16(keyId), keyId: keyId });
+					
+					crypto.fetch({
+						success: function() {
+							addressesToCryptos[address] = crypto;
+							afterAllKeys();
+						},
+						error: onFailure
+					});
+					
+				}
 				
-				keyChain.fetch({
-					success: function() {
-						var keyId = keyChain.getPrimaryKeyId();
-						var crypto = keyChain.getCrypto(keyId);
-						
-						crypto.fetch({
-							success: function() {
-								addressesToCryptos[address] = crypto;
-								afterAllKeys();
-							},
-							error: onFailure
-						});
-					},
-					error: onFailure
-				});
+				var specificKeyId = Util.getSpecificKeyFromKeyedEmail(address);
+				if (specificKeyId)
+				{
+					getCrypto(specificKeyId);
+				}
+				else
+				{
+					var keyChain = that.getKeyChain(Util.getAddressFromEmail(address));
+					
+					keyChain.fetch({
+						success: function() {
+							var keyId = keyChain.getPrimaryKeyId();
+							getCrypto(keyId);
+						},
+						error: onFailure
+					});
+				}
 			});
 			
 			afterAllKeys();
         },
 
-        getKeyInfoForAddresses: function(addresses, callbacks)
+        getKeyChainsForAddresses: function(addresses, callbacks)
         {
         	var that = this;
         	var addressesToInfos = {};
@@ -345,7 +359,7 @@ define([
         	var keyFailure = false;
     		var afterAllKeys = _.after(addresses.length+1, function() {
         		if (keyFailure)
-        			callbacks.failure();
+        			callbacks.failure(addressesToInfos);
         		else
         			callbacks.success(addressesToInfos);
         	});
@@ -361,13 +375,9 @@ define([
     			
     			keyChain.fetch({
     				success: function() {
-    					var info = keyChain.getKey(keyChain.getPrimaryKeyId());
-    					addressesToInfos[address] = info;
+    					addressesToInfos[address] = keyChain;
     					
-    					if (info)
-    						afterAllKeys();
-    					else
-    						onFailure();
+						afterAllKeys();
     				},
     				error: onFailure
     			});

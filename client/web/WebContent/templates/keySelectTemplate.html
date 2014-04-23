@@ -1,0 +1,30 @@
+<div class="btn-group token-key-selector-group">
+	<button class="btn btn-xs dropdown-toggle token-key-selector" type="button" data-toggle="dropdown">
+		<%- keyId %>
+	</button>
+
+	<ul class="dropdown-menu">
+<% 
+	if (keyChain) {
+		var keys = keyChain.get('keys');
+		_.each(keys, function(key) { 
+%>
+		<li role="presentation" class="<%- key.revoked ? 'label-warning' : '' %>">
+			<a role="menuitem" tabindex="-1" href="#" data="<%- key.keyId %>" class="key-selector">
+				<span class="date">Date created: <%- Util.getUserFriendlyDate(key.timeStamp) %></span>
+				<span class="bits">Size: <%- key.keySize %></span>
+				<span class="id">Id: <%- key.keyId %></span>
+				<span class="isRevoked"><%- key.revoked ? 'REVOKED!' : '' %></span>
+			</a>
+		</li>
+<% 
+		}); 
+	} else { 
+%>
+		<li>No keys</li>
+<% 
+	} 
+%>
+	</ul>
+	
+</div>

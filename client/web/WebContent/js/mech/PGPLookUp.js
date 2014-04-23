@@ -69,7 +69,7 @@ define([
 	    			
 	    			key.keyId = parts[1].toLowerCase();
 	    			key.keySize = parts[3];
-	    			key.timeStamp = parseInt(parts[4]);
+	    			key.timeStamp = parseInt(parts[4]) * 1000;
 	    			key.revoked = line.endsWith(":r");
 	    			key.address = address;
 	    		}

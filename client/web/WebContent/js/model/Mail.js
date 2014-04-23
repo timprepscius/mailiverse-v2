@@ -76,6 +76,11 @@ define([
     		return this.getAddresses(['to', 'cc', 'bcc']);
     	},
     	
+    	getRecipientEmailAddresses: function()
+    	{
+    		return this.getEmailAddresses(['to', 'cc', 'bcc']);
+    	},
+    	
     	addTagToBodyPart: function (hash, key, value)
     	{
     		_.each (this.get('content'), function(part) {
