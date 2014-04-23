@@ -173,8 +173,6 @@ define([
 		
 		doSend: function(mail, data, callbacks)
 		{
-			return false;
-			
 		    $.ajax({ 
 		    	method: 'PUT',
 		    	url: Constants.URL + 'util/Send', 
