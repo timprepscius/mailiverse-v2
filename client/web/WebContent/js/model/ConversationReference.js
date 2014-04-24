@@ -180,6 +180,8 @@ define([
     	sort: function()
     	{
     		this.getPage(0).sort();
+    		// trigger a sort event, so that the folder list view will update
+    		this.getPage(0).trigger('sort');
     	}
     });
 });
