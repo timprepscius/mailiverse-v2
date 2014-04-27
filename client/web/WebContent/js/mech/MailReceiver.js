@@ -29,7 +29,9 @@ define([
 			appSingleton.user.getConversations().syncedOnce(function() {
 			appSingleton.user.getContacts().syncedOnce(function() {
 			appSingleton.user.getFolders().syncedOnce(function() {
+			appSingleton.user.getFilters().syncedOnce(function() {
 				fn();
+			});
 			});
 			});
 			});
@@ -124,6 +126,9 @@ define([
 			var user = appSingleton.user;
 			mail.set('sent', original.get('sent'));
 			mail.set('received', !original.get('sent'));
+			
+			var filters = user.getFilters();
+			filters.applyTo(mail);
 
 			var conversations = appSingleton.user.getConversations();
 
@@ -139,7 +144,7 @@ define([
 
 			conversation.getMails().syncedOnce(function() {
 			conversation.getReferences().syncedOnce(function() {
-			user.getContacts().syncedOnce(function() {
+
 				
 				// add the mail
 				conversation.getMails().add(mail);
@@ -162,7 +167,7 @@ define([
 				
 				that.trigger('next');
 				
-			});});});
+			});});
 		}
 	});
 	

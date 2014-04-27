@@ -80,6 +80,7 @@ define([
 	    		var dictionary = {};
 	    		var date = null;
 	    		var draft = null;
+	    		var tags = [];
 	    		
 	    		_.each(
 	    			that.getMails().models, 
@@ -101,6 +102,9 @@ define([
 	    				if (mail.get('dictionary'))
 	    					_.extend(dictionary, mail.get('dictionary'));
 	    				
+	    				if (mail.get('tags'))
+	    					tags = _.union(tags, mail.get('tags'));
+	    				
 	    				if (date == null || mail.get('date') > date)
 	    					date = mail.get('date');
 	    			}
@@ -116,6 +120,7 @@ define([
 	    		that.set('date', date);
 	    		that.set('subject', subject);
 	    		that.set('draft', draft);
+	    		that.set('tags', tags);
 	    		
 	    		that.trigger('recompute');
 	    		that.save();

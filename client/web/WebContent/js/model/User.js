@@ -10,6 +10,7 @@ define([
     	idAttribute: "syncId",
     	urlRoot: Constants.REST + 'User',
     	folders: null,
+    	filters: null,
     	conversations: null,
     	contacts: null,
     	originals: null,
@@ -47,6 +48,15 @@ define([
         	return this.folders;
         },
         
+        getFilters: function() 
+        {
+        	if (!this.filters) {
+        		this.filters = new Filters([], { user:this });
+        		this.filters.fetch();
+        	}
+        	return this.filters;
+        },
+
         getContacts: function()
         {
         	if (!this.contacts) {
@@ -91,7 +101,7 @@ define([
     			name: 'Inbox', 
     			ordering: 0, 
     			inclusion_criteria : { received: true }, 
-    			exclusion_criteria : { spam: true, trash: true },
+    			exclusion_criteria : { spam: true, trash: true, skipInbox: true },
     			syncId: Util.guid()
     		});
     		folders.create({ 

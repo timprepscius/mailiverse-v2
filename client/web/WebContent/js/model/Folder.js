@@ -21,11 +21,32 @@ define([
         	return this.conversations;
         },
         
+        matches: function(conversation, kv)
+        {
+        	if (kv[0] == 'all')
+        		return true;
+        	
+        	if (kv[0] == 'tags')
+        	{
+        		var matches = true;
+        		
+        		var tags = conversation.get('tags') || [];
+        		var matching = kv[1];
+        		_.each(matching, function(m) {
+        			matches = matches || _.contains(tags, m);
+        		});
+        		
+        		return matches && (tags.length > 0);
+        	}
+        	
+        	return conversation.get(kv[0])==kv[1];
+        },
+        
         shouldInclude: function(conversation)
         {
         	var matches = false;
         	_.each(_.pairs(this.get('inclusion_criteria')), function(kv) {
-        		matches = matches || (conversation.get(kv[0])==kv[1]) || (kv[0] =='all');
+        		matches = matches || this.matches(conversation, kv);
         	}, this);
         	
         	return matches;
@@ -35,7 +56,7 @@ define([
         {
         	var matches = false;
         	_.each(_.pairs(this.get('exclusion_criteria')), function(kv) {
-        		matches = matches || (conversation.get(kv[0])==kv[1]); 
+        		matches = matches || this.matches(conversation, kv); 
         	}, this);
         	
         	return matches;
