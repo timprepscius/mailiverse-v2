@@ -13,6 +13,7 @@ define([
         	'click #main-compose-button': 'loadCompose',
         	'click #main-profile': 'showProfile',
         	'click #main-keys': 'showKeys',
+        	'click #main-filters' : 'showFilters',
         },
         
         currentView: null,
@@ -105,6 +106,12 @@ define([
         	original.render();
         },
         
+        showFilters: function(id)
+        {
+        	var filters = new FiltersView({ el: this.$('#main-modal'), collection:this.user.getFilters() });
+        	filters.render();
+        },
+
         closeCurrentView: function() {
         	if (this.currentView)
         	{

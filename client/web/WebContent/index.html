@@ -8,6 +8,9 @@
 <link href="__VERSION__/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" media="screen">
 <link href="__VERSION__/css/dashboard.css" rel="stylesheet" media="screen">
 
+<link href="__VERSION__/css/bootstrap-select.css" rel="stylesheet" media="screen">
+
+
 <link rel="stylesheet" href="__VERSION__/css/tokenfield-typeahead.css" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="__VERSION__/css/bootstrap-tokenfield.css" type="text/css" media="screen" charset="utf-8" />
 
@@ -30,6 +33,7 @@ require.config({
 		typeahead: 'js/lib/typeahead',
 		underscore: 'js/lib/underscore-min',
 		bootstrap: 'bootstrap/js/bootstrap',
+		bootstrap_select: 'js/lib/bootstrap-select',
 
 		backbone: 'js/lib/backbone',
 		modelBinder: 'js/lib/Backbone.ModelBinder',
@@ -59,6 +63,7 @@ require.config({
 		aes: { deps: [] },
 		jqueryappear: { deps: ['jquery'] },
 		typeahead: { deps: ['jquery'] },
+		bootstrap_select: { deps: ['jquery', 'bootstrap'] },
 	}
 });
 </script>
@@ -82,6 +87,8 @@ require ([
 	'ckeditor_adapter',
 	
 	'js/lib/bootstrap-tokenfield',
+	'bootstrap_select',
+
 	'js/lib/Encodings',
 	'js/lib/Sandbox',
 	
@@ -95,10 +102,11 @@ require ([
 	'js/Util',
 	'js/Crypto',
 	'js/Constants',
+	
 ], function () {
 	require ([
 	    
-	    'js/model/App',
+        'js/model/App',
 	    'js/model/Login',
 		'js/model/User', 
 		'js/model/Folder', 
@@ -127,6 +135,7 @@ require ([
 		'js/view/ProfileView',
 		'js/view/KeysView',
 		'js/view/OriginalView',
+		'js/view/FiltersView',
 	
 		'js/mech/MailReceiver',
 		'js/mech/MailSender',

@@ -91,6 +91,15 @@ define([
     		});
     	},
     	
+    	applyFilter: function(filter)
+    	{
+    		if (filter.get('tags'))
+    			this.set('filterTags', _.union(this.get('filterTags') || [], filter.get('tags')));
+    		
+    		if (filter.get('folder'))
+    			this.set('filterFolders', _.union(this.get('filterFolders') || [], filter.get('folder')));
+    	},
+    	
     	recomputeParent: function()
     	{
     		this.getParentConversation().recomputeAttributesAndFolderMemberships();

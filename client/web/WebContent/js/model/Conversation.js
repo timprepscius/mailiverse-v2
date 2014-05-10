@@ -80,7 +80,8 @@ define([
 	    		var dictionary = {};
 	    		var date = null;
 	    		var draft = null;
-	    		var tags = [];
+	    		var filterTags = [];
+	    		var filterFolders = [];
 	    		
 	    		_.each(
 	    			that.getMails().models, 
@@ -102,9 +103,12 @@ define([
 	    				if (mail.get('dictionary'))
 	    					_.extend(dictionary, mail.get('dictionary'));
 	    				
-	    				if (mail.get('tags'))
-	    					tags = _.union(tags, mail.get('tags'));
+	    				if (mail.get('filterTags'))
+	    					filterTags = _.union(tags, mail.get('filterTags'));
 	    				
+	    				if (mail.get('filterFolders'))
+	    					filterFolders = _.union(filterFolders, mail.get('filterFolders'));
+
 	    				if (date == null || mail.get('date') > date)
 	    					date = mail.get('date');
 	    			}
@@ -120,7 +124,8 @@ define([
 	    		that.set('date', date);
 	    		that.set('subject', subject);
 	    		that.set('draft', draft);
-	    		that.set('tags', tags);
+	    		that.set('filterTags', filterTags);
+	    		that.set('filterFolders', filterFolders);
 	    		
 	    		that.trigger('recompute');
 	    		that.save();

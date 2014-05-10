@@ -26,12 +26,13 @@ define([
         	if (kv[0] == 'all')
         		return true;
         	
-        	if (kv[0] == 'tags')
+        	if (kv[0] == 'filter')
         	{
-        		var matches = true;
+        		kv[1] = this.id;
+        		var matches = false;
         		
-        		var tags = conversation.get('tags') || [];
-        		var matching = kv[1];
+        		var tags = conversation.get('filterFolders') || [];
+        		var matching = [ kv[1] ];
         		_.each(matching, function(m) {
         			matches = matches || _.contains(tags, m);
         		});

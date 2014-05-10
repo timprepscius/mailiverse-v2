@@ -1,0 +1,70 @@
+<div>
+
+
+<div class="row">
+<div class="col-md-4">folder</div>
+<div class="col-md-4">
+<select name="folder" class="selectpicker">
+	<option value="">None</option>
+
+<% 
+_.each(folders.models, function(f) {
+	if (f.get('custom')) {
+
+%>
+	<option value="<%- f.id %>"><%- f.get('name') %></option>
+<%
+	}
+}); 
+%>
+
+</select>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-4">Must match</div>
+<div class="col-md-4">
+<select name="mustMatch" class="selectpicker">
+	<option value="some">Some</option>
+	<option value="all">All</option>
+</select>
+</div>
+</div>
+
+
+<div class="row">
+<div class="col-md-4">from</div>
+<div class="col-md-4"><input type="text" name="from"></input></div>
+</div>
+
+
+<div class="row">
+<div class="col-md-4">to</div>
+<div class="col-md-4"><input type="text" name="to"></input></div>
+</div>
+
+<div class="row">
+<div class="col-md-4">cc</div>
+<div class="col-md-4"><input type="text" name="cc"></input></div>
+</div>
+
+<div class="row">
+<div class="col-md-4">subject</div>
+<div class="col-md-4"><input type="text" name="subject"></input></div>
+</div>
+
+<div class="row">
+<div class="col-md-4">body</div>
+<div class="col-md-4"><input type="text" name="body"></input></div>
+</div>
+
+
+
+
+<button type="button" class="delete btn btn-default">Delete</button>
+<button type="button" class="save btn btn-default">Save</button>
+
+</div>
+
+<hr/>

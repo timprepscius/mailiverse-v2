@@ -14,12 +14,18 @@ define([
     	
         matches: function(mail)
         {
-        	var results = _.map(this.get('criteria'), function(criteria) {
+        	var criteria = [];
+        	var fields = ['to', 'cc', 'from', 'subject', 'body'];
+        	_.each(fields, function(f) {
+            	if (this.get(f))
+            		criteria.push({ field: f, match: this.get(f) });
         		
-    			var value = conversation.get(criteria.field);
-    			var re = new RegExp(criteria.regularExpression);
-	
-    			if (re.test(value))
+        	}, this);
+        	
+        	var results = _.map(criteria, function(criteria) {
+        		
+    			var value = mail.get(criteria.field);
+    			if (value.toLowerCase().indexOf(criteria.match.toLowerCase()) != -1)
     				return true;
         			
     			return false;
@@ -38,14 +44,14 @@ define([
         {
         	if (this.matches(mail))
         	{
-        		mail.applyTags(this.get('tags'));
+        		mail.applyFilter(this);
         	}
         },
     });
 
     Filters = Backbone.Collection.extend({
     	url: function () { return Constants.REST + 'Filters?field=' +this.field + "&id="+ this.id; },
-        model: Folder,
+        model: Filter,
         exposedFields: FilterExposedFields,
         
         initialize:function(objects, options)
@@ -55,10 +61,10 @@ define([
         	this.user = options.user;
         },
         
-        applyTo: function(conversation, mail)
+        applyTo: function(mail)
         {
         	this.each(function(filter) {
-        		filter.applyTo(conversation, mail);
+        		filter.applyTo(mail);
         	});
         }
     });

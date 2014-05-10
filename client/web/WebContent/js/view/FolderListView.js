@@ -36,7 +36,8 @@ define([
         	var that = this;
         	
         	var rendered = _.template(folderListItemTemplate, { model: this.model });
-            $(this.el).html(rendered);
+            $(this.el).html(rendered); 
+            
             return this;
         },
         
@@ -45,9 +46,9 @@ define([
     FolderListView = Backbone.View.extend({
 
     	events: {
-        	'click #_mMain_userFoldersAdd_newUserFolder': 'onNewFolder',
-        	'click #_mMain_userFoldersAdd_deleteUserFolder': 'onDeleteFolder',
-        	'click #_mMain_userFoldersAdd_renameUserFolder': 'onRenameFolder'
+        	'click #sidebar-folderlist-add': 'onNewFolder',
+        	'click #sidebar-folderlist-remove': 'onDeleteFolder',
+        	'click #sidebar-folderlist-rename': 'onRenameFolder'
     	},
     	
         initialize: function(options) 
@@ -72,7 +73,12 @@ define([
         
         onNewFolder: function()
         {
-        	this.collection.create({name:'Unnamed', user:this.collection.id});
+        	this.collection.create({ 
+        		name:'Unnamed', 
+        		user:this.collection.id, 
+        		custom:true,
+    			inclusion_criteria : { filter: true }, 
+        	});
         },
         
         onDeleteFolder: function()
