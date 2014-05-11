@@ -98,6 +98,9 @@ define([
     		
     		if (filter.get('folder'))
     			this.set('filterFolders', _.union(this.get('filterFolders') || [], filter.get('folder')));
+    		
+    		if (filter.get('skipInbox'))
+    			this.set('skipInbox', true);
     	},
     	
     	recomputeParent: function()

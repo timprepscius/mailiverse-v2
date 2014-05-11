@@ -82,6 +82,7 @@ define([
 	    		var draft = null;
 	    		var filterTags = [];
 	    		var filterFolders = [];
+	    		var skipInbox = false;
 	    		
 	    		_.each(
 	    			that.getMails().models, 
@@ -111,6 +112,9 @@ define([
 
 	    				if (date == null || mail.get('date') > date)
 	    					date = mail.get('date');
+	    				
+	    				if (mail.get('skipInbox'))
+	    					skipInbox = true;
 	    			}
 	    		);
 	    		
@@ -126,6 +130,7 @@ define([
 	    		that.set('draft', draft);
 	    		that.set('filterTags', filterTags);
 	    		that.set('filterFolders', filterFolders);
+	    		that.set('skipInbox', skipInbox);
 	    		
 	    		that.trigger('recompute');
 	    		that.save();

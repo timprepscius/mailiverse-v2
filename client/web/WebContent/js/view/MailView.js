@@ -99,6 +99,9 @@ define([
 		
 		onModeChange: function(event)
 		{
+			if ($(event.target).hasClass('not-clickable'))
+				return;
+			
 			this.hideMode();
 
 			if (this.mode == 'partial')

@@ -23,14 +23,14 @@
 	<div class="clickable">		
 		
 		<div class="line">
-			<div class="from"><%- model.get('from') %></div>
+			<div class="from"><span class="not-clickable"><%- model.get('from') %></span></div>
 		</div>
-		<div class="to">To: <%- model.get('to') %></div>
+		<div class="to"><span class="not-clickable">To: <%- model.get('to') %></span></div>
 		<% if (model.has('cc')) { %>
-		<div class="cc">Cc: <%- model.get('cc') %></div>
+		<div class="cc"><span class="not-clickable">Cc: <%- model.get('cc') %></span></div>
 		<% } %>
 		<% if (model.has('bcc')) { %>
-		<div class="cc">Bcc: <%- model.get('bcc') %></div>
+		<div class="cc"><span class="not-clickable">Bcc: <%- model.get('bcc') %></span></div>
 		<% } %>
 	
 	</div>	

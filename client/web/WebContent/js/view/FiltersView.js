@@ -33,6 +33,9 @@ define([
         		this.model.set(key, this.$('[name=' + key + ']').val());
         	}, this);
         	
+        	
+        	this.model.set('skipInbox', this.$('[name=skipInbox]').val() == 'on');
+        	
         	this.model.save();
         },
         
