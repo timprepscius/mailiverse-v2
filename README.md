@@ -24,6 +24,21 @@ include some sort of script to generate default certs.
 
 Progress:
 
+05/11/2014 - Signatures working almost all of the time.  Filters, folders.
+ * The core of the project seems to be 90% done.  All signatures are working except for a few gpg extensions which open
+pgp isn't handling quite right.  However I see changes in their source.  They seem to be making necessary changes.
+ * When sending encrypted email you can now choose the key of the recipient you want to use.  All with a nice UI. ;-)
+ * Filters first cut is done.  So now, you can filter a bunch of incoming conversations into the correct folder.
+I still need to enable retroactive filter placement.
+ * You can add folders now and rename existing folders.   Can't delete yet.
+ * Things are in a useable state.  
+
+Changes to be made:
+ * retroactive filter application.
+ * deleting a folder.
+ * need to make user session key a sha instead of real.
+ * lots of odds and ends.
+
 04/09/2014 - Working on checking signatures, debugging openpgpjs.
  * Checking signatures works with all examples I have at this point.  Yay!   Wow that was a lot of work.
  * Decryption is continuing to work with the examples I have, but do not have enough examples.
