@@ -25,9 +25,6 @@ define([
         
         onClick: function(event)
         {
-        	if (FolderListActiveFolder == this)
-        		return;
-        	
         	if (FolderListActiveFolder)
         		FolderListActiveFolder.$el.removeClass("active");
         	

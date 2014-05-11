@@ -25,7 +25,7 @@ define([
         	var results = _.map(criteria, function(criteria) {
         		
     			var value = mail.get(criteria.field);
-    			if (value.toLowerCase().indexOf(criteria.match.toLowerCase()) != -1)
+    			if (value && value.toLowerCase().indexOf(criteria.match.toLowerCase()) != -1)
     				return true;
         			
     			return false;
