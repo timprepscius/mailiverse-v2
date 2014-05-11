@@ -14,16 +14,20 @@ define([
 		
         events: {
             'click' : 'onClick',
+            'keydown .folder-name-input': 'onChange'
         },
         
         initialize: function(options) 
         {
         	this.modelBinders = [];
-        	_.bindAll(this, 'onClick');
+        	_.bindAll(this, 'onClick', 'onChange');
         },
         
         onClick: function(event)
         {
+        	if (FolderListActiveFolder == this)
+        		return;
+        	
         	if (FolderListActiveFolder)
         		FolderListActiveFolder.$el.removeClass("active");
         	
@@ -32,12 +36,38 @@ define([
         	appSingleton.mainView.loadFolder(this.model);
         },
         
-        render: function( model ) {
+        onEdit: function()
+        {
+        	this.$('.folder-name-input').removeClass('hide');
+        	this.$('.folder-name-label').addClass('hide');
+        },
+        
+        onFinishEdit: function()
+        {
+        	this.model.set('name', this.$('.folder-name-input').val());
+        	this.$('.folder-name-label').removeClass('hide');
+        	this.$('.folder-name-input').addClass('hide');
+        	
+        	this.model.save();
+        },
+        
+        onChange: function(event)
+        {
+        	if (event.keyCode == 13)
+        		this.onFinishEdit();
+        },
+        
+        render: function( model ) 
+        {
         	var that = this;
         	
         	var rendered = _.template(folderListItemTemplate, { model: this.model });
             $(this.el).html(rendered); 
-            
+
+            var mb = new Backbone.ModelBinder();
+            this.modelBinders.push(mb);
+            mb.bind(this.model, this.el);            
+
             return this;
         },
         
@@ -89,8 +119,7 @@ define([
         
         onRenameFolder: function()
         {
-        	alert('onRenameFolder');
-        	
+        	FolderListActiveFolder.onEdit();
         },
                 
         render: function() {
