@@ -85,7 +85,14 @@ define([
     		var re = new RegExp(subKey + "=([\\S]*)", "gm");
     		var matches = re.exec(value);
     		if (matches)
-    			return Util.trimChars(matches[1], '\'";');
+			{
+				var m = matches[1];
+				var semicolon = m.indexOf(';');
+				if (semicolon != -1)
+					m = m.substr(0, semicolon);
+					
+    			return Util.trimChars(m, '\'";');
+			}
     		
     		return null;
     	},
