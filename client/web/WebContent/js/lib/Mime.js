@@ -7,12 +7,12 @@ define(['jquery'], function(jQuery) {
                 return new Mime();
             }
 
-            function processHeader(header) {
-                var data = $.trim(header).split("\n");
+            function processHeader(data) {
 
                 for (var line in data) {
-                    if (data[line].indexOf("boundary") !== -1) {
-                        var temp = data[line].split(";");
+                	var value = data[line].value;
+                	if (value && value.indexOf("boundary") !== -1) {
+                        var temp = value.split(";");
 
                         for (var item in temp) {
                             if (temp[item].indexOf("boundary") !== -1) {
@@ -88,7 +88,7 @@ define(['jquery'], function(jQuery) {
                         	}
                         }
                         
-                        var innerBoundary = processHeader(data[part]);
+                        var innerBoundary = processHeader(message.headers);
                         if (innerBoundary != defaultBoundary)
                         {
                         	message.data = processBody(innerBoundary, message.data);
