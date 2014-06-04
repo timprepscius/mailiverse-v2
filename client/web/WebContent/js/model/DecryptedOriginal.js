@@ -278,7 +278,7 @@ define([
     		_.each(htmlParts, function(htmlPart) {
     			var pgpBlock = this.getPGPSignedBlockIfAny(Util.toText(this.getDecodedPart(htmlPart)));
     			if (pgpBlock)
-    				partsToDecrypt.push({ 
+    				partsToCheck.push({ 
     					part: textPart, 
     					block: { armoredText: pgpBlock[0], signature: pgpBlock[1] }, 
     					isInline: true 
