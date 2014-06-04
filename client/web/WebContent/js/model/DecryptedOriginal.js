@@ -279,7 +279,7 @@ define([
     			var pgpBlock = this.getPGPSignedBlockIfAny(Util.toText(this.getDecodedPart(htmlPart)));
     			if (pgpBlock)
     				partsToCheck.push({ 
-    					part: textPart, 
+    					part: htmlPart, 
     					block: { armoredText: pgpBlock[0], signature: pgpBlock[1] }, 
     					isInline: true 
 					});
